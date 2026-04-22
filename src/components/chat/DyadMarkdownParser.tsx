@@ -44,6 +44,7 @@ import { DyadExitPlan } from "./DyadExitPlan";
 import { DyadQuestionnaire } from "./DyadQuestionnaire";
 import { DyadStepLimit } from "./DyadStepLimit";
 import { DyadReadGuide } from "./DyadReadGuide";
+import { DyadSkill } from "./DyadSkill";
 import { mapActionToButton } from "./ChatInput";
 import { SuggestedAction } from "@/lib/schemas";
 import { FixAllErrorsButton } from "./FixAllErrorsButton";
@@ -93,6 +94,8 @@ const DYAD_CUSTOM_TAGS = [
   "dyad-questionnaire",
   // Step limit notification
   "dyad-step-limit",
+  // Skills
+  "dyad-skill",
 ];
 
 interface DyadMarkdownParserProps {
@@ -882,6 +885,21 @@ function renderCustomTag(
         >
           {content}
         </DyadStepLimit>
+      );
+
+    case "dyad-skill":
+      return (
+        <DyadSkill
+          node={{
+            properties: {
+              name: attributes.name || "",
+              description: attributes.description || "",
+              state: getState({ isStreaming, inProgress }),
+            },
+          }}
+        >
+          {content}
+        </DyadSkill>
       );
 
     default:
