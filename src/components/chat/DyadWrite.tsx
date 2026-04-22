@@ -72,10 +72,10 @@ export const DyadWrite: React.FC<DyadWriteProps> = ({
           )}
         </div>
         {inProgress && (
-          <DyadStateIndicator state="pending" pendingLabel="Writing..." />
+          <DyadStateIndicator state="pending" pendingLabel="Écriture..." />
         )}
         {aborted && (
-          <DyadStateIndicator state="aborted" abortedLabel="Did not finish" />
+          <DyadStateIndicator state="aborted" abortedLabel="Non terminé" />
         )}
         <div className="ml-auto flex items-center gap-1">
           {!inProgress && (
@@ -89,7 +89,7 @@ export const DyadWrite: React.FC<DyadWriteProps> = ({
                   className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded transition-colors cursor-pointer"
                 >
                   <X size={14} />
-                  Cancel
+                  Annuler
                 </button>
               ) : (
                 <button
@@ -100,7 +100,7 @@ export const DyadWrite: React.FC<DyadWriteProps> = ({
                   className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded transition-colors cursor-pointer"
                 >
                   <Edit size={14} />
-                  Edit
+                  Modifier
                 </button>
               )}
             </>
@@ -111,7 +111,7 @@ export const DyadWrite: React.FC<DyadWriteProps> = ({
       {description && (
         <DyadDescription>
           <span className={!isContentVisible ? "line-clamp-2" : undefined}>
-            <span className="font-medium">Summary: </span>
+            <span className="font-medium">Résumé : </span>
             {description}
           </span>
         </DyadDescription>
