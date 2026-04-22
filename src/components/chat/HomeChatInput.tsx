@@ -33,10 +33,12 @@ import { cn } from "@/lib/utils";
 import { useLoadApps } from "@/hooks/useLoadApps";
 import { AppSearchDialog } from "../AppSearchDialog";
 import { useVoiceToText } from "@/hooks/useVoiceToText";
-import { useUserBudgetInfo } from "@/hooks/useUserBudgetInfo";
-import { ipc } from "@/ipc/types";
 import { useCallback, useEffect } from "react";
 import { showError } from "@/lib/toast";
+import { useSkillContextMatcher } from "@/hooks/useSkillContextMatcher";
+import { SkillMatcherSuggestion } from "@/components/skills/SkillMatcherSuggestion";
+import { matchedSkillsAtom, dismissedSkillsAtom } from "@/atoms/chatAtoms";
+import type { MatchedSkill } from "@/skills/types";
 
 export function HomeChatInput({
   onSubmit,
@@ -51,6 +53,11 @@ export function HomeChatInput({
     hasChatId: false,
   }); // eslint-disable-line @typescript-eslint/no-unused-vars
   useChatModeToggle();
+
+  // Skill context matching
+  const { analyzeContext } = useSkillContextMatcher();
+  const [matchedSkills, setMatchedSkills] = useAtom(matchedSkillsAtom);
+  const [, setDismissedSkills] = useAtom(dismissedSkillsAtom);
 
   const handleTranscription = useCallback(
     (text: string) => {
@@ -122,6 +129,9 @@ export function HomeChatInput({
       await toggleRecording();
     }
 
+    // Analyze message context for automatic skill suggestions (non-blocking)
+    analyzeContext(inputValue);
+
     // Call the parent's onSubmit handler with attachments and selected app
     onSubmit({
       attachments,
@@ -136,6 +146,48 @@ export function HomeChatInput({
       existingApp: !!selectedApp,
     });
   };
+
+  // Skill suggestion handlers
+  const handleAcceptSkill = useCallback(
+    (match: MatchedSkill) => {
+      // For home chat input, we'll just insert the skill name as a slash command
+      // The user can then submit it manually
+      setInputValue(`/${match.skill.name}`);
+
+      // Clear the suggestion
+      setMatchedSkills((prev) =>
+        prev.filter((m) => m.skill.name !== match.skill.name),
+      );
+
+      posthog.capture("skill:auto_accept_home", {
+        skillName: match.skill.name,
+        relevance: match.relevance,
+      });
+    },
+    [setInputValue, setMatchedSkills, posthog],
+  );
+
+  const handleDismissSkill = useCallback(
+    (match: MatchedSkill) => {
+      // Remove this skill from the matched skills list
+      setMatchedSkills((prev) =>
+        prev.filter((m) => m.skill.name !== match.skill.name),
+      );
+
+      // Track dismissed skill to prevent re-suggestion
+      setDismissedSkills((prev) => {
+        const next = new Map(prev);
+        next.set(match.skill.name, Date.now());
+        return next;
+      });
+
+      posthog.capture("skill:auto_dismiss_home", {
+        skillName: match.skill.name,
+        relevance: match.relevance,
+      });
+    },
+    [setMatchedSkills, setDismissedSkills, posthog],
+  );
 
   if (!settings) {
     return null; // Or loading state
@@ -160,6 +212,20 @@ export function HomeChatInput({
             attachments={attachments}
             onRemove={removeAttachment}
           />
+
+          {/* Show skill suggestions */}
+          {matchedSkills.length > 0 && !isStreaming && (
+            <div className="border-b border-border p-2 space-y-2">
+              {matchedSkills.map((match) => (
+                <SkillMatcherSuggestion
+                  key={match.skill.name}
+                  match={match}
+                  onAccept={handleAcceptSkill}
+                  onDismiss={handleDismissSkill}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Drag and drop overlay */}
           <DragDropOverlay isDraggingOver={isDraggingOver} />

@@ -28,6 +28,7 @@ import { useAtomValue } from "jotai";
 import { selectedAppIdAtom } from "@/atoms/appAtoms";
 import { MENTION_REGEX, parseAppMentions } from "@/shared/parse_mention_apps";
 import { useLoadApp } from "@/hooks/useLoadApp";
+import { useSkills } from "@/hooks/useSkills";
 import { HistoryNavigation, HISTORY_TRIGGER } from "./HistoryNavigation";
 import { slugForPrompt } from "@/ipc/utils/replaceSlashSkillReference";
 
@@ -45,7 +46,8 @@ const CustomMenuItem = forwardRef<
   BeautifulMentionsMenuItemProps
 >(({ selected, item, ...props }, ref) => {
   const isPrompt = item.data?.type === "prompt";
-  const isSkill = item.data?.type === "skill";
+  const isSkill =
+    item.data?.type === "skill" || item.data?.type === "registry-skill";
   const isApp = item.data?.type === "app";
   const isHistory = item.data?.type === "history";
   const isMedia = item.data?.type === "media";
@@ -313,6 +315,7 @@ export function LexicalChatInput({
 }: LexicalChatInputProps) {
   const { apps } = useLoadApps();
   const { prompts } = usePrompts();
+  const { skills } = useSkills();
   const { mediaApps } = useAppMediaFiles();
   const [shouldClear, setShouldClear] = useState(false);
   const historyTriggerActiveRef = useRef(false);
@@ -339,7 +342,7 @@ export function LexicalChatInput({
       }));
     result[HISTORY_TRIGGER] = historyItems;
 
-    // Skills (slash commands): all prompts by slug
+    // Skills (slash commands): prompts by slug + registered SKILL.md skills
     const skillItems = (prompts || [])
       .map((p) => ({
         value: slugForPrompt(p),
@@ -347,7 +350,22 @@ export function LexicalChatInput({
         id: p.id,
       }))
       .filter((item) => item.value != null && item.value !== "");
-    result["/"] = skillItems;
+
+    // Add registered skills from the skill registry (SKILL.md-based)
+    // Use "skill:" prefix in value to distinguish from prompt-based skills
+    const registrySkillItems = (skills || []).map((s) => ({
+      value: s.name,
+      type: "registry-skill",
+      description: s.description,
+    }));
+
+    // Merge: registry skills take precedence over prompt slugs with the same name
+    const promptSlugSet = new Set(skillItems.map((i) => i.value));
+    const dedupedRegistryItems = registrySkillItems.filter(
+      (s) => !promptSlugSet.has(s.value),
+    );
+
+    result["/"] = [...skillItems, ...dedupedRegistryItems];
 
     if (!apps) return result;
 
@@ -407,6 +425,7 @@ export function LexicalChatInput({
     value,
     excludeCurrentApp,
     prompts,
+    skills,
     appFiles,
     messageHistory,
     mediaApps,
@@ -502,10 +521,30 @@ export function LexicalChatInput({
             textContent = textContent.replace(fileRegex, `@file:${fullPath}`);
           }
         }
+
+        // Transform /skill-name mentions from the registry to /skill:skill-name
+        // so the stream handler can identify and expand them correctly.
+        if (textContent.includes("/") && (skills || []).length > 0) {
+          for (const skill of skills || []) {
+            const escapedName = skill.name.replace(
+              /[.*+?^${}()|[\]\\]/g,
+              "\\$&",
+            );
+            const skillRegex = new RegExp(
+              `(^|\\s)\\/(${escapedName})(?=\\s|$)`,
+              "g",
+            );
+            textContent = textContent.replace(
+              skillRegex,
+              `$1/skill:${skill.name}`,
+            );
+          }
+        }
+
         onChange(textContent);
       });
     },
-    [onChange, apps, prompts, appFiles, mediaApps, selectedAppId],
+    [onChange, apps, prompts, skills, appFiles, mediaApps, selectedAppId],
   );
 
   const handleSubmit = useCallback(() => {

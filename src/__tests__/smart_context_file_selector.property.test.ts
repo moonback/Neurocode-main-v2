@@ -1,15 +1,12 @@
 // Feature: smart-context-mode
 import * as fc from "fast-check";
-import { describe, it, expect } from "vitest";
+import { describe, it } from "vitest";
 import { matchesByKeyword } from "../context_manager/file_selector";
 
 // Arbitrary for a keyword (lowercase word, length 2–20)
 const keywordArb = fc.stringMatching(/^[a-z]{2,20}$/);
 
 // Arbitrary for a set of keywords (1–5 keywords)
-const keywordsSetArb = fc
-  .array(keywordArb, { minLength: 1, maxLength: 5 })
-  .map((arr) => new Set(arr));
 
 // Arbitrary for a file path that contains a given keyword in its basename
 function filePathWithKeywordArb(keyword: string) {

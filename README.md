@@ -85,6 +85,7 @@ NeuroCode est une puissante application de bureau qui permet aux développeurs d
 - Capacités de génération d'images par l'IA
 - Optimisation et nettoyage des fichiers médias
 - Service de médias persistant avec protocole personnalisé
+
 ### 🧠 Contexte Intelligent (Smart Context)
 
 NeuroCode utilise un **Context Manager avancé** pour sélectionner automatiquement les fichiers les plus pertinents de votre projet avant de les envoyer à l’IA.
@@ -93,18 +94,18 @@ NeuroCode utilise un **Context Manager avancé** pour sélectionner automatiquem
 
 Le système fonctionne en 4 étapes :
 
-1. **File Selector**  
-   - Analyse les imports et dépendances  
-   - Recherche par mots-clés si aucun fichier actif  
+1. **File Selector**
+   - Analyse les imports et dépendances
+   - Recherche par mots-clés si aucun fichier actif
 
-2. **Scorer**  
+2. **Scorer**
    - Attribue un score de pertinence (0 → 1) basé sur :
      - Relations d’import (40%)
      - Correspondance de symboles (30%)
      - Proximité des fichiers (20%)
      - Récence (10%)
 
-3. **Assembler**  
+3. **Assembler**
    - Sélectionne les fichiers selon une stratégie :
      - Conservative (précis, rapide)
      - Balanced (équilibré)
@@ -112,7 +113,7 @@ Le système fonctionne en 4 étapes :
    - Tronque automatiquement les fichiers peu pertinents
    - Respecte strictement le budget de tokens
 
-4. **Observability Store**  
+4. **Observability Store**
    - Enregistre chaque interaction
    - Permet d’expliquer pourquoi un fichier a été inclus
 
@@ -125,11 +126,11 @@ Le système fonctionne en 4 étapes :
 
 #### 🎛️ Stratégies disponibles
 
-| Stratégie | Description |
-|----------|------------|
+| Stratégie        | Description                  |
+| ---------------- | ---------------------------- |
 | **Conservative** | Très précis, peu de fichiers |
-| **Balanced** | Équilibre (par défaut) |
-| **Deep** | Contexte large, plus complet |
+| **Balanced**     | Équilibre (par défaut)       |
+| **Deep**         | Contexte large, plus complet |
 
 #### 🔍 Observabilité (Pro)
 
@@ -140,13 +141,14 @@ Accédez aux décisions du Context Manager :
 - Pourquoi certains fichiers ont été exclus
 
 Disponible via IPC :
+
 - `get-context-observability`
 - `get-recent-context-observability`
-
 
 #### 📊 Pipeline du Context Manager
 
 ![Pipeline Context Manager](assets/context-manager-pipeline.png)
+
 ### Fonctionnalités avancées
 
 - **Compactage du contexte :** Résumé automatique des longues conversations
@@ -419,12 +421,13 @@ npm run build
 npm run e2e
 npm run e2e:fast      # Avec moins de tentatives
 ```
+
 - Tests de propriétés (fast-check) pour garantir :
   - Scores toujours bornés et déterministes
   - Respect du budget de tokens
   - Ordonnancement correct des fichiers
   - Limite mémoire de l’observabilité (50 entrées max)
-  
+
 **Important :** Les tests E2E s'exécutent sur l'application compilée. Recompilez toujours après des modifications de code.
 
 ---

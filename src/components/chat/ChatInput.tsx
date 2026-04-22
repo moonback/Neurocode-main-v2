@@ -85,7 +85,6 @@ import {
 import { ImageGeneratorDialog } from "@/components/ImageGeneratorDialog";
 import { useChatModeToggle } from "@/hooks/useChatModeToggle";
 import { VisualEditingChangesDialog } from "@/components/preview_panel/VisualEditingChangesDialog";
-import { useUserBudgetInfo } from "@/hooks/useUserBudgetInfo";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
 import {
@@ -103,7 +102,11 @@ import { useRouter } from "@tanstack/react-router";
 import { showError as showErrorToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useVoiceToText } from "@/hooks/useVoiceToText";
-import { isDyadProEnabled } from "@/lib/schemas";
+import { isSlashCommand, parseCommand } from "@/skills/command_parser";
+import { useSkillContextMatcher } from "@/hooks/useSkillContextMatcher";
+import { SkillMatcherSuggestion } from "@/components/skills/SkillMatcherSuggestion";
+import { matchedSkillsAtom, dismissedSkillsAtom } from "@/atoms/chatAtoms";
+import type { MatchedSkill } from "@/skills/types";
 
 const showTokenBarAtom = atom(false);
 
@@ -228,6 +231,11 @@ export function ChatInput({ chatId }: { chatId?: number }) {
   const { proposal, messageId } = proposalResult ?? {};
   useChatModeToggle();
 
+  // Skill context matching — analyzeContext is called on every message submit
+  const { analyzeContext } = useSkillContextMatcher();
+  const [matchedSkills, setMatchedSkills] = useAtom(matchedSkillsAtom);
+  const [, setDismissedSkills] = useAtom(dismissedSkillsAtom);
+
   const lastMessage = (chatId ? (messagesById.get(chatId) ?? []) : []).at(-1);
   const disableSendButton =
     settings?.selectedChatMode !== "local-agent" &&
@@ -246,9 +254,6 @@ export function ChatInput({ chatId }: { chatId?: number }) {
       .map((msg) => msg.content)
       .reverse(); // Most recent first
   }, [chatId, messagesById]);
-
-  const { userBudget } = useUserBudgetInfo();
-  const isProEnabled = true;
 
   const handleTranscription = useCallback(
     (text: string) => {
@@ -455,6 +460,9 @@ export function ChatInput({ chatId }: { chatId?: number }) {
       return;
     }
 
+    // Analyze message context for automatic skill suggestions (non-blocking)
+    analyzeContext(inputValue);
+
     if (isRecording) {
       await toggleRecording();
     }
@@ -505,7 +513,59 @@ export function ChatInput({ chatId }: { chatId?: number }) {
 
     const currentInput = promptWithImages;
 
-    // Use all selected components for multi-component editing
+    // Handle slash command invocation (e.g. `/lint`, `/fix-issue 123`)
+    if (isSlashCommand(currentInput)) {
+      const parsed = parseCommand(currentInput);
+      if (parsed) {
+        let skillContent: string;
+        try {
+          const result = await ipc.skills.execute({
+            name: parsed.skillName,
+            args: parsed.args.length > 0 ? parsed.args.join(" ") : undefined,
+          });
+          skillContent = result.content;
+        } catch {
+          // Skill not found – fetch available skills and show a helpful error
+          let availableSkillsMsg = "";
+          try {
+            const skills = await ipc.skills.list(undefined);
+            if (skills.length > 0) {
+              availableSkillsMsg = ` Available skills: ${skills.map((s) => `/${s.name}`).join(", ")}`;
+            } else {
+              availableSkillsMsg = " No skills are currently registered.";
+            }
+          } catch {
+            // ignore secondary error
+          }
+          showErrorToast(
+            `Skill "/${parsed.skillName}" not found.${availableSkillsMsg}`,
+          );
+          return;
+        }
+
+        // Load skill content into context by sending it as the message prompt
+        setInputValue("");
+        clearAttachments();
+        setSelectedComponents([]);
+        setVisualEditingSelectedComponent(null);
+        await streamMessage({
+          prompt: skillContent,
+          chatId,
+          attachments,
+          redo: false,
+          selectedComponents:
+            selectedComponents && selectedComponents.length > 0
+              ? selectedComponents
+              : [],
+        });
+        posthog.capture("chat:submit", {
+          chatMode: settings?.selectedChatMode,
+          skillName: parsed.skillName,
+        });
+        return;
+      }
+    }
+
     const componentsToSend =
       selectedComponents && selectedComponents.length > 0
         ? selectedComponents
@@ -683,6 +743,65 @@ export function ChatInput({ chatId }: { chatId?: number }) {
     }
   };
 
+  // Skill suggestion handlers
+  const handleAcceptSkill = useCallback(
+    async (match: MatchedSkill) => {
+      if (!chatId) return;
+
+      // Load skill content into context by executing it
+      try {
+        const result = await ipc.skills.execute({
+          name: match.skill.name,
+          args: undefined,
+        });
+
+        // Clear the suggestion
+        setMatchedSkills((prev) =>
+          prev.filter((m) => m.skill.name !== match.skill.name),
+        );
+
+        // Send the skill content as a message
+        await streamMessage({
+          prompt: result.content,
+          chatId,
+          attachments: [],
+          redo: false,
+        });
+
+        posthog.capture("skill:auto_accept", {
+          skillName: match.skill.name,
+          relevance: match.relevance,
+        });
+      } catch (err) {
+        console.error("Error executing skill:", err);
+        showErrorToast(`Failed to load skill: ${(err as Error).message}`);
+      }
+    },
+    [chatId, setMatchedSkills, streamMessage, posthog],
+  );
+
+  const handleDismissSkill = useCallback(
+    (match: MatchedSkill) => {
+      // Remove this skill from the matched skills list
+      setMatchedSkills((prev) =>
+        prev.filter((m) => m.skill.name !== match.skill.name),
+      );
+
+      // Track dismissed skill to prevent re-suggestion
+      setDismissedSkills((prev) => {
+        const next = new Map(prev);
+        next.set(match.skill.name, Date.now());
+        return next;
+      });
+
+      posthog.capture("skill:auto_dismiss", {
+        skillName: match.skill.name,
+        relevance: match.relevance,
+      });
+    },
+    [setMatchedSkills, setDismissedSkills, posthog],
+  );
+
   if (!settings) {
     return null; // Or loading state
   }
@@ -777,6 +896,19 @@ export function ChatInput({ chatId }: { chatId?: number }) {
               onPauseQueue={pauseQueue}
               onResumeQueue={resumeQueue}
             />
+          )}
+          {/* Show skill suggestions */}
+          {matchedSkills.length > 0 && !isStreaming && (
+            <div className="border-b border-border p-2 space-y-2">
+              {matchedSkills.map((match) => (
+                <SkillMatcherSuggestion
+                  key={match.skill.name}
+                  match={match}
+                  onAccept={handleAcceptSkill}
+                  onDismiss={handleDismissSkill}
+                />
+              ))}
+            </div>
           )}
           {/* Show editing indicator when editing a queued message */}
           {editingQueuedMessageId && (

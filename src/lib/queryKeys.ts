@@ -335,6 +335,19 @@ export const queryKeys = {
       ["smart-context", "observability", interactionId] as const,
     recentObservability: ["smart-context", "recent-observability"] as const,
   },
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Skills
+  // ─────────────────────────────────────────────────────────────────────────────
+  skills: {
+    /** Base key – invalidate to refetch everything skills-related */
+    all: ["skills"] as const,
+    /** Parameterised list key – includes optional scope/namespace filter */
+    list: (filter?: { scope?: string; namespace?: string }) =>
+      ["skills", "list", filter] as const,
+    /** Single-skill key by name */
+    detail: ({ name }: { name: string }) => ["skills", "detail", name] as const,
+  },
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -402,4 +415,5 @@ export type AppQueryKey =
   | QueryKeyOf<(typeof queryKeys.media)[keyof typeof queryKeys.media]>
   | QueryKeyOf<
       (typeof queryKeys.smartContext)[keyof typeof queryKeys.smartContext]
-    >;
+    >
+  | QueryKeyOf<(typeof queryKeys.skills)[keyof typeof queryKeys.skills]>;

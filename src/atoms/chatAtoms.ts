@@ -5,6 +5,7 @@ import type {
   ComponentSelection,
 } from "@/ipc/types";
 import type { ListedApp } from "@/ipc/types/app";
+import type { MatchedSkill } from "@/skills/types";
 import type { Getter, Setter } from "jotai";
 import { atom } from "jotai";
 
@@ -263,3 +264,12 @@ export const streamCompletedSuccessfullyByIdAtom = atom<Map<number, boolean>>(
 
 // Tracks if the queue is paused for each chat (Map<chatId, isPaused>)
 export const queuePausedByIdAtom = atom<Map<number, boolean>>(new Map());
+
+// Stores the skills matched against the most recently submitted message context.
+// Reset to [] on each new submission; populated asynchronously after submission.
+export const matchedSkillsAtom = atom<MatchedSkill[]>([]);
+
+// Tracks skills that have been dismissed by the user in the current session.
+// These skills will not be suggested again until the app is restarted.
+// Map<skillName, timestamp>
+export const dismissedSkillsAtom = atom<Map<string, number>>(new Map());

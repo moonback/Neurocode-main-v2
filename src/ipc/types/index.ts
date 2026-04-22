@@ -55,6 +55,7 @@ export { audioContracts } from "./audio";
 export { mediaContracts } from "./media";
 export { imageGenerationContracts } from "./image_generation";
 export { smartContextContracts } from "./smart-context";
+export { skillContracts } from "./skills";
 
 // =============================================================================
 // Client Exports
@@ -89,6 +90,7 @@ export { audioClient } from "./audio";
 export { mediaClient } from "./media";
 export { imageGenerationClient } from "./image_generation";
 export { smartContextClient } from "./smart-context";
+export { skillClient } from "./skills";
 
 // =============================================================================
 // Type Exports
@@ -333,6 +335,29 @@ export type {
   GetRecentContextObservabilityOutput,
 } from "./smart-context";
 
+// Skills types
+export type {
+  Skill,
+  SkillScope,
+  SkillFilter,
+  CreateSkillParams,
+  UpdateSkillParams,
+  ValidationError,
+  ValidationWarning,
+  ValidationResult,
+  ExecuteSkillParams,
+  ExecuteSkillResult,
+  DiscoverSkillsResult,
+} from "./skills";
+export {
+  SkillSchema,
+  SkillScopeSchema,
+  SkillFilterSchema,
+  CreateSkillParamsSchema,
+  UpdateSkillParamsSchema,
+  ValidationResultSchema,
+} from "./skills";
+
 // =============================================================================
 // Schema Exports (for validation in handlers/components)
 // =============================================================================
@@ -394,6 +419,7 @@ import { audioClient } from "./audio";
 import { mediaClient } from "./media";
 import { imageGenerationClient } from "./image_generation";
 import { smartContextClient } from "./smart-context";
+import { skillClient } from "./skills";
 
 /**
  * Unified IPC client with all domains organized by namespace.
@@ -454,6 +480,7 @@ export const ipc = {
   media: mediaClient,
   imageGeneration: imageGenerationClient,
   smartContext: smartContextClient,
+  skills: skillClient,
 
   // Event clients for main->renderer pub/sub
   events: {

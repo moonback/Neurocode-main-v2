@@ -26,6 +26,7 @@ import { BackupManager } from "./backup_manager";
 import { getDatabasePath, initializeDatabase } from "./db";
 import { UserSettings } from "./lib/schemas";
 import { handleNeonOAuthReturn } from "./neon_admin/neon_return_handler";
+import { skillRegistry } from "./skills/skill_registry";
 import {
   AddMcpServerConfigSchema,
   AddMcpServerPayload,
@@ -172,6 +173,14 @@ export async function onReady() {
     logger.error("Error initializing backup manager", e);
   }
   initializeDatabase();
+
+  // Discover and register user-level skills
+  try {
+    await skillRegistry.discoverAndRegister();
+    logger.info("Skills discovery completed");
+  } catch (error) {
+    logger.error("Failed to discover skills:", error);
+  }
 
   // Cleanup old ai_messages_json entries to prevent database bloat
   cleanupOldAiMessagesJson();

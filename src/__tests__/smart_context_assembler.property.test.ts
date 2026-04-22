@@ -1,6 +1,6 @@
 // Feature: smart-context-mode
 import * as fc from "fast-check";
-import { describe, expect, it } from "vitest";
+import { describe, it } from "vitest";
 import { assembleContext } from "../context_manager/assembler";
 import type { AssemblerOptions, ScoredFile } from "../context_manager/types";
 

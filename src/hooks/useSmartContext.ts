@@ -33,7 +33,10 @@ export function useContextObservability({
 }) {
   return useQuery({
     queryKey: queryKeys.smartContext.observability({ interactionId }),
-    queryFn: () => ipc.smartContext.getContextObservability({ interactionId: interactionId! }),
+    queryFn: () =>
+      ipc.smartContext.getContextObservability({
+        interactionId: interactionId!,
+      }),
     enabled: enabled && !!interactionId,
   });
 }

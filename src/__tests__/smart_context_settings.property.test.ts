@@ -2,7 +2,6 @@
 import * as fc from "fast-check";
 import { describe, it, beforeEach, afterEach } from "vitest";
 import fs from "node:fs";
-import path from "node:path";
 import {
   writeSettings,
   readSettings,

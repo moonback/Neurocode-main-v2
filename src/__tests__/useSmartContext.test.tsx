@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useContextObservability, useRecentContextObservability } from "../hooks/useSmartContext";
+import {
+  useContextObservability,
+  useRecentContextObservability,
+} from "../hooks/useSmartContext";
 import { ipc } from "@/ipc/types";
 import type { ReactNode } from "react";
 
@@ -50,11 +53,13 @@ describe("useSmartContext hooks", () => {
         strategy: "balanced" as const,
       };
 
-      vi.mocked(ipc.smartContext.getContextObservability).mockResolvedValue(mockData);
+      vi.mocked(ipc.smartContext.getContextObservability).mockResolvedValue(
+        mockData,
+      );
 
       const { result } = renderHook(
         () => useContextObservability({ interactionId: "test-123" }),
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -68,7 +73,7 @@ describe("useSmartContext hooks", () => {
     it("should not fetch when no interaction ID is provided", () => {
       const { result } = renderHook(
         () => useContextObservability({ interactionId: undefined }),
-        { wrapper }
+        { wrapper },
       );
 
       expect(result.current.isFetching).toBe(false);
@@ -78,8 +83,12 @@ describe("useSmartContext hooks", () => {
 
     it("should not fetch when enabled is false", () => {
       const { result } = renderHook(
-        () => useContextObservability({ interactionId: "test-123", enabled: false }),
-        { wrapper }
+        () =>
+          useContextObservability({
+            interactionId: "test-123",
+            enabled: false,
+          }),
+        { wrapper },
       );
 
       expect(result.current.isFetching).toBe(false);
@@ -87,13 +96,17 @@ describe("useSmartContext hooks", () => {
     });
 
     it("should handle error responses from IPC", async () => {
-      const mockError = { error: "Observability data not available for this interaction" };
+      const mockError = {
+        error: "Observability data not available for this interaction",
+      };
 
-      vi.mocked(ipc.smartContext.getContextObservability).mockResolvedValue(mockError);
+      vi.mocked(ipc.smartContext.getContextObservability).mockResolvedValue(
+        mockError,
+      );
 
       const { result } = renderHook(
         () => useContextObservability({ interactionId: "unknown-id" }),
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -121,9 +134,13 @@ describe("useSmartContext hooks", () => {
         },
       ];
 
-      vi.mocked(ipc.smartContext.getRecentContextObservability).mockResolvedValue(mockData);
+      vi.mocked(
+        ipc.smartContext.getRecentContextObservability,
+      ).mockResolvedValue(mockData);
 
-      const { result } = renderHook(() => useRecentContextObservability(), { wrapper });
+      const { result } = renderHook(() => useRecentContextObservability(), {
+        wrapper,
+      });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -134,17 +151,23 @@ describe("useSmartContext hooks", () => {
     it("should not fetch when enabled is false", () => {
       const { result } = renderHook(
         () => useRecentContextObservability({ enabled: false }),
-        { wrapper }
+        { wrapper },
       );
 
       expect(result.current.isFetching).toBe(false);
-      expect(ipc.smartContext.getRecentContextObservability).not.toHaveBeenCalled();
+      expect(
+        ipc.smartContext.getRecentContextObservability,
+      ).not.toHaveBeenCalled();
     });
 
     it("should return empty array when no recent interactions exist", async () => {
-      vi.mocked(ipc.smartContext.getRecentContextObservability).mockResolvedValue([]);
+      vi.mocked(
+        ipc.smartContext.getRecentContextObservability,
+      ).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useRecentContextObservability(), { wrapper });
+      const { result } = renderHook(() => useRecentContextObservability(), {
+        wrapper,
+      });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
