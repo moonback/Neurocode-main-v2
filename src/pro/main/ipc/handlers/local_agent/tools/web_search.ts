@@ -8,6 +8,7 @@ import {
 } from "./types";
 import { engineFetch } from "./engine_fetch";
 import { DyadError, DyadErrorKind } from "@/errors/dyad_error";
+import { readSettings } from "@/main/settings";
 
 const logger = log.scope("web_search");
 
@@ -162,21 +163,80 @@ async function callWebSearchSSE(
   return accumulated;
 }
 
+/**
+ * Local fallback web search using DuckDuckGo Instant Answer API (no key required).
+ */
+async function callWebSearchLocal(query: string): Promise<string> {
+  const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
+  const response = await fetch(url, {
+    headers: { "User-Agent": "Dyad/1.0" },
+  });
+
+  if (!response.ok) {
+    throw new DyadError(
+      `Web search failed: ${response.status} ${response.statusText}`,
+      DyadErrorKind.External,
+    );
+  }
+
+  const data = (await response.json()) as {
+    AbstractText?: string;
+    AbstractURL?: string;
+    RelatedTopics?: Array<{ Text?: string; FirstURL?: string }>;
+    Answer?: string;
+  };
+
+  const parts: string[] = [];
+
+  if (data.Answer) {
+    parts.push(`Answer: ${data.Answer}`);
+  }
+
+  if (data.AbstractText) {
+    parts.push(
+      `Summary: ${data.AbstractText}${data.AbstractURL ? `\nSource: ${data.AbstractURL}` : ""}`,
+    );
+  }
+
+  if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+    const topics = data.RelatedTopics.slice(0, 5)
+      .filter((t) => t.Text)
+      .map((t) => `- ${t.Text}${t.FirstURL ? ` (${t.FirstURL})` : ""}`)
+      .join("\n");
+    if (topics) {
+      parts.push(`Related:\n${topics}`);
+    }
+  }
+
+  if (parts.length === 0) {
+    return `No instant results found for "${query}". Try a more specific query.`;
+  }
+
+  return parts.join("\n\n");
+}
+
 export const webSearchTool: ToolDefinition<z.infer<typeof webSearchSchema>> = {
   name: "web_search",
   description: DESCRIPTION,
   inputSchema: webSearchSchema,
   defaultConsent: "ask",
 
-  // Requires Dyad Pro engine API
-  isEnabled: (ctx) => ctx.isDyadPro,
-
   getConsentPreview: (args) => `Search the web: "${args.query}"`,
 
   execute: async (args, ctx: AgentContext) => {
     logger.log(`Executing web search: ${args.query}`);
 
-    const result = await callWebSearchSSE(args.query, ctx);
+    const settings = readSettings();
+    const apiKey = settings.providerSettings?.auto?.apiKey?.value;
+
+    let result: string;
+
+    if (apiKey) {
+      result = await callWebSearchSSE(args.query, ctx);
+    } else {
+      ctx.onXmlStream(`<dyad-web-search query="${escapeXmlAttr(args.query)}">`);
+      result = await callWebSearchLocal(args.query);
+    }
 
     if (!result) {
       throw new DyadError(
