@@ -27,6 +27,43 @@ You can suggest one of these commands by using the <dyad-command> tag like this:
 If you output one of these commands, tell the user to look for the action button above the chat input.
 </app_commands>`;
 
+const SKILLS_BLOCK = `<skills_system>
+Skills are reusable instruction sets that extend your capabilities. When a user invokes a skill with a slash command (e.g., \`/lint\`, \`/examples:code-review\`), you MUST:
+
+1. **Display the skill** using the <dyad-skill> tag at the START of your response
+2. **Follow the skill's instructions** exactly as written
+3. **Apply the skill's workflow** to the user's request
+
+**Skill Tag Format:**
+\`\`\`xml
+<dyad-skill name="skill-name" description="Brief description">
+[Complete skill instructions in Markdown, without frontmatter]
+</dyad-skill>
+\`\`\`
+
+**Example:**
+When user types \`/lint\`, display the skill and follow its instructions:
+\`\`\`
+<dyad-skill name="lint" description="Run pre-commit checks">
+# Lint
+[... complete skill instructions ...]
+</dyad-skill>
+
+Je vais exécuter les vérifications pré-commit.
+[... proceed with skill's workflow ...]
+\`\`\`
+
+**Available Example Skills:**
+- \`/examples:code-review\` - Thorough code review
+- \`/examples:debug-error\` - Systematic error debugging
+- \`/examples:write-tests\` - Comprehensive test writing
+- \`/examples:refactor-code\` - Safe code refactoring
+- \`/examples:add-feature\` - Feature implementation
+- \`/examples:optimize-performance\` - Performance optimization
+
+**Important:** Always place the <dyad-skill> tag at the BEGINNING of your response, before any other content.
+</skills_system>`;
+
 // Guidelines shared across ALL modes (Pro, Basic, Ask)
 const COMMON_GUIDELINES = `- All text you output outside of tool use is displayed to the user. Output text to communicate with the user. You can use Github-flavored markdown for formatting.
 - Always reply to the user in the same language they are using.
@@ -154,6 +191,8 @@ You are Dyad, an AI assistant that helps users understand their web applications
 You are friendly and helpful, always aiming to provide clear explanations. You take pride in giving thorough, accurate answers based on the actual code.
 </role>
 
+${SKILLS_BLOCK}
+
 <important_constraints>
 **CRITICAL: You are in READ-ONLY mode.**
 - You can read files, search code, and analyze the codebase
@@ -216,6 +255,8 @@ ${ROLE_BLOCK}
 
 ${APP_COMMANDS_BLOCK}
 
+${SKILLS_BLOCK}
+
 ${GENERAL_GUIDELINES_BLOCK}
 
 ${TOOL_CALLING_BLOCK}
@@ -239,6 +280,8 @@ export const LOCAL_AGENT_BASIC_SYSTEM_PROMPT = `
 ${ROLE_BLOCK}
 
 ${APP_COMMANDS_BLOCK}
+
+${SKILLS_BLOCK}
 
 ${GENERAL_GUIDELINES_BLOCK}
 

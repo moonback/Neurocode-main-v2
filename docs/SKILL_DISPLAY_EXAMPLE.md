@@ -7,6 +7,7 @@ Ce document montre comment les skills apparaissent visuellement dans l'interface
 ## Exemple 1 : Invocation d'un skill par commande slash
 
 ### Entrée utilisateur
+
 ```
 /lint
 ```
@@ -33,7 +34,7 @@ Je vais exécuter les vérifications pré-commit pour votre code.
 
 ### Quand on clique pour développer
 
-```
+````
 ┌─────────────────────────────────────────────────────────────┐
 │ ✨ Skill utilisé  /lint                                      │
 │ Run pre-commit checks including formatting, linting...      │
@@ -85,11 +86,12 @@ Je vais exécuter les vérifications pré-commit pour votre code.
 │    - If all checks pass, confirm the code is ready to       │
 │      commit                                                  │
 └─────────────────────────────────────────────────────────────┘
-```
+````
 
 ## Exemple 2 : Chargement automatique d'un skill
 
 ### Entrée utilisateur
+
 ```
 J'ai une erreur dans mon code, peux-tu m'aider à la déboguer ?
 ```
@@ -113,6 +115,7 @@ Pouvez-vous me fournir le message d'erreur complet et la stack trace ?
 ## Exemple 3 : Skill groupé avec namespace
 
 ### Entrée utilisateur
+
 ```
 /git:commit
 ```
@@ -183,6 +186,7 @@ Je vais vous aider à créer un commit Git bien formaté.
 ## Comparaison avec d'autres composants
 
 ### DyadWrite (bleu)
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ ✏️ file.tsx                                                  │
@@ -192,6 +196,7 @@ Je vais vous aider à créer un commit Git bien formaté.
 ```
 
 ### DyadSkill (violet)
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ ✨ Skill utilisé  /lint                                      │
@@ -201,6 +206,7 @@ Je vais vous aider à créer un commit Git bien formaté.
 ```
 
 ### DyadRead (vert)
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ 📖 file.tsx                                                  │
