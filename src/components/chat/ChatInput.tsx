@@ -892,7 +892,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
                     className={cn(
                       "px-2 py-2 mb-0.5 text-muted-foreground rounded-lg transition-colors duration-150 cursor-pointer disabled:cursor-default disabled:opacity-30",
                       isRecording &&
-                      "text-red-500 hover:text-red-600 animate-pulse",
+                        "text-red-500 hover:text-red-600 animate-pulse",
                       !isRecording && !isTranscribing && "hover:text-primary",
                     )}
                   />

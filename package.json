@@ -168,6 +168,7 @@
     "electron": "40.0.0",
     "eslint": "^8.57.1",
     "eslint-plugin-import": "^2.31.0",
+    "fast-check": "^4.7.0",
     "happy-dom": "^17.4.4",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",

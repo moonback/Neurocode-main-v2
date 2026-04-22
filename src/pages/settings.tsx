@@ -34,6 +34,7 @@ import { ZoomSelector } from "@/components/ZoomSelector";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { DefaultChatModeSelector } from "@/components/DefaultChatModeSelector";
 import { ContextCompactionSwitch } from "@/components/ContextCompactionSwitch";
+import { SmartContextStrategySelector } from "@/components/SmartContextStrategySelector";
 import { BlockUnsafeNpmPackagesSwitch } from "@/components/BlockUnsafeNpmPackagesSwitch";
 import { CloudSandboxExperimentSwitch } from "@/components/CloudSandboxExperimentSwitch";
 import { useSetAtom } from "jotai";
@@ -462,6 +463,19 @@ export function AISettings() {
         <div className="text-sm text-gray-500 dark:text-gray-400">
           Automatically compact long conversations to stay within context
           limits. Original messages are preserved in the app data directory.
+        </div>
+      </div>
+
+      <div id={SETTING_IDS.smartContextStrategy} className="space-y-1 mt-4">
+        <div className="mb-2">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Smart Context Strategy (Pro)
+          </label>
+        </div>
+        <SmartContextStrategySelector />
+        <div className="text-sm text-gray-500 dark:text-gray-400">
+          Choose how aggressively the AI includes files in context. Balanced is
+          recommended for most workflows.
         </div>
       </div>
     </div>

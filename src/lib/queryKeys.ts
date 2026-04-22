@@ -325,6 +325,16 @@ export const queryKeys = {
   media: {
     all: ["media"] as const,
   },
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Smart Context
+  // ─────────────────────────────────────────────────────────────────────────────
+  smartContext: {
+    all: ["smart-context"] as const,
+    observability: ({ interactionId }: { interactionId: string | undefined }) =>
+      ["smart-context", "observability", interactionId] as const,
+    recentObservability: ["smart-context", "recent-observability"] as const,
+  },
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -389,4 +399,7 @@ export type AppQueryKey =
   | QueryKeyOf<(typeof queryKeys.github)[keyof typeof queryKeys.github]>
   | QueryKeyOf<(typeof queryKeys.neon)[keyof typeof queryKeys.neon]>
   | QueryKeyOf<(typeof queryKeys.appEnvVars)[keyof typeof queryKeys.appEnvVars]>
-  | QueryKeyOf<(typeof queryKeys.media)[keyof typeof queryKeys.media]>;
+  | QueryKeyOf<(typeof queryKeys.media)[keyof typeof queryKeys.media]>
+  | QueryKeyOf<
+      (typeof queryKeys.smartContext)[keyof typeof queryKeys.smartContext]
+    >;

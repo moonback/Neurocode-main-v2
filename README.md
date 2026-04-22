@@ -37,42 +37,49 @@ NeuroCode est une puissante application de bureau qui permet aux développeurs d
 ### Capacités de base
 
 #### 🤖 Développement propulsé par l'IA
+
 - **Mode Build :** Génération et modification interactive de code avec aperçu en direct
 - **Mode Ask :** Questions-réponses sur votre base de code
 - **Mode Plan :** Planification assistée par l'IA et décomposition des tâches avec collecte des besoins
 - **Mode Agent Local (Pro) :** Agent autonome qui exécute des outils et prend des décisions
 
 #### 💻 Édition de code et aperçu
+
 - Intégration de l'éditeur Monaco avec coloration syntaxique
 - Panneau d'aperçu en direct avec modes d'appareils réponsifs (ordinateur, tablette, mobile)
 - Modifications de code reflétées instantanément en temps réel
 - Support de nombreux types de fichiers et frameworks
 
 #### 🔄 Contrôle de version et Git
+
 - Intégration Git native (compatible Windows)
 - Gestion des dépôts GitHub
 - Opérations sur les branches et résolution de conflits de fusion
 - Suivi des commits et versionnage
 
 #### 🗄️ Intégration de base de données
+
 - **Supabase :** Intégration de base de données PostgreSQL et d'authentification
 - **Neon :** Gestion de PostgreSQL Serverless
 - Gestion des schémas et migrations
 - Exécution de requêtes SQL
 
 #### 🚀 Déploiement et hébergement
+
 - Intégration Vercel pour un déploiement en un clic
 - Suivi des URL de déploiement
 - Gestion des variables d'environnement
 - Support des dossiers d'applications personnalisés
 
 #### 🎨 Personnalisation
+
 - Thèmes générés par l'IA ou création manuelle de thèmes
 - Fournisseurs de modèles de langage personnalisés
 - Intégration de serveurs Model Context Protocol (MCP)
 - Configuration du contexte de chat spécifique à l'application
 
 #### 🖼️ Gestion des médias
+
 - Bibliothèque de médias intégrée pour les ressources d'application
 - Capacités de génération d'images par l'IA
 - Optimisation et nettoyage des fichiers médias
@@ -94,19 +101,19 @@ NeuroCode est une puissante application de bureau qui permet aux développeurs d
 
 NeuroCode supporte de nombreux fournisseurs d'IA nativement :
 
-| Fournisseur | Modèles | Type |
-|-------------|---------|------|
-| **OpenAI** | GPT-4, GPT-3.5, o1, o3 | Cloud |
-| **Anthropic** | Claude 3.5 Sonnet, Claude 3 Opus | Cloud |
-| **Google** | Gemini Pro, Gemini Ultra | Cloud |
-| **Google Vertex AI** | Modèles Gemini | Cloud |
-| **Azure OpenAI** | GPT-4, GPT-3.5 | Cloud |
-| **Amazon Bedrock** | Claude, Titan | Cloud |
-| **XAI** | Modèles Grok | Cloud |
-| **OpenRouter** | Modèles multiples | Cloud |
-| **Ollama** | Llama, Mistral, CodeLlama | Local |
-| **LM Studio** | Tout modèle GGUF | Local |
-| **MiniMax** | Modèles MiniMax | Cloud |
+| Fournisseur          | Modèles                          | Type  |
+| -------------------- | -------------------------------- | ----- |
+| **OpenAI**           | GPT-4, GPT-3.5, o1, o3           | Cloud |
+| **Anthropic**        | Claude 3.5 Sonnet, Claude 3 Opus | Cloud |
+| **Google**           | Gemini Pro, Gemini Ultra         | Cloud |
+| **Google Vertex AI** | Modèles Gemini                   | Cloud |
+| **Azure OpenAI**     | GPT-4, GPT-3.5                   | Cloud |
+| **Amazon Bedrock**   | Claude, Titan                    | Cloud |
+| **XAI**              | Modèles Grok                     | Cloud |
+| **OpenRouter**       | Modèles multiples                | Cloud |
+| **Ollama**           | Llama, Mistral, CodeLlama        | Local |
+| **LM Studio**        | Tout modèle GGUF                 | Local |
+| **MiniMax**          | Modèles MiniMax                  | Cloud |
 
 ---
 
@@ -159,6 +166,7 @@ npm run make
 ### Modes de discussion
 
 #### Mode Build (Par défaut)
+
 Génération de code interactive avec exécution d'outils autonome. L'IA peut lire des fichiers, écrire du code et effectuer des modifications directement dans votre projet.
 
 ```
@@ -167,6 +175,7 @@ IA : [Crée le composant formulaire, ajoute la validation, applique le style]
 ```
 
 #### Mode Ask
+
 Mode questions-réponses pour comprendre votre base de code sans apporter de modifications.
 
 ```
@@ -175,6 +184,7 @@ IA : [Explique l'implémentation de l'authentification]
 ```
 
 #### Mode Plan
+
 Interface de planification collaborative pour des fonctionnalités complexes. L'IA pose des questions de clarification et crée des plans d'implémentation détaillés.
 
 ```
@@ -183,6 +193,7 @@ IA : [Pose des questions sur les besoins, crée un plan détaillé]
 ```
 
 #### Mode Agent Local (Pro)
+
 Agent autonome capable d'exécuter des tâches multi-étapes de manière indépendante avec appels d'outils et prise de décision.
 
 ```
@@ -310,7 +321,11 @@ Configurez les serveurs Model Context Protocol dans `.kiro/settings/mcp.json` :
   "mcpServers": {
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/chemin/vers/fichiers/autorises"]
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/chemin/vers/fichiers/autorises"
+      ]
     }
   }
 }
@@ -425,21 +440,25 @@ NeuroCode prend la sécurité au sérieux :
 ### Problèmes courants
 
 **L'application ne démarre pas :**
+
 - Vérifiez la version de Node.js (>= 24 requis)
 - Supprimez `node_modules` et réinstallez : `npm install`
 - Vérifiez les journaux (logs) dans le dossier de données de l'application
 
 **L'aperçu ne se met pas à jour :**
+
 - Cliquez sur le bouton Actualiser au-dessus de la saisie du chat
 - Essayez les commandes Redémarrer (Restart) ou Reconstruire (Rebuild)
 - Vérifiez la console du navigateur pour les erreurs
 
 **L'IA ne répond pas :**
+
 - Vérifiez la clé API dans les Paramètres
 - Vérifiez la connexion internet (pour les fournisseurs cloud)
 - Essayez un autre modèle ou fournisseur
 
 **Les opérations Git échouent :**
+
 - Assurez-vous que Git est installé (ou utilisez le Git inclus)
 - Vérifiez les permissions du dépôt
 - Vérifiez le jeton GitHub si vous utilisez l'intégration GitHub
@@ -472,7 +491,7 @@ Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de
 
 <div align="center">
 
-Fait avec ❤️ 
+Fait avec ❤️
 
 [⬆ Retour en haut](#neurocode)
 

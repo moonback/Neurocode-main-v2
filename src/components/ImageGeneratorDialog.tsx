@@ -150,7 +150,6 @@ export function ImageGeneratorDialog({
                   Pro-only feature
                 </p>
               </div>
-
             </div>
           ) : (
             <>

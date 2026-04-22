@@ -277,6 +277,33 @@ export const SmartContextModeSchema = z.enum([
 ]);
 export type SmartContextMode = z.infer<typeof SmartContextModeSchema>;
 
+export const IncludedFileRecordSchema = z.object({
+  path: z.string(),
+  relevanceScore: z.number().min(0).max(1),
+  tokensUsed: z.number().int().nonnegative(),
+  wasTruncated: z.boolean(),
+});
+export type IncludedFileRecord = z.infer<typeof IncludedFileRecordSchema>;
+
+export const ContextObservabilityRecordSchema = z.object({
+  interactionId: z.string(),
+  timestamp: z.number(),
+  includedFiles: z.array(IncludedFileRecordSchema),
+  totalTokensUsed: z.number().int().nonnegative(),
+  strategy: SmartContextModeSchema,
+});
+export type ContextObservabilityRecord = z.infer<
+  typeof ContextObservabilityRecordSchema
+>;
+
+export const ContextObservabilityResultSchema = z.union([
+  ContextObservabilityRecordSchema,
+  z.object({ error: z.string() }),
+]);
+export type ContextObservabilityResult = z.infer<
+  typeof ContextObservabilityResultSchema
+>;
+
 export const AgentToolConsentSchema = z.enum(["ask", "always", "never"]);
 export type AgentToolConsent = z.infer<typeof AgentToolConsentSchema>;
 

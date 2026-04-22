@@ -624,6 +624,9 @@ ${componentSnippet}
         const { formattedOutput: codebaseInfo, files } = await extractCodebase({
           appPath,
           chatContext,
+          activeFilePath: null, // TODO: Pass active file from editor state when available
+          requestText: req.prompt,
+          tokenBudget: 100000, // Default token budget
         });
 
         // For smart context and selected components, we will mark the selected components' files as focused.
@@ -1564,6 +1567,9 @@ ${problemReport.problems
                     appPath,
                     chatContext,
                     virtualFileSystem,
+                    activeFilePath: null, // TODO: Pass active file from editor state when available
+                    requestText: req.prompt,
+                    tokenBudget: 100000, // Default token budget
                   });
                 const { modelClient } = await getModelClient(
                   settings.selectedModel,
