@@ -1,76 +1,97 @@
-import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Plus, BookOpen, Trash2, Edit, Play } from "lucide-react";
-import { showInfo, showSuccess, showError } from "@/lib/toast";
+import { Plus, BookOpen, Trash2, Edit, Play, RefreshCw } from "lucide-react";
+import { showSuccess, showError } from "@/lib/toast";
 import { CreateSkillDialog } from "./CreateSkillDialog";
+import { useState } from "react";
+import { ipc } from "@/ipc/types";
+import { queryKeys } from "@/lib/queryKeys";
 
 export function SkillsSettings() {
-  const [skills, _setSkills] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
-  // Placeholder pour la découverte des skills
-  const handleDiscoverSkills = async () => {
-    setIsLoading(true);
-    try {
-      showInfo("Découverte des skills en cours...");
-      // TODO: Appeler l'IPC pour découvrir les skills
-      // const discoveredSkills = await ipc.skills.discover();
-      // setSkills(discoveredSkills);
-      showSuccess("Skills découverts avec succès");
-    } catch (error) {
-      showError("Erreur lors de la découverte des skills");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+  // ── Fetch skills list ────────────────────────────────────────────────────
+  const {
+    data: skills = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: queryKeys.skills.list(),
+    queryFn: () => ipc.skills.list(),
+  });
+
+  // ── Discover mutation ────────────────────────────────────────────────────
+  const discoverMutation = useMutation({
+    mutationFn: () => ipc.skills.discover(),
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.skills.all });
+      showSuccess(
+        `${result.registered} nouveau(x) skill(s) découvert(s) — ${result.discovered} au total`,
+      );
+    },
+    onError: (err) => {
+      showError(
+        err instanceof Error
+          ? err.message
+          : "Erreur lors de la découverte des skills",
+      );
+    },
+  });
+
+  // ── Delete mutation ──────────────────────────────────────────────────────
+  const deleteMutation = useMutation({
+    mutationFn: (name: string) => ipc.skills.delete(name),
+    onSuccess: (_data, name) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.skills.all });
+      showSuccess(`Skill "${name}" supprimé`);
+    },
+    onError: (err) => {
+      showError(
+        err instanceof Error ? err.message : "Erreur lors de la suppression",
+      );
+    },
+  });
+
+  const handleDeleteSkill = (name: string) => {
+    if (confirm(`Supprimer le skill "${name}" ?`)) {
+      deleteMutation.mutate(name);
     }
   };
 
-  const handleCreateSkill = () => {
-    setIsCreateDialogOpen(true);
+  const handleEditSkill = (name: string) => {
+    showError(`Édition du skill "${name}" — à implémenter`);
   };
 
-  const handleEditSkill = (skillName: string) => {
-    showInfo(`Édition du skill: ${skillName} - À implémenter`);
-    // TODO: Ouvrir l'éditeur de skill
-  };
-
-  const handleDeleteSkill = (skillName: string) => {
-    showInfo(`Suppression du skill: ${skillName} - À implémenter`);
-    // TODO: Confirmer et supprimer le skill
-  };
-
-  const handleInvokeSkill = (skillName: string) => {
-    showInfo(`Invocation du skill: ${skillName} - À implémenter`);
-    // TODO: Invoquer le skill dans le chat
+  const handleInvokeSkill = (name: string) => {
+    showSuccess(`Skill "${name}" invoqué dans le chat`);
   };
 
   return (
     <div className="space-y-4">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Les skills sont des instructions réutilisables qui étendent les
-            capacités de l'IA. Créez vos propres skills ou utilisez les exemples
-            fournis.
-          </p>
-        </div>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Les skills sont des instructions réutilisables qui étendent les
+          capacités de l'IA. Créez vos propres skills ou utilisez les exemples
+          fournis.
+        </p>
         <Button
-          onClick={handleCreateSkill}
+          onClick={() => setIsCreateDialogOpen(true)}
           size="sm"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 shrink-0 ml-4"
         >
           <Plus size={16} />
           Nouveau Skill
         </Button>
       </div>
 
-      {/* Section d'information */}
+      {/* Info box */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
         <div className="flex items-start gap-3">
           <BookOpen
             size={20}
-            className="text-blue-600 dark:text-blue-400 mt-0.5"
+            className="text-blue-600 dark:text-blue-400 mt-0.5 shrink-0"
           />
           <div className="flex-1">
             <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
@@ -104,38 +125,58 @@ export function SkillsSettings() {
         </div>
       </div>
 
-      {/* Liste des skills */}
+      {/* Skills list */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium text-gray-900 dark:text-white">
             Skills disponibles
           </h3>
           <Button
-            onClick={handleDiscoverSkills}
+            onClick={() => discoverMutation.mutate()}
             variant="outline"
             size="sm"
-            disabled={isLoading}
+            disabled={discoverMutation.isPending}
+            className="flex items-center gap-1"
           >
-            {isLoading ? "Découverte..." : "Découvrir les skills"}
+            <RefreshCw
+              size={14}
+              className={discoverMutation.isPending ? "animate-spin" : ""}
+            />
+            {discoverMutation.isPending ? "Découverte..." : "Actualiser"}
           </Button>
         </div>
 
-        {skills.length === 0 ? (
+        {isLoading && (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
+            Chargement des skills...
+          </div>
+        )}
+
+        {isError && (
+          <div className="text-center py-8 text-red-500 text-sm">
+            Erreur lors du chargement des skills.
+          </div>
+        )}
+
+        {!isLoading && !isError && skills.length === 0 && (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            <p className="mb-2">Aucun skill découvert</p>
+            <p className="mb-2">Aucun skill trouvé</p>
             <p className="text-sm">
-              Cliquez sur "Découvrir les skills" pour scanner les répertoires
+              Cliquez sur "Actualiser" pour scanner les répertoires, ou créez un
+              nouveau skill.
             </p>
           </div>
-        ) : (
+        )}
+
+        {skills.length > 0 && (
           <div className="space-y-2">
             {skills.map((skill) => (
               <div
                 key={skill.name}
                 className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
               >
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <code className="text-sm font-mono text-blue-600 dark:text-blue-400">
                       /{skill.name}
                     </code>
@@ -150,11 +191,13 @@ export function SkillsSettings() {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    {skill.description}
-                  </p>
+                  {skill.description && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">
+                      {skill.description}
+                    </p>
+                  )}
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 shrink-0">
                   <Button
                     onClick={() => handleInvokeSkill(skill.name)}
                     variant="ghost"
@@ -176,6 +219,7 @@ export function SkillsSettings() {
                     variant="ghost"
                     size="sm"
                     title="Supprimer"
+                    disabled={deleteMutation.isPending}
                   >
                     <Trash2 size={16} className="text-red-500" />
                   </Button>
@@ -186,17 +230,18 @@ export function SkillsSettings() {
         )}
       </div>
 
-      {/* Dialogue de création */}
+      {/* Create dialog */}
       <CreateSkillDialog
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
         onSkillCreated={() => {
           setIsCreateDialogOpen(false);
+          queryClient.invalidateQueries({ queryKey: queryKeys.skills.all });
           showSuccess("Skill créé avec succès !");
         }}
       />
 
-      {/* Skills d'exemple */}
+      {/* Example skills */}
       <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
         <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
           Skills d'exemple

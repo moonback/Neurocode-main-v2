@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
-import { showSuccess, showError } from "@/lib/toast";
+import { showError } from "@/lib/toast";
+import { ipc } from "@/ipc/types";
 
 interface CreateSkillDialogProps {
   isOpen: boolean;
@@ -51,22 +52,19 @@ export function CreateSkillDialog({
 
     setIsCreating(true);
     try {
-      // TODO: Appeler l'IPC pour créer le skill
-      // await ipc.skills.create({
-      //   name: name.trim(),
-      //   description: description.trim(),
-      //   content: content.trim(),
-      //   scope,
-      // });
+      await ipc.skills.create({
+        name: name.trim(),
+        description: description.trim(),
+        content: content.trim(),
+        scope,
+      });
 
-      showSuccess(`Skill "${name}" créé avec succès`);
-      
       // Reset form
       setName("");
       setDescription("");
       setContent("");
       setScope("user");
-      
+
       // Notify parent
       onSkillCreated?.();
       onClose();
