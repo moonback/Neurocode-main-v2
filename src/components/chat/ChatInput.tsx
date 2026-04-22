@@ -693,7 +693,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
         <ChatErrorBox
           onDismiss={dismissError}
           error={error}
-          isDyadProEnabled={settings.enableDyadPro ?? false}
+          isDyadProEnabled={settings.enableDyadPro !== false}
           onStartNewChat={handleNewChat}
         />
       )}

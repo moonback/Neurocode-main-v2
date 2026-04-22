@@ -2,11 +2,11 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 // Import all English locale bundles (bundled with the app)
-import enCommon from "./locales/en/common.json";
-import enSettings from "./locales/en/settings.json";
-import enChat from "./locales/en/chat.json";
-import enHome from "./locales/en/home.json";
-import enErrors from "./locales/en/errors.json";
+import enCommon from "./locales/fr/common.json";
+import enSettings from "./locales/fr/settings.json";
+import enChat from "./locales/fr/chat.json";
+import enHome from "./locales/fr/home.json";
+import enErrors from "./locales/fr/errors.json";
 
 // Chinese Simplified
 import zhCNCommon from "./locales/zh-CN/common.json";
