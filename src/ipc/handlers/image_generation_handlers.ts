@@ -43,14 +43,23 @@ export function registerImageGenerationHandlers() {
     imageGenerationContracts.generateImage,
     async (_, params) => {
       const settings = readSettings();
-      const apiKey = settings.providerSettings?.auto?.apiKey?.value;
+
+      // Use Dyad Pro key if available, otherwise fall back to user's OpenAI key
+      const dyadApiKey = settings.providerSettings?.auto?.apiKey?.value;
+      const openaiApiKey = settings.providerSettings?.openai?.apiKey?.value;
+      const apiKey = dyadApiKey || openaiApiKey;
 
       if (!apiKey) {
         throw new DyadError(
-          "Dyad Pro API key is required for image generation",
+          "Une clé API est requise pour la génération d'images. Configurez une clé OpenAI dans les paramètres.",
           DyadErrorKind.Auth,
         );
       }
+
+      // Use OpenAI directly if no Dyad Pro key
+      const baseUrl = dyadApiKey
+        ? DYAD_ENGINE_URL
+        : "https://api.openai.com/v1";
 
       const app = await db.query.apps.findFirst({
         where: eq(apps.id, params.targetAppId),
@@ -74,16 +83,17 @@ export function registerImageGenerationHandlers() {
 
       let response: Response;
       try {
-        response = await fetch(`${DYAD_ENGINE_URL}/images/generations`, {
+        response = await fetch(`${baseUrl}/images/generations`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${apiKey}`,
-            "X-Dyad-Request-Id": requestId,
+            ...(dyadApiKey && { "X-Dyad-Request-Id": requestId }),
           },
           body: JSON.stringify({
             prompt: fullPrompt,
-            model: "gpt-image-1.5",
+            model: dyadApiKey ? "gpt-image-1.5" : "dall-e-3",
+            ...(dyadApiKey ? {} : { response_format: "b64_json", size: "1024x1024" }),
           }),
           signal: controller.signal,
         });
