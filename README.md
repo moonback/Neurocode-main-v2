@@ -19,7 +19,7 @@
 
 ## Overview
 
-NeuroCode (branded as **dyad**) is a powerful desktop application that enables developers to create and modify web applications through AI-assisted development. Built with Electron, it provides a live preview of your applications while making code changes in real-time, combining chat-based interaction with autonomous AI capabilities.
+NeuroCode is a powerful desktop application that enables developers to create and modify web applications through AI-assisted development. Built with Electron, it provides a live preview of your applications while making code changes in real-time, combining chat-based interaction with autonomous AI capabilities.
 
 ### Why NeuroCode?
 
@@ -472,7 +472,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-Made with ❤️ by [Will Chen](https://github.com/wwwillchen)
+Made with ❤️ 
 
 [⬆ Back to Top](#neurocode)
 
