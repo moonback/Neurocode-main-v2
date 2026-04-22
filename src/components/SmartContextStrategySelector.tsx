@@ -42,26 +42,25 @@ export function SmartContextStrategySelector() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <ToggleGroup
         value={[currentStrategy]}
         onValueChange={handleStrategyChange}
         variant="outline"
-        className="flex-col items-stretch sm:flex-row"
+        className="grid grid-cols-1 gap-3 sm:grid-cols-3"
       >
         {STRATEGY_OPTIONS.map((option) => (
-          <div key={option.value} className="flex flex-col">
-            <ToggleGroupItem
-              value={option.value}
-              aria-label={`${option.label} strategy`}
-              className="flex-col items-start gap-1 px-4 py-3 text-left"
-            >
-              <span className="font-medium">{option.label}</span>
-              <span className="text-xs text-muted-foreground">
-                {option.description}
-              </span>
-            </ToggleGroupItem>
-          </div>
+          <ToggleGroupItem
+            key={option.value}
+            value={option.value}
+            aria-label={`${option.label} strategy`}
+            className="flex h-auto flex-col items-start gap-2 px-4 py-4 text-left transition-all hover:bg-accent/50 data-[state=on]:border-primary data-[state=on]:bg-primary/10 data-[state=on]:ring-1 data-[state=on]:ring-primary"
+          >
+            <span className="text-sm font-semibold">{option.label}</span>
+            <span className="text-xs leading-relaxed text-muted-foreground">
+              {option.description}
+            </span>
+          </ToggleGroupItem>
         ))}
       </ToggleGroup>
     </div>
