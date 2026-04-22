@@ -43,12 +43,12 @@ const items = [
     icon: Inbox,
   },
   {
-    title: "Settings",
+    title: "Config",
     to: "/settings",
     icon: Settings,
   },
   {
-    title: "Library",
+    title: "Librairie",
     to: "/library",
     icon: BookOpen,
   },
@@ -202,9 +202,8 @@ function AppIcons({
                   as={Link}
                   to={item.to}
                   size="sm"
-                  className={`font-medium w-14 flex flex-col items-center gap-1 h-14 mb-2 rounded-2xl ${
-                    isActive ? "bg-sidebar-accent" : ""
-                  }`}
+                  className={`font-medium w-14 flex flex-col items-center gap-1 h-14 mb-2 rounded-2xl ${isActive ? "bg-sidebar-accent" : ""
+                    }`}
                   onMouseEnter={() => {
                     if (item.title === "Apps") {
                       onHoverChange("start-hover:app");
