@@ -1,24 +1,24 @@
-# NeuroCode Roadmap
+# Feuille de route NeuroCode
 
-This document outlines the development roadmap for NeuroCode, including completed features, current work, and future plans.
-
----
-
-## Current Version: 0.44.0-beta.1
+Ce document décrit la feuille de route du développement de NeuroCode, incluant les fonctionnalités terminées, les travaux en cours et les projets futurs.
 
 ---
 
-## ✅ Completed Features
+## Version actuelle : 0.44.0-beta.1
 
-### Core Platform (v0.1 - v0.30)
+---
 
-- [x] **Electron Application Foundation**
-  - Desktop app with React frontend
-  - Secure IPC communication layer
-  - SQLite database with Drizzle ORM
-  - Settings management with encrypted storage
+## ✅ Fonctionnalités terminées
 
-- [x] **Multi-Provider AI Integration**
+### Plateforme de base (v0.1 - v0.30)
+
+- [x] **Fondation de l'application Electron**
+  - Application de bureau avec frontend React
+  - Couche de communication IPC sécurisée
+  - Base de données SQLite avec Drizzle ORM
+  - Gestion des paramètres avec stockage chiffré
+
+- [x] **Intégration multi-fournisseurs d'IA**
   - OpenAI (GPT-4, GPT-3.5, o1, o3)
   - Anthropic (Claude 3.5 Sonnet, Claude 3 Opus)
   - Google (Gemini Pro, Gemini Ultra)
@@ -27,439 +27,439 @@ This document outlines the development roadmap for NeuroCode, including complete
   - Amazon Bedrock
   - XAI (Grok)
   - OpenRouter
-  - Ollama (local models)
-  - LM Studio (local models)
+  - Ollama (modèles locaux)
+  - LM Studio (modèles locaux)
   - MiniMax
 
-- [x] **App Management**
-  - Create, import, and manage web applications
-  - Custom app folders support
-  - App favorites and search
-  - App versioning with Git commit tracking
+- [x] **Gestion des applications**
+  - Création, importation et gestion d'applications web
+  - Support des dossiers d'applications personnalisés
+  - Favoris et recherche d'applications
+  - Versionnage des applications avec suivi des commits Git
 
-- [x] **Chat Interface**
-  - Real-time chat with AI
-  - Chat history and search
-  - Message approval/rejection workflow
-  - Chat summaries
+- [x] **Interface de discussion (Chat)**
+  - Chat en temps réel avec l'IA
+  - Historique des discussions et recherche
+  - Flux de travail d'approbation/rejet des messages
+  - Résumés de discussion
 
-- [x] **Code Editing & Preview**
-  - Monaco editor integration
-  - Live preview panel with iframe
-  - Resizable layout panels
-  - Device mode switching (desktop, tablet, mobile)
+- [x] **Édition de code et aperçu**
+  - Intégration de l'éditeur Monaco
+  - Panneau d'aperçu en direct avec iframe
+  - Panneaux de mise en page redimensionnables
+  - Changement de mode d'appareil (ordinateur, tablette, mobile)
 
-### Advanced Features (v0.31 - v0.40)
+### Fonctionnalités avancées (v0.31 - v0.40)
 
-- [x] **Git Integration**
-  - Native Git support (Windows-safe)
-  - GitHub repository integration
-  - Branch management
-  - Commit tracking
-  - Merge conflict detection
+- [x] **Intégration Git**
+  - Support Git natif (compatible Windows)
+  - Intégration des dépôts GitHub
+  - Gestion des branches
+  - Suivi des commits
+  - Détection des conflits de fusion
 
-- [x] **Database Integrations**
-  - Supabase integration (PostgreSQL + Auth)
-  - Neon integration (Serverless PostgreSQL)
-  - Schema management
-  - Branch-based development databases
+- [x] **Intégrations de bases de données**
+  - Intégration Supabase (PostgreSQL + Auth)
+  - Intégration Neon (PostgreSQL Serverless)
+  - Gestion des schémas
+  - Bases de données de développement basées sur les branches
 
-- [x] **Deployment**
-  - Vercel integration
-  - One-click deployment
-  - Environment variable management
-  - Deployment URL tracking
+- [x] **Déploiement**
+  - Intégration Vercel
+  - Déploiement en un clic
+  - Gestion des variables d'environnement
+  - Suivi des URL de déploiement
 
-- [x] **Build Mode**
-  - Interactive code generation
-  - Autonomous tool execution
-  - Real-time code changes
-  - Security guidelines
+- [x] **Mode Build (Construction)**
+  - Génération de code interactive
+  - Exécution autonome des outils
+  - Modifications de code en temps réel
+  - Directives de sécurité
 
-- [x] **Ask Mode**
-  - Question-answering about codebase
-  - Read-only exploration
-  - No autonomous changes
+- [x] **Mode Ask (Question)**
+  - Questions-réponses sur la base de code
+  - Exploration en lecture seule
+  - Aucune modification autonome
 
-### Recent Features (v0.41 - v0.44)
+### Fonctionnalités récentes (v0.41 - v0.44)
 
-- [x] **Plan Mode** (v0.42)
-  - AI-assisted planning interface
-  - Requirements gathering with questionnaires
-  - Detailed implementation plans
-  - Plan refinement workflow
-  - Exit to Build mode for execution
+- [x] **Mode Plan** (v0.42)
+  - Interface de planification assistée par l'IA
+  - Collecte des besoins via des questionnaires
+  - Plans d'implémentation détaillés
+  - Flux de travail d'affinage du plan
+  - Passage au mode Build pour l'exécution
 
-- [x] **Local Agent Mode (Pro)** (v0.43)
-  - Autonomous agent with tool execution
-  - Parallel tool calling
-  - Multi-step task management
-  - Outer loop for incomplete tasks
-  - Support for reasoning models (o1/o3)
+- [x] **Mode Agent Local (Pro)** (v0.43)
+  - Agent autonome avec exécution d'outils
+  - Appels d'outils en parallèle
+  - Gestion des tâches multi-étapes
+  - Boucle externe pour les tâches incomplètes
+  - Support des modèles de raisonnement (o1/o3)
 
-- [x] **Context Compaction** (v0.43)
-  - Automatic chat summarization
-  - Token management for long conversations
-  - Backup creation before compaction
-  - Configurable compaction triggers
+- [x] **Compactage du contexte** (v0.43)
+  - Résumé automatique des discussions
+  - Gestion des jetons pour les longues conversations
+  - Création de sauvegarde avant compactage
+  - Déclencheurs de compactage configurables
 
 - [x] **Turbo Edits v2** (v0.44)
-  - Smart file editing with search-replace DSL
-  - Efficient code modifications
-  - Reduced token usage
+  - Édition intelligente de fichiers avec DSL recherche-remplacement
+  - Modifications de code efficaces
+  - Utilisation réduite de jetons
 
-- [x] **Media Management** (v0.44)
-  - Media library for app assets
-  - Custom dyad-media:// protocol
-  - Media file cleanup and optimization
-  - Persistent media serving
+- [x] **Gestion des médias** (v0.44)
+  - Bibliothèque de médias pour les ressources d'application
+  - Protocole personnalisé dyad-media://
+  - Nettoyage et optimisation des fichiers médias
+  - Service de médias persistant
 
-- [x] **Image Generation** (v0.44)
-  - AI image generation capabilities
-  - Integration with image generation APIs
-  - Media library integration
+- [x] **Génération d'images** (v0.44)
+  - Capacités de génération d'images par l'IA
+  - Intégration avec les API de génération d'images
+  - Intégration à la bibliothèque de médias
 
-- [x] **Theme System** (v0.44)
-  - AI-generated themes
-  - Custom theme creation
-  - Theme preview and management
-  - Per-app theme selection
+- [x] **Système de thèmes** (v0.44)
+  - Thèmes générés par l'IA
+  - Création de thèmes personnalisés
+  - Aperçu et gestion des thèmes
+  - Sélection de thèmes par application
 
-- [x] **MCP Integration** (v0.44)
-  - Model Context Protocol support
-  - External tool server integration
-  - Tool consent management
-  - Auto-approval configuration
+- [x] **Intégration MCP** (v0.44)
+  - Support du protocole Model Context Protocol
+  - Intégration de serveurs d'outils externes
+  - Gestion du consentement des outils
+  - Configuration de l'auto-approbation
 
-- [x] **Security Features** (v0.44)
-  - AI-powered security review
-  - Problem detection and auto-fix
-  - Unsafe package blocking
-  - Security guidelines in prompts
-
----
-
-## 🚧 In Progress (v0.45 - v0.50)
-
-### Performance & Optimization
-
-- [ ] **Smart Context Mode Improvements**
-  - Enhanced file selection algorithms
-  - Better context relevance scoring
-  - Reduced token usage without losing quality
-  - Configurable context strategies (balanced, conservative, deep)
-
-- [ ] **Token Optimization**
-  - More aggressive context pruning
-  - Smarter message history management
-  - Dynamic token allocation per provider
-  - Cost tracking and budgeting
-
-- [ ] **Performance Monitoring**
-  - Enhanced memory usage tracking
-  - CPU usage optimization
-  - Startup time improvements
-  - Preview rendering optimization
-
-### User Experience
-
-- [ ] **Onboarding Flow**
-  - First-time user tutorial
-  - Interactive feature discovery
-  - Sample projects and templates
-  - Quick start guides
-
-- [ ] **Improved Error Handling**
-  - Better error messages
-  - Recovery suggestions
-  - Error reporting improvements
-  - Diagnostic tools
-
-- [ ] **UI/UX Refinements**
-  - Keyboard shortcuts customization
-  - Command palette enhancements
-  - Better mobile device preview
-  - Accessibility improvements
-
-### Developer Experience
-
-- [ ] **Enhanced Debugging**
-  - Better error stack traces
-  - Debug mode for AI responses
-  - Tool execution logging
-  - Performance profiling
-
-- [ ] **Testing Improvements**
-  - More E2E test coverage
-  - Visual regression testing
-  - Performance benchmarks
-  - Flaky test detection
+- [x] **Fonctionnalités de sécurité** (v0.44)
+  - Revue de sécurité assistée par l'IA
+  - Détection de problèmes et correction automatique
+  - Blocage des paquets non sécurisés
+  - Directives de sécurité dans les instructions (prompts)
 
 ---
 
-## 🔮 Planned Features (v0.51+)
+## 🚧 En cours (v0.45 - v0.50)
 
-### Q2 2026: Collaboration & Sharing
+### Performance et Optimisation
 
-- [ ] **Team Collaboration**
-  - Multi-user support
-  - Real-time collaboration on apps
-  - Shared chat history
-  - Team settings and permissions
+- [ ] **Améliorations du mode Smart Context**
+  - Algorithmes de sélection de fichiers améliorés
+  - Meilleur scoring de pertinence du contexte
+  - Utilisation réduite de jetons sans perte de qualité
+  - Stratégies de contexte configurables (équilibrée, conservatrice, profonde)
 
-- [ ] **App Sharing**
-  - Export/import app configurations
-  - Share apps with other users
-  - App marketplace/gallery
-  - Template sharing
+- [ ] **Optimisation des jetons**
+  - Élagage du contexte plus agressif
+  - Gestion plus intelligente de l'historique des messages
+  - Allocation dynamique de jetons par fournisseur
+  - Suivi des coûts et budgétisation
 
-- [ ] **Cloud Sync (Optional)**
-  - Sync settings across devices
-  - Cloud backup of apps and chats
-  - Cross-device chat history
-  - End-to-end encryption
+- [ ] **Suivi des performances**
+  - Suivi amélioré de l'utilisation de la mémoire
+  - Optimisation de l'utilisation du processeur (CPU)
+  - Amélioration du temps de démarrage
+  - Optimisation du rendu de l'aperçu
 
-### Q3 2026: Advanced AI Features
+### Expérience utilisateur
 
-- [ ] **Multi-Agent Workflows**
-  - Specialized agents for different tasks
-  - Agent orchestration
-  - Agent-to-agent communication
-  - Custom agent creation
+- [ ] **Flux d'intégration (Onboarding)**
+  - Tutoriel pour les nouveaux utilisateurs
+  - Découverte interactive des fonctionnalités
+  - Projets d'exemple et modèles
+  - Guides de démarrage rapide
 
-- [ ] **Visual Editing Mode**
-  - Drag-and-drop component editing
-  - Visual style editor
-  - Layout builder
-  - Component library browser
+- [ ] **Gestion des erreurs améliorée**
+  - Meilleurs messages d'erreur
+  - Suggestions de récupération
+  - Améliorations du rapport d'erreurs
+  - Outils de diagnostic
 
-- [ ] **Code Review Agent**
-  - Automated code review
-  - Best practices suggestions
-  - Performance optimization hints
-  - Security vulnerability detection
+- [ ] **Affinages UI/UX**
+  - Personnalisation des raccourcis clavier
+  - Améliorations de la palette de commandes
+  - Meilleur aperçu sur appareils mobiles
+  - Améliorations de l'accessibilité
 
-- [ ] **Testing Agent**
-  - Automated test generation
-  - Test coverage analysis
-  - E2E test creation
-  - Test maintenance
+### Expérience développeur
 
-### Q4 2026: Enterprise Features
+- [ ] **Débogage amélioré**
+  - Meilleures traces d'appels d'erreurs (stack traces)
+  - Mode débogage pour les réponses de l'IA
+  - Journalisation de l'exécution des outils
+  - Profilage des performances
 
-- [ ] **Self-Hosted AI Models**
-  - Support for more local models
-  - Model fine-tuning interface
-  - Custom model training
-  - Model performance comparison
+- [ ] **Améliorations des tests**
+  - Plus de couverture de tests E2E
+  - Tests de régression visuelle
+  - Benchmarks de performance
+  - Détection des tests instables (flaky)
 
-- [ ] **Advanced Security**
-  - Role-based access control
-  - Audit logging
-  - Compliance reporting
-  - Data retention policies
+---
 
-- [ ] **Enterprise Integrations**
-  - JIRA integration
-  - Slack/Teams notifications
-  - CI/CD pipeline integration
-  - Custom webhook support
+## 🔮 Fonctionnalités prévues (v0.51+)
 
-- [ ] **Analytics & Insights**
-  - Usage analytics dashboard
-  - AI performance metrics
-  - Cost tracking and optimization
-  - Team productivity insights
+### T2 2026 : Collaboration et Partage
 
-### 2027: Platform Expansion
+- [ ] **Collaboration en équipe**
+  - Support multi-utilisateurs
+  - Collaboration en temps réel sur les applications
+  - Historique de chat partagé
+  - Paramètres d'équipe et permissions
 
-- [ ] **Mobile App**
-  - iOS and Android apps
-  - Mobile-optimized UI
-  - Sync with desktop app
-  - Push notifications
+- [ ] **Partage d'applications**
+  - Exportation/importation de configurations d'applications
+  - Partage d'applications avec d'autres utilisateurs
+  - Marché/Galerie d'applications
+  - Partage de modèles (templates)
 
-- [ ] **Web Version**
-  - Browser-based version
+- [ ] **Synchronisation Cloud (Optionnel)**
+  - Synchronisation des paramètres sur tous les appareils
+  - Sauvegarde cloud des applications et chats
+  - Historique de chat multi-appareils
+  - Chiffrement de bout en bout
+
+### T3 2026 : Fonctionnalités IA avancées
+
+- [ ] **Flux de travail multi-agents**
+  - Agents spécialisés pour différentes tâches
+  - Orchestration des agents
+  - Communication d'agent à agent
+  - Création d'agents personnalisés
+
+- [ ] **Mode d'édition visuelle**
+  - Édition de composants par glisser-déposer
+  - Éditeur de style visuel
+  - Constructeur de mise en page (layout builder)
+  - Navigateur de bibliothèque de composants
+
+- [ ] **Agent de revue de code**
+  - Revue de code automatisée
+  - Suggestions de bonnes pratiques
+  - Conseils d'optimisation de performance
+  - Détection de vulnérabilités de sécurité
+
+- [ ] **Agent de test**
+  - Génération de tests automatisés
+  - Analyse de la couverture de tests
+  - Création de tests E2E
+  - Maintenance des tests
+
+### T4 2026 : Fonctionnalités Entreprise
+
+- [ ] **Modèles d'IA auto-hébergés**
+  - Support de plus de modèles locaux
+  - Interface d'ajustement fin des modèles (fine-tuning)
+  - Entraînement de modèles personnalisés
+  - Comparaison des performances des modèles
+
+- [ ] **Sécurité avancée**
+  - Contrôle d'accès basé sur les rôles (RBAC)
+  - Journalisation d'audit (audit logging)
+  - Rapports de conformité
+  - Politiques de rétention des données
+
+- [ ] **Intégrations entreprise**
+  - Intégration JIRA
+  - Notifications Slack/Teams
+  - Intégration de pipeline CI/CD
+  - Support de webhooks personnalisés
+
+- [ ] **Analyses et informations (Insights)**
+  - Tableau de bord analytique d'utilisation
+  - Métriques de performance de l'IA
+  - Suivi et optimisation des coûts
+  - Aperçu de la productivité de l'équipe
+
+### 2027 : Expansion de la plateforme
+
+- [ ] **Application mobile**
+  - Applications iOS et Android
+  - Interface optimisée pour mobile
+  - Synchronisation avec l'application de bureau
+  - Notifications push
+
+- [ ] **Version Web**
+  - Version basée sur le navigateur
   - Progressive Web App (PWA)
-  - Cloud-hosted option
-  - Offline support
+  - Option d'hébergement cloud
+  - Support hors ligne
 
-- [ ] **Plugin System**
-  - Third-party plugin support
-  - Plugin marketplace
-  - Custom tool creation
-  - Extension API
+- [ ] **Système de plugins**
+  - Support des plugins tiers
+  - Marché de plugins
+  - Création d'outils personnalisés
+  - API d'extension
 
-- [ ] **Language Support**
-  - More programming languages
-  - Framework-specific templates
-  - Language-specific AI prompts
-  - Multi-language documentation
-
----
-
-## 🎯 Long-Term Vision
-
-### Developer Productivity
-
-- **AI Pair Programming:** Real-time AI assistance while coding
-- **Intelligent Code Completion:** Context-aware suggestions
-- **Automated Refactoring:** AI-powered code improvements
-- **Documentation Generation:** Automatic docs from code
-
-### Platform Ecosystem
-
-- **Marketplace:** Templates, themes, plugins, and agents
-- **Community:** Forums, tutorials, and shared knowledge
-- **Education:** Learning resources and courses
-- **Certification:** Developer certification program
-
-### AI Capabilities
-
-- **Multi-Modal AI:** Support for vision, audio, and video
-- **Custom Model Training:** Fine-tune models on your codebase
-- **Federated Learning:** Learn from community without sharing code
-- **Explainable AI:** Understand AI decision-making
-
-### Integration Ecosystem
-
-- **More Cloud Providers:** AWS, GCP, DigitalOcean, etc.
-- **More Databases:** MongoDB, PostgreSQL, MySQL, Redis, etc.
-- **More Frameworks:** Next.js, Nuxt, SvelteKit, Astro, etc.
-- **More Tools:** Docker, Kubernetes, Terraform, etc.
+- [ ] **Support des langages**
+  - Plus de langages de programmation
+  - Modèles spécifiques à certains frameworks
+  - Instructions IA spécifiques au langage
+  - Documentation multilingue
 
 ---
 
-## 📊 Feature Prioritization
+## 🎯 Vision à long terme
 
-Features are prioritized based on:
+### Productivité des développeurs
 
-1. **User Impact:** How many users will benefit?
-2. **Development Effort:** How complex is the implementation?
-3. **Strategic Value:** Does it align with long-term vision?
-4. **Community Feedback:** What are users requesting?
-5. **Technical Debt:** Does it improve code quality?
+- **Programmation en binôme avec l'IA :** Assistance IA en temps réel pendant le codage
+- **Complétion de code intelligente :** Suggestions contextuelles
+- **Refactorisation automatisée :** Améliorations de code assistées par l'IA
+- **Génération de documentation :** Documentation automatique à partir du code
+
+### Écosystème de la plateforme
+
+- **Marketplace :** Modèles, thèmes, plugins et agents
+- **Communauté :** Forums, tutoriels et partage de connaissances
+- **Éducation :** Ressources d'apprentissage et cours
+- **Certification :** Programme de certification pour les développeurs
+
+### Capacités de l'IA
+
+- **IA multimodale :** Support de la vision, de l'audio et de la vidéo
+- **Entraînement de modèles personnalisés :** Ajustez les modèles sur votre base de code
+- **Apprentissage fédéré :** Apprendre de la communauté sans partager le code
+- **IA explicable :** Comprendre la prise de décision de l'IA
+
+### Écosystème d'intégration
+
+- **Plus de fournisseurs cloud :** AWS, GCP, DigitalOcean, etc.
+- **Plus de bases de données :** MongoDB, PostgreSQL, MySQL, Redis, etc.
+- **Plus de frameworks :** Next.js, Nuxt, SvelteKit, Astro, etc.
+- **Plus d'outils :** Docker, Kubernetes, Terraform, etc.
 
 ---
 
-## 🤝 Community Involvement
+## 📊 Priorisation des fonctionnalités
 
-We welcome community contributions! Here's how you can help:
+Les fonctionnalités sont priorisées en fonction de :
 
-### Feature Requests
+1. **Impact utilisateur :** Combien d'utilisateurs en bénéficieront ?
+2. **Effort de développement :** Quelle est la complexité de l'implémentation ?
+3. **Valeur stratégique :** Est-ce aligné avec la vision à long terme ?
+4. **Retour de la communauté :** Que demandent les utilisateurs ?
+5. **Dette technique :** Est-ce que cela améliore la qualité du code ?
 
-- Open an issue with the `feature-request` label
-- Describe the use case and expected behavior
-- Provide examples or mockups if possible
-- Vote on existing feature requests
+---
 
-### Bug Reports
+## 🤝 Implication de la communauté
 
-- Open an issue with the `bug` label
-- Include steps to reproduce
-- Provide system information
-- Attach logs or screenshots
+Nous accueillons les contributions de la communauté ! Voici comment vous pouvez aider :
+
+### Demandes de fonctionnalités
+
+- Ouvrez un ticket (issue) avec le label `feature-request`
+- Décrivez le cas d'utilisation et le comportement attendu
+- Fournissez des exemples ou des maquettes si possible
+- Votez pour les demandes de fonctionnalités existantes
+
+### Rapports de bugs
+
+- Ouvrez un ticket avec le label `bug`
+- Incluez les étapes pour reproduire
+- Fournissez des informations sur votre système
+- Joignez des journaux (logs) ou des captures d'écran
 
 ### Pull Requests
 
-- Check the roadmap for planned features
-- Discuss major changes in an issue first
-- Follow the contribution guidelines
-- Write tests for new features
+- Consultez la feuille de route pour les fonctionnalités prévues
+- Discutez d'abord des changements majeurs dans un ticket
+- Suivez les directives de contribution
+- Écrivez des tests pour les nouvelles fonctionnalités
 
 ### Documentation
 
-- Improve existing documentation
-- Write tutorials and guides
-- Translate documentation
-- Create video tutorials
+- Améliorez la documentation existante
+- Écrivez des tutoriels et des guides
+- Traduisez la documentation
+- Créez des tutoriels vidéo
 
 ---
 
-## 📅 Release Schedule
+## 📅 Calendrier de sortie
 
-### Beta Releases
+### Sorties Bêta
 
-- **Frequency:** Every 2-3 weeks
-- **Focus:** New features and improvements
-- **Stability:** May have bugs, use with caution
-- **Channel:** `beta` in settings
+- **Fréquence :** Toutes les 2-3 semaines
+- **Focus :** Nouvelles fonctionnalités et améliorations
+- **Stabilité :** Peut contenir des bugs, à utiliser avec précaution
+- **Canal :** `beta` dans les paramètres
 
-### Stable Releases
+### Sorties Stables
 
-- **Frequency:** Every 4-6 weeks
-- **Focus:** Bug fixes and stability
-- **Stability:** Production-ready
-- **Channel:** `stable` in settings (default)
+- **Fréquence :** Toutes les 4-6 semaines
+- **Focus :** Corrections de bugs et stabilité
+- **Stabilité :** Prêt pour la production
+- **Canal :** `stable` dans les paramètres (par défaut)
 
-### Hotfix Releases
+### Sorties de correctifs (Hotfix)
 
-- **Frequency:** As needed
-- **Focus:** Critical bug fixes
-- **Stability:** Minimal changes, high priority
-- **Channel:** Both `beta` and `stable`
+- **Fréquence :** Selon les besoins
+- **Focus :** Corrections de bugs critiques
+- **Stabilité :** Modifications minimales, haute priorité
+- **Canal :** À la fois `beta` et `stable`
 
 ---
 
-## 🔄 Version History
+## 🔄 Historique des versions
 
-### v0.44.0-beta.1 (Current)
-- Media management system
-- Image generation capabilities
-- Theme system improvements
-- MCP integration enhancements
+### v0.44.0-beta.1 (Actuelle)
+- Système de gestion des médias
+- Capacités de génération d'images
+- Améliorations du système de thèmes
+- Améliorations de l'intégration MCP
 
 ### v0.43.0
-- Local Agent Mode (Pro)
-- Context compaction
+- Mode Agent Local (Pro)
+- Compactage du contexte
 - Turbo Edits v2
-- Performance improvements
+- Améliorations de performance
 
 ### v0.42.0
-- Plan Mode
-- Requirements gathering
-- Implementation planning
-- Plan refinement workflow
+- Mode Plan
+- Collecte des besoins
+- Planification d'implémentation
+- Flux de travail d'affinage du plan
 
 ### v0.41.0
-- Security review features
-- Problem detection
-- Auto-fix capabilities
-- Enhanced error handling
+- Fonctionnalités de revue de sécurité
+- Détection de problèmes
+- Capacités de correction automatique
+- Gestion des erreurs améliorée
 
 ### v0.40.0
-- Vercel integration
-- Deployment management
-- Environment variables
-- Production builds
+- Intégration Vercel
+- Gestion du déploiement
+- Variables d'environnement
+- Builds de production
 
 ---
 
 ## 📝 Notes
 
-- This roadmap is subject to change based on user feedback and technical constraints
-- Dates are estimates and may shift based on development progress
-- Pro features are marked with (Pro) and require a Dyad Pro subscription
-- Community contributions may accelerate feature development
+- Cette feuille de route est susceptible de changer en fonction des retours des utilisateurs et des contraintes techniques
+- Les dates sont des estimations et peuvent varier en fonction de l'avancement du développement
+- Les fonctionnalités Pro sont marquées par (Pro) et nécessitent un abonnement Dyad Pro
+- Les contributions de la communauté peuvent accélérer le développement des fonctionnalités
 
 ---
 
-## 🙏 Feedback
+## 🙏 Retours
 
-We value your feedback! Please share your thoughts:
+Nous apprécions vos retours ! N'hésitez pas à partager vos réflexions :
 
-- **GitHub Issues:** [Report bugs or request features](https://github.com/dyad-sh/dyad/issues)
-- **GitHub Discussions:** [Join the conversation](https://github.com/dyad-sh/dyad/discussions)
-- **Help Button:** Use the in-app Help button for direct feedback
-- **Email:** willchen90@gmail.com
+- **GitHub Issues :** [Signaler des bugs ou demander des fonctionnalités](https://github.com/dyad-sh/dyad/issues)
+- **GitHub Discussions :** [Rejoindre la conversation](https://github.com/dyad-sh/dyad/discussions)
+- **Bouton d'aide :** Utilisez le bouton d'aide intégré à l'application pour un retour direct
+- **E-mail :** willchen90@gmail.com
 
 ---
 
 <div align="center">
 
-**Last Updated:** April 2026
+**Dernière mise à jour :** Avril 2026
 
-[⬆ Back to Top](#neurocode-roadmap)
+[⬆ Retour en haut](#feuille-de-route-neurocode)
 
 </div>

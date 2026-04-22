@@ -2,268 +2,268 @@
 
 <div align="center">
 
-![NeuroCode Logo](assets/icon.png)
+![Logo NeuroCode](assets/icon.png)
 
-**Free, local, open-source AI app builder**
+**Générateur d'applications IA gratuit, local et open-source**
 
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Licence MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.44.0--beta.1-blue.svg)](package.json)
 [![Node](https://img.shields.io/badge/node-%3E%3D24-brightgreen.svg)](package.json)
 [![Electron](https://img.shields.io/badge/electron-40.0.0-blue.svg)](package.json)
 
-[Features](#features) • [Installation](#installation) • [Usage](#usage) • [Development](#development) • [Contributing](#contributing)
+[Fonctionnalités](#fonctionnalités) • [Installation](#installation) • [Utilisation](#utilisation) • [Développement](#développement) • [Contribution](#contribution)
 
 </div>
 
 ---
 
-## Overview
+## Présentation
 
-NeuroCode is a powerful desktop application that enables developers to create and modify web applications through AI-assisted development. Built with Electron, it provides a live preview of your applications while making code changes in real-time, combining chat-based interaction with autonomous AI capabilities.
+NeuroCode est une puissante application de bureau qui permet aux développeurs de créer et de modifier des applications web grâce au développement assisté par l'IA. Basé sur Electron, il offre un aperçu en direct de vos applications tout en effectuant des modifications de code en temps réel, combinant interaction par chat et capacités d'IA autonomes.
 
-### Why NeuroCode?
+### Pourquoi choisir NeuroCode ?
 
-- **🔒 Privacy First:** All processing happens locally on your machine
-- **🤖 Multi-AI Support:** Works with OpenAI, Anthropic, Google, Azure, and more
-- **⚡ Real-Time Preview:** See your changes instantly in the integrated preview panel
-- **🎯 Multiple Modes:** Build, Ask, Plan, and Local Agent modes for different workflows
-- **🛠️ Full Stack:** Integrated Git, database management, and deployment tools
-- **🎨 Customizable:** Themes, templates, and custom AI model providers
-
----
-
-## Features
-
-### Core Capabilities
-
-#### 🤖 AI-Powered Development
-- **Build Mode:** Interactive code generation and modification with live preview
-- **Ask Mode:** Question-answering about your codebase
-- **Plan Mode:** AI-assisted planning and task breakdown with requirements gathering
-- **Local Agent Mode (Pro):** Autonomous agent that executes tools and makes decisions
-
-#### 💻 Code Editing & Preview
-- Monaco editor integration with syntax highlighting
-- Live preview panel with responsive device modes (desktop, tablet, mobile)
-- Real-time code changes reflected instantly
-- Support for multiple file types and frameworks
-
-#### 🔄 Version Control & Git
-- Native Git integration (Windows-safe)
-- GitHub repository management
-- Branch operations and merge conflict resolution
-- Commit tracking and versioning
-
-#### 🗄️ Database Integration
-- **Supabase:** PostgreSQL database and auth integration
-- **Neon:** Serverless PostgreSQL management
-- Schema management and migrations
-- SQL query execution
-
-#### 🚀 Deployment & Hosting
-- Vercel integration for one-click deployment
-- Deployment URL tracking
-- Environment variable management
-- Custom app folders support
-
-#### 🎨 Customization
-- AI-generated themes or manual theme creation
-- Custom language model providers
-- Model Context Protocol (MCP) server integration
-- App-specific chat context configuration
-
-#### 🖼️ Media Management
-- Built-in media library for app assets
-- AI image generation capabilities
-- Media file optimization and cleanup
-- Persistent media serving with custom protocol
-
-### Advanced Features
-
-- **Context Compaction:** Automatically summarize long conversations
-- **Security Review:** AI-powered code security analysis
-- **Auto-Fix Problems:** Automatic detection and fixing of issues
-- **Token Management:** Smart context management for long chats
-- **Web Search (Pro):** Search the web for up-to-date information
-- **Thinking Budget:** Support for reasoning models (o1/o3)
-- **Smart Context:** Intelligent file selection for context
+- **🔒 Confidentialité avant tout :** Tout le traitement se fait localement sur votre machine
+- **🤖 Support multi-IA :** Fonctionne avec OpenAI, Anthropic, Google, Azure, et bien d'autres
+- **⚡ Aperçu en temps réel :** Visualisez instantanément vos changements dans le panneau d'aperçu intégré
+- **🎯 Plusieurs modes :** Modes Build, Ask, Plan et Agent Local pour différents flux de travail
+- **🛠️ Full Stack :** Intégration Git, gestion de base de données et outils de déploiement
+- **🎨 Personnalisable :** Thèmes, modèles et fournisseurs de modèles d'IA personnalisés
 
 ---
 
-## Supported AI Providers
+## Fonctionnalités
 
-NeuroCode supports multiple AI providers out of the box:
+### Capacités de base
 
-| Provider | Models | Type |
-|----------|--------|------|
+#### 🤖 Développement propulsé par l'IA
+- **Mode Build :** Génération et modification interactive de code avec aperçu en direct
+- **Mode Ask :** Questions-réponses sur votre base de code
+- **Mode Plan :** Planification assistée par l'IA et décomposition des tâches avec collecte des besoins
+- **Mode Agent Local (Pro) :** Agent autonome qui exécute des outils et prend des décisions
+
+#### 💻 Édition de code et aperçu
+- Intégration de l'éditeur Monaco avec coloration syntaxique
+- Panneau d'aperçu en direct avec modes d'appareils réponsifs (ordinateur, tablette, mobile)
+- Modifications de code reflétées instantanément en temps réel
+- Support de nombreux types de fichiers et frameworks
+
+#### 🔄 Contrôle de version et Git
+- Intégration Git native (compatible Windows)
+- Gestion des dépôts GitHub
+- Opérations sur les branches et résolution de conflits de fusion
+- Suivi des commits et versionnage
+
+#### 🗄️ Intégration de base de données
+- **Supabase :** Intégration de base de données PostgreSQL et d'authentification
+- **Neon :** Gestion de PostgreSQL Serverless
+- Gestion des schémas et migrations
+- Exécution de requêtes SQL
+
+#### 🚀 Déploiement et hébergement
+- Intégration Vercel pour un déploiement en un clic
+- Suivi des URL de déploiement
+- Gestion des variables d'environnement
+- Support des dossiers d'applications personnalisés
+
+#### 🎨 Personnalisation
+- Thèmes générés par l'IA ou création manuelle de thèmes
+- Fournisseurs de modèles de langage personnalisés
+- Intégration de serveurs Model Context Protocol (MCP)
+- Configuration du contexte de chat spécifique à l'application
+
+#### 🖼️ Gestion des médias
+- Bibliothèque de médias intégrée pour les ressources d'application
+- Capacités de génération d'images par l'IA
+- Optimisation et nettoyage des fichiers médias
+- Service de médias persistant avec protocole personnalisé
+
+### Fonctionnalités avancées
+
+- **Compactage du contexte :** Résumé automatique des longues conversations
+- **Revue de sécurité :** Analyse de sécurité du code par l'IA
+- **Correction automatique des problèmes :** Détection et résolution automatique des erreurs
+- **Gestion des jetons :** Gestion intelligente du contexte pour les longs chats
+- **Recherche Web (Pro) :** Recherche sur le web pour des informations à jour
+- **Budget de réflexion :** Support des modèles de raisonnement (o1/o3)
+- **Contexte intelligent :** Sélection intelligente de fichiers pour le contexte
+
+---
+
+## Fournisseurs d'IA supportés
+
+NeuroCode supporte de nombreux fournisseurs d'IA nativement :
+
+| Fournisseur | Modèles | Type |
+|-------------|---------|------|
 | **OpenAI** | GPT-4, GPT-3.5, o1, o3 | Cloud |
 | **Anthropic** | Claude 3.5 Sonnet, Claude 3 Opus | Cloud |
 | **Google** | Gemini Pro, Gemini Ultra | Cloud |
-| **Google Vertex AI** | Gemini models | Cloud |
+| **Google Vertex AI** | Modèles Gemini | Cloud |
 | **Azure OpenAI** | GPT-4, GPT-3.5 | Cloud |
 | **Amazon Bedrock** | Claude, Titan | Cloud |
-| **XAI** | Grok models | Cloud |
-| **OpenRouter** | Multiple models | Cloud |
+| **XAI** | Modèles Grok | Cloud |
+| **OpenRouter** | Modèles multiples | Cloud |
 | **Ollama** | Llama, Mistral, CodeLlama | Local |
-| **LM Studio** | Any GGUF model | Local |
-| **MiniMax** | MiniMax models | Cloud |
+| **LM Studio** | Tout modèle GGUF | Local |
+| **MiniMax** | Modèles MiniMax | Cloud |
 
 ---
 
 ## Installation
 
-### Prerequisites
+### Prérequis
 
 - **Node.js** >= 24
-- **npm** or **yarn**
-- **Git** (optional, bundled with the app)
+- **npm** ou **yarn**
+- **Git** (optionnel, inclus avec l'application)
 
-### From Source
+### À partir des sources
 
 ```bash
-# Clone the repository
+# Cloner le dépôt
 git clone https://github.com/dyad-sh/dyad.git
 cd dyad
 
-# Install dependencies
+# Installer les dépendances
 npm install
 
-# Initialize pre-commit hooks
+# Initialiser les hooks de pré-commit
 npm run init-precommit
 
-# Start development
+# Lancer le développement
 npm run dev
 ```
 
-### Build Installers
+### Générer les installateurs
 
 ```bash
-# Package the application
+# Packager l'application
 npm run package
 
-# Create platform-specific installers
+# Créer les installateurs spécifiques à la plateforme
 npm run make
 ```
 
 ---
 
-## Usage
+## Utilisation
 
-### Getting Started
+### Pour commencer
 
-1. **Launch NeuroCode** and configure your AI provider API key in Settings
-2. **Create a new app** or import an existing project
-3. **Start chatting** with the AI to build or modify your application
-4. **Preview changes** in real-time in the integrated preview panel
+1. **Lancez NeuroCode** et configurez votre clé API de fournisseur d'IA dans les Paramètres (Settings)
+2. **Créez une nouvelle application** ou importez un projet existant
+3. **Commencez à discuter** avec l'IA pour construire ou modifier votre application
+4. **Visualisez les changements** en temps réel dans le panneau d'aperçu intégré
 
-### Chat Modes
+### Modes de discussion
 
-#### Build Mode (Default)
-Interactive code generation with autonomous tool execution. The AI can read files, write code, and make changes directly to your project.
-
-```
-You: "Create a contact form with name, email, and message fields"
-AI: [Creates form component, adds validation, styles it]
-```
-
-#### Ask Mode
-Question-answering mode for understanding your codebase without making changes.
+#### Mode Build (Par défaut)
+Génération de code interactive avec exécution d'outils autonome. L'IA peut lire des fichiers, écrire du code et effectuer des modifications directement dans votre projet.
 
 ```
-You: "How does the authentication flow work?"
-AI: [Explains the auth implementation]
+Vous : "Crée un formulaire de contact avec des champs nom, email et message"
+IA : [Crée le composant formulaire, ajoute la validation, applique le style]
 ```
 
-#### Plan Mode
-Collaborative planning interface for complex features. The AI asks clarifying questions and creates detailed implementation plans.
+#### Mode Ask
+Mode questions-réponses pour comprendre votre base de code sans apporter de modifications.
 
 ```
-You: "I want to add user profiles"
-AI: [Asks about requirements, creates detailed plan]
+Vous : "Comment fonctionne le flux d'authentification ?"
+IA : [Explique l'implémentation de l'authentification]
 ```
 
-#### Local Agent Mode (Pro)
-Autonomous agent that can execute multi-step tasks independently with tool calling and decision-making.
+#### Mode Plan
+Interface de planification collaborative pour des fonctionnalités complexes. L'IA pose des questions de clarification et crée des plans d'implémentation détaillés.
 
 ```
-You: "Refactor the API layer to use TypeScript"
-AI: [Analyzes codebase, creates plan, executes refactoring]
+Vous : "Je veux ajouter des profils utilisateurs"
+IA : [Pose des questions sur les besoins, crée un plan détaillé]
 ```
 
-### Keyboard Shortcuts
+#### Mode Agent Local (Pro)
+Agent autonome capable d'exécuter des tâches multi-étapes de manière indépendante avec appels d'outils et prise de décision.
 
-- `Ctrl/Cmd + N` - New app
-- `Ctrl/Cmd + K` - New chat
-- `Ctrl/Cmd + ,` - Settings
-- `Ctrl/Cmd + R` - Restart app server
-- `Ctrl/Cmd + Shift + R` - Rebuild app
+```
+Vous : "Refactorise la couche API pour utiliser TypeScript"
+IA : [Analyse la base de code, crée un plan, exécute la refactorisation]
+```
+
+### Raccourcis clavier
+
+- `Ctrl/Cmd + N` - Nouvelle application
+- `Ctrl/Cmd + K` - Nouvelle discussion
+- `Ctrl/Cmd + ,` - Paramètres
+- `Ctrl/Cmd + R` - Redémarrer le serveur de l'application
+- `Ctrl/Cmd + Shift + R` - Reconstruire l'application
 
 ---
 
-## Development
+## Développement
 
-### Project Structure
+### Structure du projet
 
 ```
 src/
-├── main.ts                 # Electron main process
-├── preload.ts             # IPC bridge
-├── renderer.tsx           # React app entry
-├── app/                   # App layout
-├── components/            # React components
-├── db/                    # Database schema
-├── ipc/                   # IPC handlers
-├── pages/                 # Page components
-├── pro/                   # Pro features
-├── prompts/               # AI system prompts
-└── routes/                # Router configuration
+├── main.ts                 # Processus principal Electron
+├── preload.ts             # Pont IPC
+├── renderer.tsx           # Entrée de l'application React
+├── app/                   # Mise en page de l'application
+├── components/            # Composants React
+├── db/                    # Schéma de base de données
+├── ipc/                   # Gestionnaires IPC
+├── pages/                 # Composants de pages
+├── pro/                   # Fonctionnalités Pro
+├── prompts/               # Instructions système IA
+└── routes/                # Configuration du routeur
 ```
 
-### Tech Stack
+### Stack technique
 
-- **Frontend:** React 19, TanStack Router, Jotai, Tailwind CSS
-- **Backend:** Electron 40, SQLite, Drizzle ORM
-- **AI:** Vercel AI SDK with multi-provider support
-- **Build:** Vite, Electron Forge
-- **Testing:** Vitest, Playwright
+- **Frontend :** React 19, TanStack Router, Jotai, Tailwind CSS
+- **Backend :** Electron 40, SQLite, Drizzle ORM
+- **IA :** Vercel AI SDK avec support multi-fournisseurs
+- **Build :** Vite, Electron Forge
+- **Tests :** Vitest, Playwright
 
-### Development Commands
+### Commandes de développement
 
 ```bash
-# Start development server
+# Lancer le serveur de développement
 npm run dev
 
-# Type checking
+# Vérification des types
 npm run ts
 
 # Linting
 npm run lint
 npm run lint:fix
 
-# Formatting
+# Formatage
 npm run fmt
 
-# Run tests
+# Exécuter les tests
 npm test
 npm run e2e
 
-# Database operations
-npm run db:generate    # Generate migrations
-npm run db:push        # Push schema changes
-npm run db:studio      # Open Drizzle Studio
+# Opérations sur la base de données
+npm run db:generate    # Générer les migrations
+npm run db:push        # Pousser les modifications de schéma
+npm run db:studio      # Ouvrir Drizzle Studio
 ```
 
-### Pre-commit Checks
+### Vérifications pré-commit
 
-Before committing, run:
+Avant de committer, lancez :
 
 ```bash
-npm run fmt        # Format code
-npm run lint       # Lint code
-npm run ts         # Type check
+npm run fmt        # Formater le code
+npm run lint       # Linter le code
+npm run ts         # Vérifier les types
 ```
 
-Or use the automated skill:
+Ou utilisez la commande automatisée :
 
 ```bash
 /dyad:lint
@@ -273,44 +273,44 @@ Or use the automated skill:
 
 ## Configuration
 
-### User Settings
+### Paramètres utilisateur
 
-Settings are stored in `user-settings.json` in the app data directory:
+Les paramètres sont stockés dans `user-settings.json` dans le dossier de données de l'application :
 
-- **Model Selection:** Choose your preferred AI provider and model
-- **API Keys:** Securely stored with Electron safe storage
-- **Chat Modes:** Configure default and current chat mode
-- **Context Management:** Max chat turns, token limits, thinking budget
-- **UI Preferences:** Theme, language, zoom level, device mode
-- **Integrations:** GitHub, Vercel, Supabase, Neon credentials
+- **Sélection du modèle :** Choisissez votre fournisseur d'IA et votre modèle préférés
+- **Clés API :** Stockées de manière sécurisée avec le stockage sécurisé d'Electron
+- **Modes de discussion :** Configurez le mode par défaut et le mode actuel
+- **Gestion du contexte :** Nombre max de tours de discussion, limites de jetons, budget de réflexion
+- **Préférences UI :** Thème, langue, niveau de zoom, mode d'appareil
+- **Intégrations :** Identifiants GitHub, Vercel, Supabase, Neon
 
-### Environment Variables
+### Variables d'environnement
 
-Create a `.env` file for development:
+Créez un fichier `.env` pour le développement :
 
 ```env
-# AI Provider API Keys
-OPENAI_API_KEY=your_key_here
-ANTHROPIC_API_KEY=your_key_here
-GOOGLE_API_KEY=your_key_here
+# Clés API des fournisseurs d'IA
+OPENAI_API_KEY=votre_cle_ici
+ANTHROPIC_API_KEY=votre_cle_ici
+GOOGLE_API_KEY=votre_cle_ici
 
-# GitHub Integration
-GITHUB_TOKEN=your_token_here
+# Intégration GitHub
+GITHUB_TOKEN=votre_jeton_ici
 
-# Local Ollama (optional)
+# Ollama local (optionnel)
 OLLAMA_HOST=http://localhost:11434
 ```
 
-### MCP Servers
+### Serveurs MCP
 
-Configure Model Context Protocol servers in `.kiro/settings/mcp.json`:
+Configurez les serveurs Model Context Protocol dans `.kiro/settings/mcp.json` :
 
 ```json
 {
   "mcpServers": {
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/allowed/files"]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/chemin/vers/fichiers/autorises"]
     }
   }
 }
@@ -318,51 +318,51 @@ Configure Model Context Protocol servers in `.kiro/settings/mcp.json`:
 
 ---
 
-## Testing
+## Tests
 
-### Unit Tests
+### Tests unitaires
 
 ```bash
-npm test              # Run once
-npm run test:watch    # Watch mode
-npm run test:ui       # UI mode
+npm test              # Exécuter une fois
+npm run test:watch    # Mode surveillance
+npm run test:ui       # Mode UI
 ```
 
-### E2E Tests
+### Tests E2E
 
 ```bash
-# Build first (required!)
+# Compiler d'abord (requis !)
 npm run build
 
-# Run E2E tests
+# Exécuter les tests E2E
 npm run e2e
-npm run e2e:fast      # With fewer retries
+npm run e2e:fast      # Avec moins de tentatives
 ```
 
-**Important:** E2E tests run against the built application. Always rebuild after code changes.
+**Important :** Les tests E2E s'exécutent sur l'application compilée. Recompilez toujours après des modifications de code.
 
 ---
 
-## Contributing
+## Contribution
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Les contributions sont les bienvenues ! Veuillez consulter [CONTRIBUTING.md](CONTRIBUTING.md) pour les directives.
 
-### Development Workflow
+### Flux de développement
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run pre-commit checks (`npm run fmt && npm run lint && npm run ts`)
-5. Commit your changes (`git commit -m 'Add amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
+1. Forkez le dépôt
+2. Créez une branche de fonctionnalité (`git checkout -b feature/ma-super-fonctionnalite`)
+3. Apportez vos modifications
+4. Lancez les vérifications pré-commit (`npm run fmt && npm run lint && npm run ts`)
+5. Committez vos changements (`git commit -m 'Ajout d'une super fonctionnalité'`)
+6. Poussez vers la branche (`git push origin feature/ma-super-fonctionnalite`)
+7. Ouvrez une Pull Request
 
-### Code Style
+### Style de code
 
-- Use TypeScript for all new code
-- Follow the existing code style (enforced by Oxlint and Oxfmt)
-- Write tests for new features
-- Update documentation as needed
+- Utilisez TypeScript pour tout nouveau code
+- Suivez le style de code existant (appliqué par Oxlint et Oxfmt)
+- Écrivez des tests pour les nouvelles fonctionnalités
+- Mettez à jour la documentation si nécessaire
 
 ---
 
@@ -370,110 +370,110 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ### Electron IPC
 
-NeuroCode uses a secure IPC architecture with:
+NeuroCode utilise une architecture IPC sécurisée avec :
 
-- **Context Isolation:** Enabled for security
-- **Typed Contracts:** All IPC endpoints have TypeScript contracts
-- **Error Handling:** DyadError with DyadErrorKind for proper classification
-- **Handler Categories:** 30+ specialized handler modules
+- **Isolation du contexte :** Activée pour la sécurité
+- **Contrats typés :** Tous les points de terminaison IPC ont des contrats TypeScript
+- **Gestion des erreurs :** DyadError avec DyadErrorKind pour une classification appropriée
+- **Catégories de gestionnaires :** Plus de 30 modules de gestionnaires spécialisés
 
-### Database Schema
+### Schéma de base de données
 
-SQLite database with Drizzle ORM:
+Base de données SQLite avec Drizzle ORM :
 
-- **apps:** Application metadata and integrations
-- **chats:** Chat sessions per app
-- **messages:** Chat messages with AI responses
-- **versions:** Git commit tracking
-- **prompts:** Saved prompts and templates
-- **language_models:** Available AI models
-- **mcp_servers:** MCP server configurations
-- **custom_themes:** User-created themes
+- **apps :** Métadonnées et intégrations des applications
+- **chats :** Sessions de discussion par application
+- **messages :** Messages de chat avec réponses de l'IA
+- **versions :** Suivi des commits Git
+- **prompts :** Instructions et modèles sauvegardés
+- **language_models :** Modèles d'IA disponibles
+- **mcp_servers :** Configurations des serveurs MCP
+- **custom_themes :** Thèmes créés par l'utilisateur
 
-### State Management
+### Gestion de l'état
 
-- **Jotai:** Atomic state management for global state
-- **TanStack Query:** Server state and data fetching
-- **Local State:** Component-level UI state
+- **Jotai :** Gestion d'état atomique pour l'état global
+- **TanStack Query :** État du serveur et récupération de données
+- **État local :** État UI au niveau du composant
 
 ---
 
-## Security
+## Sécurité
 
-NeuroCode takes security seriously:
+NeuroCode prend la sécurité au sérieux :
 
-- **Encrypted Storage:** API keys stored with Electron safe storage
-- **Input Validation:** Zod schemas for all user input
-- **Context Isolation:** Renderer process is sandboxed
-- **Security Review:** AI-powered code security analysis
-- **Safe Defaults:** Block unsafe npm packages by default
+- **Stockage chiffré :** Clés API stockées avec le stockage sécurisé d'Electron
+- **Validation des entrées :** Schémas Zod pour toutes les entrées utilisateur
+- **Isolation du contexte :** Le processus de rendu est cloisonné (sandboxed)
+- **Revue de sécurité :** Analyse de sécurité du code par l'IA
+- **Valeurs par défaut sûres :** Blocage des paquets npm dangereux par défaut
 
 ---
 
 ## Performance
 
-- **Context Compaction:** Automatic summarization for long chats
-- **Token Management:** Smart context limits and counting
-- **Lazy Loading:** Components loaded on demand
-- **Virtual Scrolling:** Efficient rendering of large lists
-- **Performance Monitoring:** Built-in memory and CPU tracking
+- **Compactage du contexte :** Résumé automatique pour les longs chats
+- **Gestion des jetons :** Limites de contexte et comptage intelligents
+- **Chargement différé (Lazy Loading) :** Composants chargés à la demande
+- **Défilement virtuel :** Rendu efficace des grandes listes
+- **Suivi des performances :** Suivi intégré de la mémoire et du CPU
 
 ---
 
-## Troubleshooting
+## Dépannage
 
-### Common Issues
+### Problèmes courants
 
-**App won't start:**
-- Check Node.js version (>= 24 required)
-- Delete `node_modules` and reinstall: `npm install`
-- Check logs in app data directory
+**L'application ne démarre pas :**
+- Vérifiez la version de Node.js (>= 24 requis)
+- Supprimez `node_modules` et réinstallez : `npm install`
+- Vérifiez les journaux (logs) dans le dossier de données de l'application
 
-**Preview not updating:**
-- Click the Refresh button above chat input
-- Try Restart or Rebuild commands
-- Check browser console for errors
+**L'aperçu ne se met pas à jour :**
+- Cliquez sur le bouton Actualiser au-dessus de la saisie du chat
+- Essayez les commandes Redémarrer (Restart) ou Reconstruire (Rebuild)
+- Vérifiez la console du navigateur pour les erreurs
 
-**AI not responding:**
-- Verify API key in Settings
-- Check internet connection (for cloud providers)
-- Try a different model or provider
+**L'IA ne répond pas :**
+- Vérifiez la clé API dans les Paramètres
+- Vérifiez la connexion internet (pour les fournisseurs cloud)
+- Essayez un autre modèle ou fournisseur
 
-**Git operations failing:**
-- Ensure Git is installed (or use bundled Git)
-- Check repository permissions
-- Verify GitHub token if using GitHub integration
-
----
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+**Les opérations Git échouent :**
+- Assurez-vous que Git est installé (ou utilisez le Git inclus)
+- Vérifiez les permissions du dépôt
+- Vérifiez le jeton GitHub si vous utilisez l'intégration GitHub
 
 ---
 
-## Acknowledgments
+## Licence
 
-- Built with [Electron](https://www.electronjs.org/)
-- AI powered by [Vercel AI SDK](https://sdk.vercel.ai/)
-- UI components from [Base UI](https://base-ui.com/)
-- Code editor by [Monaco Editor](https://microsoft.github.io/monaco-editor/)
+Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
+
+---
+
+## Remerciements
+
+- Construit avec [Electron](https://www.electronjs.org/)
+- IA propulsée par [Vercel AI SDK](https://sdk.vercel.ai/)
+- Composants UI de [Base UI](https://base-ui.com/)
+- Éditeur de code par [Monaco Editor](https://microsoft.github.io/monaco-editor/)
 
 ---
 
 ## Support
 
-- **Documentation:** [docs.dyad.sh](https://docs.dyad.sh)
-- **Issues:** [GitHub Issues](https://github.com/dyad-sh/dyad/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/dyad-sh/dyad/discussions)
-- **Help Button:** Use the Help button in the bottom left of the app
+- **Documentation :** [docs.dyad.sh](https://docs.dyad.sh)
+- **Problèmes :** [GitHub Issues](https://github.com/dyad-sh/dyad/issues)
+- **Discussions :** [GitHub Discussions](https://github.com/dyad-sh/dyad/discussions)
+- **Bouton d'aide :** Utilisez le bouton d'aide en bas à gauche de l'application
 
 ---
 
 <div align="center">
 
-Made with ❤️ 
+Fait avec ❤️ 
 
-[⬆ Back to Top](#neurocode)
+[⬆ Retour en haut](#neurocode)
 
 </div>
