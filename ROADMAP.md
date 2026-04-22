@@ -4,7 +4,7 @@ Ce document décrit la feuille de route du développement de NeuroCode, incluant
 
 ---
 
-## Version actuelle : 0.44.0-beta.1
+## Version actuelle : 0.45.0-beta.1
 
 ---
 
@@ -137,9 +137,19 @@ Ce document décrit la feuille de route du développement de NeuroCode, incluant
   - Blocage des paquets non sécurisés
   - Directives de sécurité dans les instructions (prompts)
 
+- [x] **Système de Skills** (v0.45)
+  - Création et gestion de skills réutilisables
+  - Format SKILL.md avec frontmatter YAML
+  - Invocation via commandes slash
+  - Chargement automatique basé sur le contexte
+  - Skills groupés avec namespaces
+  - Partage au niveau utilisateur et workspace
+  - Bibliothèque de skills d'exemple
+  - Validation automatique des skills
+
 ---
 
-## 🚧 En cours (v0.45 - v0.50)
+## 🚧 En cours (v0.46 - v0.50)
 
 ### Performance et Optimisation
 
@@ -404,7 +414,15 @@ Nous accueillons les contributions de la communauté ! Voici comment vous pouvez
 
 ## 🔄 Historique des versions
 
-### v0.44.0-beta.1 (Actuelle)
+### v0.45.0-beta.1 (Actuelle)
+
+- Système de Skills complet
+- Création et gestion de skills réutilisables
+- Invocation par commandes slash
+- Chargement automatique intelligent
+- Bibliothèque de skills d'exemple
+
+### v0.44.0-beta.1
 
 - Système de gestion des médias
 - Capacités de génération d'images

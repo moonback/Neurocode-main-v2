@@ -7,7 +7,7 @@
 **Générateur d'applications IA gratuit, local et open-source**
 
 [![Licence MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.44.0--beta.1-blue.svg)](package.json)
+[![Version](https://img.shields.io/badge/version-0.45.0--beta.1-blue.svg)](package.json)
 [![Node](https://img.shields.io/badge/node-%3E%3D24-brightgreen.svg)](package.json)
 [![Electron](https://img.shields.io/badge/electron-40.0.0-blue.svg)](package.json)
 
@@ -86,6 +86,16 @@ NeuroCode est une puissante application de bureau qui permet aux développeurs d
 - Optimisation et nettoyage des fichiers médias
 - Service de médias persistant avec protocole personnalisé
 
+#### 🧩 Système de Skills
+
+- **Création de skills :** Définissez des instructions réutilisables dans des fichiers SKILL.md
+- **Invocation par commande slash :** Utilisez `/skill-name` pour invoquer des skills
+- **Chargement automatique :** L'IA suggère automatiquement les skills pertinents selon le contexte
+- **Skills groupés :** Organisez des skills connexes sous des namespaces
+- **Partage de skills :** Partagez des skills au niveau utilisateur ou workspace
+- **Skills d'exemple :** Bibliothèque de skills pour workflows courants (revue de code, débogage, tests, etc.)
+- **Validation :** Validation automatique du format et de la syntaxe des skills
+
 ### 🧠 Contexte Intelligent (Smart Context)
 
 NeuroCode utilise un **Context Manager avancé** pour sélectionner automatiquement les fichiers les plus pertinents de votre projet avant de les envoyer à l’IA.
@@ -151,6 +161,7 @@ Disponible via IPC :
 
 ### Fonctionnalités avancées
 
+- **Système de Skills :** Créez et gérez des instructions réutilisables pour étendre les capacités de NeuroCode
 - **Compactage du contexte :** Résumé automatique des longues conversations
 - **Revue de sécurité :** Analyse de sécurité du code par l'IA
 - **Correction automatique des problèmes :** Détection et résolution automatique des erreurs
@@ -398,6 +409,50 @@ Configurez les serveurs Model Context Protocol dans `.kiro/settings/mcp.json` :
   }
 }
 ```
+
+### Skills
+
+Les skills sont des instructions réutilisables stockées dans des fichiers SKILL.md :
+
+**Emplacements des skills :**
+- **Niveau utilisateur :** `~/.neurocode/skills/` (disponibles uniquement pour vous)
+- **Niveau workspace :** `.neurocode/skills/` (partagés avec l'équipe)
+
+**Format d'un skill :**
+
+```markdown
+---
+name: mon-skill
+description: Description brève pour le chargement automatique
+---
+
+# Mon Skill
+
+Instructions détaillées pour le skill...
+
+## Instructions
+
+1. Étape un
+2. Étape deux
+...
+```
+
+**Utilisation des skills :**
+
+```bash
+# Invoquer un skill via commande slash
+/mon-skill
+
+# Les skills peuvent aussi être chargés automatiquement selon le contexte
+```
+
+**Skills d'exemple disponibles :**
+- `/examples:code-review` - Revue de code approfondie
+- `/examples:debug-error` - Débogage systématique d'erreurs
+- `/examples:write-tests` - Écriture de tests complets
+- `/examples:refactor-code` - Refactorisation sécurisée
+- `/examples:add-feature` - Ajout de nouvelles fonctionnalités
+- `/examples:optimize-performance` - Optimisation des performances
 
 ---
 
