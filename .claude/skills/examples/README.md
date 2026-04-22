@@ -5,31 +5,37 @@ This directory contains example skills that demonstrate common development workf
 ## Available Example Skills
 
 ### Code Review (`/examples:code-review`)
+
 Perform a thorough code review focusing on correctness, security, and best practices.
 
 **Use when:** You need to review code changes, PRs, or new implementations.
 
 ### Debug Error (`/examples:debug-error`)
+
 Debug an error or exception by analyzing stack traces, logs, and relevant code.
 
 **Use when:** You encounter an error or exception and need systematic debugging.
 
 ### Write Tests (`/examples:write-tests`)
+
 Write comprehensive unit or integration tests for a given function or component.
 
 **Use when:** You need to add test coverage for existing or new code.
 
 ### Refactor Code (`/examples:refactor-code`)
+
 Refactor code to improve readability, maintainability, or performance while preserving behavior.
 
 **Use when:** Code needs improvement but behavior should remain unchanged.
 
 ### Add Feature (`/examples:add-feature`)
+
 Add a new feature to the codebase following best practices and project conventions.
 
 **Use when:** Implementing new functionality from scratch.
 
 ### Optimize Performance (`/examples:optimize-performance`)
+
 Identify and fix performance bottlenecks in code or application.
 
 **Use when:** You need to improve application performance or resolve slowness.
@@ -37,6 +43,7 @@ Identify and fix performance bottlenecks in code or application.
 ## Using Example Skills
 
 ### Via Slash Command
+
 Invoke any example skill by typing its name in the chat:
 
 ```
@@ -44,6 +51,7 @@ Invoke any example skill by typing its name in the chat:
 ```
 
 ### As Templates
+
 Copy and modify these skills to create your own custom workflows:
 
 1. Copy an example skill directory to your user or workspace skills folder
@@ -69,7 +77,7 @@ Detailed instructions for the skill...
 
 1. Step one
 2. Step two
-...
+   ...
 ```
 
 ### Skill Locations

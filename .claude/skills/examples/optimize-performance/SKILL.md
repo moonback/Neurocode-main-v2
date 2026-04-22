@@ -56,4 +56,3 @@ Identify and fix performance bottlenecks in code or application.
    - Compare before/after metrics
    - Ensure no regressions in functionality
    - Document the optimization and results
-

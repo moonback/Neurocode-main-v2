@@ -5,6 +5,7 @@ export const SECTION_IDS = {
   providers: "provider-settings",
   telemetry: "telemetry",
   integrations: "integrations",
+  skills: "skills",
   agentPermissions: "agent-permissions",
   toolsMcp: "tools-mcp",
   experiments: "experiments",
@@ -34,6 +35,7 @@ export const SETTING_IDS = {
   vercel: "setting-vercel",
   supabase: "setting-supabase",
   neon: "setting-neon",
+  skills: "setting-skills",
   nativeGit: "setting-native-git",
   enableCloudSandbox: "setting-enable-cloud-sandbox",
   blockUnsafeNpmPackages: "setting-block-unsafe-npm-packages",
@@ -319,6 +321,24 @@ export const SETTINGS_SEARCH_INDEX: SearchableSettingItem[] = [
     ],
     sectionId: SECTION_IDS.integrations,
     sectionLabel: "Integrations",
+  },
+
+  // Skills
+  {
+    id: SETTING_IDS.skills,
+    label: "Skills",
+    description: "Manage reusable instruction sets to extend AI capabilities",
+    keywords: [
+      "skills",
+      "instructions",
+      "commands",
+      "slash",
+      "templates",
+      "workflows",
+      "reusable",
+    ],
+    sectionId: SECTION_IDS.skills,
+    sectionLabel: "Skills",
   },
 
   // Agent Permissions

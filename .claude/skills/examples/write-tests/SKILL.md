@@ -45,4 +45,3 @@ Write comprehensive unit or integration tests for a given function or component.
    - Run the test suite to ensure tests pass
    - Check test coverage if available
    - Verify tests fail when they should (test the tests)
-

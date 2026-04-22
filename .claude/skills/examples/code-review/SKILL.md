@@ -42,4 +42,3 @@ Perform a thorough code review focusing on correctness, security, and best pract
    - Provide specific line references for issues
    - Suggest concrete improvements
    - Highlight what was done well
-

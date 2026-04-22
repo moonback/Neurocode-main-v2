@@ -37,6 +37,7 @@ import { ContextCompactionSwitch } from "@/components/ContextCompactionSwitch";
 import { SmartContextStrategySelector } from "@/components/SmartContextStrategySelector";
 import { BlockUnsafeNpmPackagesSwitch } from "@/components/BlockUnsafeNpmPackagesSwitch";
 import { CloudSandboxExperimentSwitch } from "@/components/CloudSandboxExperimentSwitch";
+import { SkillsSettings } from "@/components/settings/SkillsSettings";
 import { useSetAtom } from "jotai";
 import { activeSettingsSectionAtom } from "@/atoms/viewAtoms";
 import { SECTION_IDS, SETTING_IDS } from "@/lib/settingsSearchIndex";
@@ -144,6 +145,19 @@ export default function SettingsPage() {
               <div id={SETTING_IDS.neon}>
                 <NeonIntegration />
               </div>
+            </div>
+          </div>
+
+          {/* Skills Section */}
+          <div
+            id={SECTION_IDS.skills}
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
+          >
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+              Skills
+            </h2>
+            <div id={SETTING_IDS.skills}>
+              <SkillsSettings />
             </div>
           </div>
 

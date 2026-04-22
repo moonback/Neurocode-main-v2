@@ -415,6 +415,7 @@ Configurez les serveurs Model Context Protocol dans `.kiro/settings/mcp.json` :
 Les skills sont des instructions réutilisables stockées dans des fichiers SKILL.md :
 
 **Emplacements des skills :**
+
 - **Niveau utilisateur :** `~/.neurocode/skills/` (disponibles uniquement pour vous)
 - **Niveau workspace :** `.neurocode/skills/` (partagés avec l'équipe)
 
@@ -434,7 +435,7 @@ Instructions détaillées pour le skill...
 
 1. Étape un
 2. Étape deux
-...
+   ...
 ```
 
 **Utilisation des skills :**
@@ -447,6 +448,7 @@ Instructions détaillées pour le skill...
 ```
 
 **Skills d'exemple disponibles :**
+
 - `/examples:code-review` - Revue de code approfondie
 - `/examples:debug-error` - Débogage systématique d'erreurs
 - `/examples:write-tests` - Écriture de tests complets
