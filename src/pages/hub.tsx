@@ -37,15 +37,15 @@ const HubPage: React.FC = () => {
           className="flex items-center gap-2 mb-4 bg-(--background-lightest) py-5"
         >
           <ArrowLeft className="h-4 w-4" />
-          Go Back
+          Retour
         </Button>
         <header className="mb-8 text-left">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Pick your default template
+            Choisissez votre modèle par défaut
           </h1>
           <p className="text-md text-gray-600 dark:text-gray-400">
-            Choose a starting point for your new project.
-            {isLoading && " Loading additional templates..."}
+            Choisissez un point de départ pour votre nouveau projet.
+            {isLoading && " Chargement de modèles supplémentaires..."}
           </p>
         </header>
 
@@ -53,7 +53,7 @@ const HubPage: React.FC = () => {
         {officialTemplates.length > 0 && (
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-              Official templates
+              Modèles officiels
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {officialTemplates.map((template) => (
@@ -73,7 +73,7 @@ const HubPage: React.FC = () => {
         {communityTemplates.length > 0 && (
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-              Community templates
+              Modèles de la communauté
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {communityTemplates.map((template) => (
