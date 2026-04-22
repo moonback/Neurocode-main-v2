@@ -81,8 +81,8 @@ export function HomeChatInput({
     "a landing page...",
   ]);
   const placeholder = selectedApp
-    ? `Send a message to ${selectedApp.name}...`
-    : `Ask Dyad to build ${typingText ?? ""}`;
+    ? `Envoyer un message à ${selectedApp.name}...`
+    : `Demandez à NeuroCode de construire ${typingText ?? ""}`;
 
   // Use the attachments hook
   const {
@@ -201,7 +201,7 @@ export function HomeChatInput({
                     className={cn(
                       "px-2 py-2 mb-0.5 text-muted-foreground rounded-lg transition-colors duration-150 cursor-pointer disabled:cursor-default disabled:opacity-30",
                       isRecording &&
-                      "text-red-500 hover:text-red-600 animate-pulse",
+                        "text-red-500 hover:text-red-600 animate-pulse",
                       !isRecording && !isTranscribing && "hover:text-primary",
                     )}
                   />
@@ -223,7 +223,6 @@ export function HomeChatInput({
                     : "Voice to text"}
               </TooltipContent>
             </Tooltip>
-
 
             {isStreaming ? (
               <Tooltip>

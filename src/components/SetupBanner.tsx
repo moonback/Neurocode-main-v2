@@ -315,9 +315,6 @@ export function SetupBanner() {
               </div>
             </AccordionTrigger>
             <AccordionContent className="px-4 pt-2 pb-4 bg-white dark:bg-zinc-900 border-t border-inherit">
-
-
-
               <div className="mt-2 flex gap-2">
                 <SetupProviderCard
                   className="flex-1"
@@ -375,8 +372,6 @@ export function SetupBanner() {
           </AccordionItem>
         </Accordion>
       </div>
-
-
     </>
   );
 }
@@ -440,7 +435,8 @@ function NodeInstallButton({
     case "finished-checking":
       return (
         <div className="mt-3 text-sm text-red-600 dark:text-red-400">
-          Node.js non détecté. La fermeture et la réouverture de Dyad résolvent généralement ce problème.
+          Node.js non détecté. La fermeture et la réouverture de Dyad résolvent
+          généralement ce problème.
         </div>
       );
     default:

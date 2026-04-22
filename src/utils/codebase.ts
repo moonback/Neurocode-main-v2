@@ -7,6 +7,7 @@ import { glob } from "glob";
 import { AppChatContext } from "../lib/schemas";
 import { readSettings } from "@/main/settings";
 import { AsyncVirtualFileSystem } from "../../shared/VirtualFilesystem";
+import { runContextManager } from "../context_manager";
 
 const logger = log.scope("utils/codebase");
 
@@ -246,7 +247,7 @@ export async function readFileWithCache(
 /**
  * Traverses a directory and collects all relevant files using native Git.
  */
-async function collectFilesNativeGit(dir: string): Promise<string[]> {
+export async function collectFilesNativeGit(dir: string): Promise<string[]> {
   let files: string[] = [];
 
   try {
@@ -293,7 +294,7 @@ async function collectFilesNativeGit(dir: string): Promise<string[]> {
  * Recursively walk a directory and collect all relevant files. Uses
  * isomorphic-git to check whether files and directories are gitignored.
  */
-async function collectFilesIsoGit(
+export async function collectFilesIsoGit(
   dir: string,
   baseDir: string,
 ): Promise<string[]> {
@@ -477,16 +478,25 @@ export interface CodebaseFileReference extends BaseFile {
  * Extract and format codebase files as a string to be included in prompts
  * @param appPath - Path to the codebase to extract
  * @param virtualFileSystem - Optional virtual filesystem to apply modifications
+ * @param activeFilePath - Optional path to the currently active file (for smart context)
+ * @param requestText - Optional user request text (for smart context)
+ * @param tokenBudget - Optional token budget for smart context (defaults to 100000)
  * @returns Object containing formatted output and individual files
  */
 export async function extractCodebase({
   appPath,
   chatContext,
   virtualFileSystem,
+  activeFilePath,
+  requestText,
+  tokenBudget = 100000,
 }: {
   appPath: string;
   chatContext: AppChatContext;
   virtualFileSystem?: AsyncVirtualFileSystem;
+  activeFilePath?: string | null;
+  requestText?: string;
+  tokenBudget?: number;
 }): Promise<{
   formattedOutput: string;
   files: CodebaseFile[];
@@ -504,6 +514,114 @@ export async function extractCodebase({
     };
   }
   const startTime = Date.now();
+
+  // If smart context is enabled and we have the necessary parameters, use the Context Manager
+  if (isSmartContextEnabled && settings?.proSmartContextOption) {
+    logger.log("Using Context Manager for smart context");
+    try {
+      const contextManagerResult = await runContextManager({
+        appPath,
+        activeFilePath: activeFilePath ?? null,
+        requestText: requestText ?? "",
+        chatContext,
+        strategy: settings.proSmartContextOption,
+        tokenBudget,
+      });
+
+      // Convert IncludedFileRecord to CodebaseFile format
+      const files: CodebaseFile[] = await Promise.all(
+        contextManagerResult.includedFiles.map(async (includedFile) => {
+          const absolutePath = path.resolve(appPath, includedFile.path);
+          let content: string;
+
+          // Read the file content (check virtual filesystem first)
+          if (virtualFileSystem) {
+            const virtualContent =
+              await virtualFileSystem.readFile(absolutePath);
+            if (virtualContent != null) {
+              content = virtualContent;
+            } else {
+              const readContent = await readFileWithCache(
+                absolutePath,
+                virtualFileSystem,
+              );
+              content = readContent ?? "// Error reading file";
+            }
+          } else {
+            const readContent = await readFileWithCache(
+              absolutePath,
+              virtualFileSystem,
+            );
+            content = readContent ?? "// Error reading file";
+          }
+
+          return {
+            path: includedFile.path,
+            content,
+            // Files included by Context Manager are not marked as focused or forced
+            // unless they come from smartContextAutoIncludes (handled separately below)
+          };
+        }),
+      );
+
+      // Handle smartContextAutoIncludes - these should be marked as forced
+      const { smartContextAutoIncludes } = chatContext;
+      if (smartContextAutoIncludes && smartContextAutoIncludes.length > 0) {
+        const autoIncludedFiles = new Set<string>();
+
+        for (const p of smartContextAutoIncludes) {
+          const pattern = createFullGlobPath({
+            appPath,
+            globPath: p.globPath,
+          });
+          const matches = await glob(pattern, {
+            nodir: true,
+            absolute: true,
+            ignore: "**/node_modules/**",
+          });
+          matches.forEach((file) => {
+            const normalizedRelativePath = path
+              .relative(appPath, file)
+              .split(path.sep)
+              .join("/");
+            autoIncludedFiles.add(normalizedRelativePath);
+          });
+        }
+
+        // Mark auto-included files as forced
+        for (const file of files) {
+          if (autoIncludedFiles.has(file.path)) {
+            file.force = true;
+          }
+        }
+      }
+
+      const endTime = Date.now();
+      logger.log(
+        "extractCodebase (Context Manager): time taken",
+        endTime - startTime,
+      );
+      logger.log(
+        `Context Manager included ${files.length} files, ${contextManagerResult.totalTokensUsed} tokens`,
+      );
+
+      if (IS_TEST_BUILD) {
+        // Ensure stable ordering for tests
+        files.sort((a, b) => a.path.localeCompare(b.path));
+      }
+
+      return {
+        formattedOutput: contextManagerResult.formattedOutput,
+        files,
+      };
+    } catch (error) {
+      logger.error(
+        "Context Manager failed, falling back to traditional extraction:",
+        error,
+      );
+      // Fall through to traditional extraction on error
+    }
+  }
 
   // Collect all relevant files
   let files = settings.enableNativeGit

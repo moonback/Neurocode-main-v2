@@ -405,30 +405,35 @@ Nous accueillons les contributions de la communauté ! Voici comment vous pouvez
 ## 🔄 Historique des versions
 
 ### v0.44.0-beta.1 (Actuelle)
+
 - Système de gestion des médias
 - Capacités de génération d'images
 - Améliorations du système de thèmes
 - Améliorations de l'intégration MCP
 
 ### v0.43.0
+
 - Mode Agent Local (Pro)
 - Compactage du contexte
 - Turbo Edits v2
 - Améliorations de performance
 
 ### v0.42.0
+
 - Mode Plan
 - Collecte des besoins
 - Planification d'implémentation
 - Flux de travail d'affinage du plan
 
 ### v0.41.0
+
 - Fonctionnalités de revue de sécurité
 - Détection de problèmes
 - Capacités de correction automatique
 - Gestion des erreurs améliorée
 
 ### v0.40.0
+
 - Intégration Vercel
 - Gestion du déploiement
 - Variables d'environnement

@@ -273,7 +273,6 @@ export default function HomePage() {
   // Main Home Page Content
   return (
     <div className="flex flex-col items-center justify-center max-w-3xl w-full m-auto p-8 relative">
-
       <ForceCloseDialog
         isOpen={forceCloseDialogOpen}
         onClose={() => setForceCloseDialogOpen(false)}
@@ -343,7 +342,6 @@ export default function HomePage() {
             </span>
           </button>
         </div>
-
       </div>
       <PrivacyBanner />
 

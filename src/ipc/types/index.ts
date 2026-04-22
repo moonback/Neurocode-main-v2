@@ -54,6 +54,7 @@ export { freeAgentQuotaContracts } from "./free_agent_quota";
 export { audioContracts } from "./audio";
 export { mediaContracts } from "./media";
 export { imageGenerationContracts } from "./image_generation";
+export { smartContextContracts } from "./smart-context";
 
 // =============================================================================
 // Client Exports
@@ -87,6 +88,7 @@ export { freeAgentQuotaClient } from "./free_agent_quota";
 export { audioClient } from "./audio";
 export { mediaClient } from "./media";
 export { imageGenerationClient } from "./image_generation";
+export { smartContextClient } from "./smart-context";
 
 // =============================================================================
 // Type Exports
@@ -323,6 +325,14 @@ export type {
   GenerateImageResponse,
 } from "./image_generation";
 
+// Smart context types
+export type {
+  GetContextObservabilityInput,
+  GetContextObservabilityOutput,
+  GetRecentContextObservabilityInput,
+  GetRecentContextObservabilityOutput,
+} from "./smart-context";
+
 // =============================================================================
 // Schema Exports (for validation in handlers/components)
 // =============================================================================
@@ -383,6 +393,7 @@ import { freeAgentQuotaClient } from "./free_agent_quota";
 import { audioClient } from "./audio";
 import { mediaClient } from "./media";
 import { imageGenerationClient } from "./image_generation";
+import { smartContextClient } from "./smart-context";
 
 /**
  * Unified IPC client with all domains organized by namespace.
@@ -442,6 +453,7 @@ export const ipc = {
   audio: audioClient,
   media: mediaClient,
   imageGeneration: imageGenerationClient,
+  smartContext: smartContextClient,
 
   // Event clients for main->renderer pub/sub
   events: {
