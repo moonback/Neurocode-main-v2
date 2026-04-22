@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, BookOpen, Trash2, Edit, Play } from "lucide-react";
 import { showInfo, showSuccess, showError } from "@/lib/toast";
+import { CreateSkillDialog } from "./CreateSkillDialog";
 
 export function SkillsSettings() {
   const [skills, _setSkills] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   // Placeholder pour la découverte des skills
   const handleDiscoverSkills = async () => {
@@ -25,8 +27,7 @@ export function SkillsSettings() {
   };
 
   const handleCreateSkill = () => {
-    showInfo("Création de skill - À implémenter");
-    // TODO: Ouvrir un dialogue pour créer un nouveau skill
+    setIsCreateDialogOpen(true);
   };
 
   const handleEditSkill = (skillName: string) => {
@@ -184,6 +185,16 @@ export function SkillsSettings() {
           </div>
         )}
       </div>
+
+      {/* Dialogue de création */}
+      <CreateSkillDialog
+        isOpen={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+        onSkillCreated={() => {
+          setIsCreateDialogOpen(false);
+          showSuccess("Skill créé avec succès !");
+        }}
+      />
 
       {/* Skills d'exemple */}
       <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
