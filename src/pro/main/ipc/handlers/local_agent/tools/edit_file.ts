@@ -12,6 +12,7 @@ import {
 import { engineFetch } from "./engine_fetch";
 import { DyadError, DyadErrorKind } from "@/errors/dyad_error";
 import { queueCloudSandboxSnapshotSync } from "@/ipc/utils/cloud_sandbox_provider";
+import { readSettings } from "@/main/settings";
 
 const readFile = fs.promises.readFile;
 const logger = log.scope("edit_file");
@@ -59,6 +60,68 @@ async function callTurboFileEdit(
 
   const data = turboFileEditResponseSchema.parse(await response.json());
   return data.result;
+}
+
+const EXISTING_CODE_MARKER = "// ... existing code ...";
+
+/**
+ * Local fallback for applying edits without the Pro engine.
+ * Splits the content on `// ... existing code ...` markers and stitches
+ * the blocks back into the original file by finding each block's anchor.
+ */
+function applyEditLocally(
+  originalContent: string,
+  editContent: string,
+): string {
+  // If no markers, treat the whole content as the new file
+  if (!editContent.includes(EXISTING_CODE_MARKER)) {
+    return editContent;
+  }
+
+  const blocks = editContent.split(EXISTING_CODE_MARKER);
+  let result = originalContent;
+
+  // Filter out empty/whitespace-only blocks
+  const nonEmptyBlocks = blocks.filter((b) => b.trim().length > 0);
+
+  for (const block of nonEmptyBlocks) {
+    const trimmed = block.trim();
+    if (!trimmed) continue;
+
+    // Try to find this block in the current result and replace it
+    if (result.includes(trimmed)) {
+      // Block already exists verbatim — no change needed for this block
+      continue;
+    }
+
+    // Find the best insertion point by looking for surrounding context lines
+    const blockLines = trimmed.split("\n");
+    const firstLine = blockLines[0]?.trim();
+    const lastLine = blockLines[blockLines.length - 1]?.trim();
+
+    if (firstLine && result.includes(firstLine)) {
+      // Replace from first matching line
+      const idx = result.indexOf(firstLine);
+      const before = result.slice(0, idx);
+      const after = result.slice(idx);
+
+      // Try to find the end anchor
+      if (lastLine && after.includes(lastLine)) {
+        const endIdx = after.indexOf(lastLine) + lastLine.length;
+        result = before + trimmed + after.slice(endIdx);
+      } else {
+        // Just replace from the anchor to end of that line
+        const lineEnd = after.indexOf("\n");
+        result =
+          before + trimmed + (lineEnd >= 0 ? after.slice(lineEnd) : "");
+      }
+    } else {
+      // Can't find anchor — append the block (best effort)
+      result = result + "\n" + trimmed;
+    }
+  }
+
+  return result;
 }
 
 const DESCRIPTION = `
@@ -144,9 +207,6 @@ export const editFileTool: ToolDefinition<z.infer<typeof editFileSchema>> = {
   defaultConsent: "always",
   modifiesState: true,
 
-  // Requires Dyad Pro engine API
-  isEnabled: (ctx) => ctx.isDyadPro,
-
   getConsentPreview: (args) => `Edit ${args.path}`,
 
   buildXml: (args, isComplete) => {
@@ -177,16 +237,26 @@ export const editFileTool: ToolDefinition<z.infer<typeof editFileSchema>> = {
 
     const originalContent = await readFile(fullFilePath, "utf8");
 
-    // Call the turbo-file-edit endpoint
-    const newContent = await callTurboFileEdit(
-      {
-        path: args.path,
-        content: args.content,
-        originalContent,
-        instructions: args.instructions,
-      },
-      ctx,
-    );
+    // Use Pro engine if available, otherwise apply locally
+    const settings = readSettings();
+    const apiKey = settings.providerSettings?.auto?.apiKey?.value;
+
+    let newContent: string;
+    if (apiKey) {
+      // Call the turbo-file-edit endpoint (Pro)
+      newContent = await callTurboFileEdit(
+        {
+          path: args.path,
+          content: args.content,
+          originalContent,
+          instructions: args.instructions,
+        },
+        ctx,
+      );
+    } else {
+      // Local fallback: apply edit without Pro engine
+      newContent = applyEditLocally(originalContent, args.content);
+    }
 
     if (!newContent) {
       throw new Error(
