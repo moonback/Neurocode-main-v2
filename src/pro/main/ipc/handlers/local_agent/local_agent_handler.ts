@@ -47,7 +47,7 @@ import { mcpManager } from "@/ipc/utils/mcp_manager";
 import { mcpServers } from "@/db/schema";
 import { requireMcpToolConsent } from "@/ipc/utils/mcp_consent";
 import { getAiMessagesJsonIfWithinLimit } from "@/ipc/utils/ai_messages_utils";
-import { tokenOptimizer } from "@/ipc/handlers/chat_stream_handlers";
+import { tokenOptimizer } from "@/ipc/handlers/token_optimization/token_optimizer";
 import {
   isChatPendingCompaction,
   performCompaction,

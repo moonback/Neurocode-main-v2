@@ -49,7 +49,7 @@ export const DyadAddDependency: React.FC<DyadAddDependencyProps> = ({
       {packages.length > 0 && (
         <div className="px-3 pb-2">
           <div className="text-sm text-foreground mb-1">
-            Do you want to install these packages?
+            Souhaitez-vous installer ces paquets ?
           </div>
           <div className="flex flex-wrap gap-1.5 mt-1.5">
             {packages.map((p: string) => (
@@ -68,7 +68,7 @@ export const DyadAddDependency: React.FC<DyadAddDependencyProps> = ({
             ))}
           </div>
           <div className="text-xs text-muted-foreground mt-2">
-            Make sure these packages are what you want.
+            Assurez-vous que ces forfaits correspondent à vos besoins.
           </div>
         </div>
       )}
