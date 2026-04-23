@@ -147,6 +147,15 @@ Ce document décrit la feuille de route du développement de NeuroCode, incluant
   - Bibliothèque de skills d'exemple
   - Validation automatique des skills
 
+- [x] **Optimisation de prompt** (v0.45)
+  - Amélioration automatique des prompts par l'IA
+  - Bouton d'optimisation dans le champ de saisie (icône ✨)
+  - Rend les prompts plus spécifiques et actionnables
+  - Ajoute du contexte et des détails pertinents
+  - Décompose les demandes complexes
+  - Utilise le modèle sélectionné par l'utilisateur
+  - Gestion des erreurs avec notifications
+
 ---
 
 ## 🚧 En cours (v0.46 - v0.50)
@@ -172,6 +181,12 @@ Ce document décrit la feuille de route du développement de NeuroCode, incluant
   - Optimisation du rendu de l'aperçu
 
 ### Expérience utilisateur
+
+- [x] **Optimisation de prompt** (v0.45)
+  - Amélioration automatique des prompts par l'IA
+  - Interface utilisateur intuitive
+  - Gestion des erreurs robuste
+  - Support multi-fournisseurs
 
 - [ ] **Flux d'intégration (Onboarding)**
   - Tutoriel pour les nouveaux utilisateurs
@@ -421,6 +436,10 @@ Nous accueillons les contributions de la communauté ! Voici comment vous pouvez
 - Invocation par commandes slash
 - Chargement automatique intelligent
 - Bibliothèque de skills d'exemple
+- **Optimisation de prompt avec IA**
+- Amélioration automatique des prompts pour de meilleurs résultats
+- Interface intuitive avec bouton sparkles (✨)
+- Support de tous les fournisseurs d'IA
 
 ### v0.44.0-beta.1
 

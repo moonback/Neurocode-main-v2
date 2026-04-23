@@ -261,7 +261,8 @@ const AppCommandsSection = ({
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Utilisation des commandes d'installation et de démarrage par défaut
+              Utilisation des commandes d'installation et de démarrage par
+              défaut
             </p>
             <Button
               data-testid="configure-app-commands"
@@ -524,7 +525,9 @@ export const ConfigurePanel = () => {
                   disabled={saveEnvVarsMutation.isPending}
                 >
                   <Save size={14} />
-                  {saveEnvVarsMutation.isPending ? "Enregistrer..." : "Enregistrer"}
+                  {saveEnvVarsMutation.isPending
+                    ? "Enregistrer..."
+                    : "Enregistrer"}
                 </Button>
                 <Button onClick={handleCancelAdd} variant="outline" size="sm">
                   <X size={14} />

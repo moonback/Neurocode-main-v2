@@ -25,8 +25,8 @@ export const DyadThink: React.FC<DyadThinkProps> = ({ children, node }) => {
   const tokenSavingsMatch =
     typeof children === "string"
       ? children.match(
-        /^dyad-token-savings\?original-tokens=([0-9.]+)&smart-context-tokens=([0-9.]+)$/,
-      )
+          /^dyad-token-savings\?original-tokens=([0-9.]+)&smart-context-tokens=([0-9.]+)$/,
+        )
       : null;
 
   // Collapse when transitioning from in-progress to not-in-progress
@@ -52,11 +52,11 @@ export const DyadThink: React.FC<DyadThinkProps> = ({ children, node }) => {
   const firstLine =
     typeof children === "string"
       ? (children
-        .split("\n")
-        .find((line) => line.trim() !== "")
-        ?.trim()
-        .replace(/^\*{1,2}/, "")
-        .replace(/\*{1,2}$/, "") ?? "")
+          .split("\n")
+          .find((line) => line.trim() !== "")
+          ?.trim()
+          .replace(/^\*{1,2}/, "")
+          .replace(/\*{1,2}$/, "") ?? "")
       : "";
 
   return (
@@ -69,8 +69,9 @@ export const DyadThink: React.FC<DyadThinkProps> = ({ children, node }) => {
       >
         <ChevronRight
           size={14}
-          className={`shrink-0 text-muted-foreground/50 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""
-            }`}
+          className={`shrink-0 text-muted-foreground/50 transition-transform duration-200 ${
+            isExpanded ? "rotate-90" : ""
+          }`}
         />
         <span className="text-[13px] font-medium text-foreground/70 group-hover:text-foreground transition-colors">
           {inProgress ? "Réflexion..." : "Réflexion"}
@@ -84,10 +85,11 @@ export const DyadThink: React.FC<DyadThinkProps> = ({ children, node }) => {
 
       {/* Expandable content */}
       <div
-        className={`grid transition-all duration-200 ease-in-out ${isExpanded
-          ? "grid-rows-[1fr] opacity-100"
-          : "grid-rows-[0fr] opacity-0"
-          }`}
+        className={`grid transition-all duration-200 ease-in-out ${
+          isExpanded
+            ? "grid-rows-[1fr] opacity-100"
+            : "grid-rows-[0fr] opacity-0"
+        }`}
       >
         <div className="overflow-hidden">
           <div className="flex ml-[7px]">

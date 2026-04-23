@@ -107,6 +107,7 @@ import { useSkillContextMatcher } from "@/hooks/useSkillContextMatcher";
 import { SkillMatcherSuggestion } from "@/components/skills/SkillMatcherSuggestion";
 import { matchedSkillsAtom, dismissedSkillsAtom } from "@/atoms/chatAtoms";
 import type { MatchedSkill } from "@/skills/types";
+import { PromptOptimizerButton } from "./PromptOptimizerButton";
 
 const showTokenBarAtom = atom(false);
 
@@ -898,20 +899,22 @@ export function ChatInput({ chatId }: { chatId?: number }) {
             />
           )}
           {/* Show skill suggestions - only the most relevant one */}
-          {matchedSkills.length > 0 && !isStreaming && (() => {
-            const topMatch = matchedSkills.reduce((best, current) => 
-              current.relevance > best.relevance ? current : best
-            );
-            return (
-              <div className="border-b border-border p-2">
-                <SkillMatcherSuggestion
-                  match={topMatch}
-                  onAccept={handleAcceptSkill}
-                  onDismiss={handleDismissSkill}
-                />
-              </div>
-            );
-          })()}
+          {matchedSkills.length > 0 &&
+            !isStreaming &&
+            (() => {
+              const topMatch = matchedSkills.reduce((best, current) =>
+                current.relevance > best.relevance ? current : best,
+              );
+              return (
+                <div className="border-b border-border p-2">
+                  <SkillMatcherSuggestion
+                    match={topMatch}
+                    onAccept={handleAcceptSkill}
+                    onDismiss={handleDismissSkill}
+                  />
+                </div>
+              );
+            })()}
           {/* Show editing indicator when editing a queued message */}
           {editingQueuedMessageId && (
             <div className="border-b border-border p-2 bg-yellow-500/10 flex items-center justify-between">
@@ -1007,6 +1010,13 @@ export function ChatInput({ chatId }: { chatId?: number }) {
               excludeCurrentApp={true}
               disableSendButton={disableSendButton}
               messageHistory={userMessageHistory}
+            />
+
+            {/* Prompt optimizer button */}
+            <PromptOptimizerButton
+              value={inputValue}
+              onChange={setInputValue}
+              disabled={isStreaming}
             />
 
             {/* Voice-to-text button */}

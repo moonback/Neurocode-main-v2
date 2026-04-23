@@ -96,7 +96,8 @@ export function ChatErrorBox({
     return (
       <ChatInfoContainer onDismiss={onDismiss}>
         <span>
-          Vous avez utilisé tous vos crédits IA ce mois-ci. Rechargez ou améliorez votre abonnement pour obtenir plus de crédits IA.
+          Vous avez utilisé tous vos crédits IA ce mois-ci. Rechargez ou
+          améliorez votre abonnement pour obtenir plus de crédits IA.
         </span>
       </ChatInfoContainer>
     );
@@ -114,11 +115,10 @@ export function ChatErrorBox({
   if (error.includes("FREE_AGENT_QUOTA_EXCEEDED")) {
     return (
       <ChatErrorContainer onDismiss={onDismiss}>
-        Vous avez atteint la limite de messages gratuits pour aujourd'hui. Veuillez
-        passer à Neurocode Pro pour un accès illimité ou basculer en mode Création.
-        <div className="mt-2 space-y-2 space-x-2">
-
-        </div>
+        Vous avez atteint la limite de messages gratuits pour aujourd'hui.
+        Veuillez passer à Neurocode Pro pour un accès illimité ou basculer en
+        mode Création.
+        <div className="mt-2 space-y-2 space-x-2"></div>
       </ChatErrorContainer>
     );
   }
@@ -127,7 +127,6 @@ export function ChatErrorBox({
     <ChatErrorContainer onDismiss={onDismiss}>
       {error}
       <div className="mt-2 space-y-2 space-x-2">
-
         {isDyadProEnabled && onStartNewChat && (
           <Tooltip>
             <TooltipTrigger
@@ -142,7 +141,6 @@ export function ChatErrorBox({
             </TooltipContent>
           </Tooltip>
         )}
-
       </div>
     </ChatErrorContainer>
   );

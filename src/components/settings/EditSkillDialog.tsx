@@ -46,7 +46,9 @@ export function EditSkillDialog({
       setContent(data.content);
     } catch (error) {
       showError(
-        error instanceof Error ? error.message : "Erreur lors du chargement du skill",
+        error instanceof Error
+          ? error.message
+          : "Erreur lors du chargement du skill",
       );
       onClose();
     } finally {
@@ -80,7 +82,9 @@ export function EditSkillDialog({
       onClose();
     } catch (error) {
       showError(
-        error instanceof Error ? error.message : "Erreur lors de la mise à jour",
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de la mise à jour",
       );
     } finally {
       setIsUpdating(false);

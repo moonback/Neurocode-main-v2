@@ -43,6 +43,7 @@ NeuroCode est une puissante application de bureau qui permet aux développeurs d
 - **Mode Ask :** Questions-réponses sur votre base de code
 - **Mode Plan :** Planification assistée par l'IA et décomposition des tâches avec collecte des besoins
 - **Mode Agent Local :** Agent autonome qui exécute des outils et prend des décisions
+- **Optimisation de prompt :** Amélioration automatique des prompts pour de meilleurs résultats IA
 
 #### 💻 Édition de code et aperçu
 
@@ -162,6 +163,7 @@ Disponible via IPC :
 ### Fonctionnalités avancées
 
 - **Système de Skills :** Créez et gérez des instructions réutilisables pour étendre les capacités de NeuroCode
+- **Optimisation de prompt :** Améliorez automatiquement vos prompts avec l'IA pour obtenir de meilleurs résultats
 - **Compactage du contexte :** Résumé automatique des longues conversations
 - **Revue de sécurité :** Analyse de sécurité du code par l'IA
 - **Correction automatique des problèmes :** Détection et résolution automatique des erreurs
@@ -236,7 +238,8 @@ npm run make
 1. **Lancez NeuroCode** et configurez votre clé API de fournisseur d'IA dans les Paramètres (Settings)
 2. **Créez une nouvelle application** ou importez un projet existant
 3. **Commencez à discuter** avec l'IA pour construire ou modifier votre application
-4. **Visualisez les changements** en temps réel dans le panneau d'aperçu intégré
+4. **Optimisez vos prompts** en cliquant sur l'icône ✨ pour améliorer automatiquement vos demandes
+5. **Visualisez les changements** en temps réel dans le panneau d'aperçu intégré
 
 ### Modes de discussion
 
@@ -283,6 +286,23 @@ IA : [Analyse la base de code, crée un plan, exécute la refactorisation]
 - `Ctrl/Cmd + ,` - Paramètres
 - `Ctrl/Cmd + R` - Redémarrer le serveur de l'application
 - `Ctrl/Cmd + Shift + R` - Reconstruire l'application
+
+### Optimisation de prompt
+
+Cliquez sur l'icône ✨ (sparkles) à côté du champ de saisie pour optimiser automatiquement votre prompt. L'IA analysera votre demande et la reformulera pour :
+
+- La rendre plus spécifique et actionnable
+- Ajouter du contexte pertinent si nécessaire
+- Décomposer les demandes complexes en étapes claires
+- Utiliser un langage technique précis
+- Améliorer la clarté tout en conservant votre intention
+
+**Exemple :**
+
+```
+Avant : "ajoute un formulaire"
+Après : "Crée un formulaire de contact React avec les champs suivants : nom (texte requis), email (validation email requise), message (textarea requis). Ajoute la validation côté client avec des messages d'erreur clairs et un bouton de soumission désactivé jusqu'à ce que tous les champs soient valides."
+```
 
 ---
 

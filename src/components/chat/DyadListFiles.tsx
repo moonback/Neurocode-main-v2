@@ -45,7 +45,9 @@ export function DyadListFiles({ node, children }: DyadListFilesProps) {
           {title}
         </span>
         {isRecursive && <DyadBadge color="slate">Récursif</DyadBadge>}
-        {isIncludeHidden && <DyadBadge color="slate">Inclure les fichiers cachés</DyadBadge>}
+        {isIncludeHidden && (
+          <DyadBadge color="slate">Inclure les fichiers cachés</DyadBadge>
+        )}
         {isLoading && (
           <DyadStateIndicator state="pending" pendingLabel="Listing..." />
         )}

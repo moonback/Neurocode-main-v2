@@ -150,7 +150,8 @@ export function ImageGeneratorDialog({
                   AI Image Generator
                 </h3>
                 <p className="text-sm text-muted-foreground text-center max-w-md">
-                  Configurez une clé OpenAI dans les paramètres pour utiliser la génération d'images.
+                  Configurez une clé OpenAI dans les paramètres pour utiliser la
+                  génération d'images.
                 </p>
               </div>
             </div>

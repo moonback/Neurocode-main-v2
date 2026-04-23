@@ -111,7 +111,8 @@ export default function SettingsPage() {
               <div id={SETTING_IDS.telemetry} className="space-y-2">
                 <TelemetrySwitch />
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Ceci enregistre des données d'utilisation anonymes pour améliorer le produit.
+                  Ceci enregistre des données d'utilisation anonymes pour
+                  améliorer le produit.
                 </div>
               </div>
 
@@ -208,8 +209,8 @@ export default function SettingsPage() {
                   <Label htmlFor="enable-native-git">Activer Native Git</Label>
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Ceci ne requiert aucune installation Git externe et offre
-                  une expérience de performance Git native plus rapide.
+                  Ceci ne requiert aucune installation Git externe et offre une
+                  expérience de performance Git native plus rapide.
                 </div>
               </div>
               <div
@@ -244,7 +245,8 @@ export default function SettingsPage() {
                   </Label>
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Permet aux serveurs MCP d'être utilisés en mode Build. Note: Les serveurs MCP sont toujours activés en mode Agent.
+                  Permet aux serveurs MCP d'être utilisés en mode Build. Note:
+                  Les serveurs MCP sont toujours activés en mode Agent.
                 </div>
               </div>
               <div
@@ -263,12 +265,13 @@ export default function SettingsPage() {
                     }}
                   />
                   <Label htmlFor="enable-select-app-from-home-chat-input">
-                    Activer la sélection d'application depuis le champ de chat d'accueil
+                    Activer la sélection d'application depuis le champ de chat
+                    d'accueil
                   </Label>
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Affiche un sélecteur d'application dans le champ de chat d'accueil pour commencer un chat
-                  referencing an existing app.
+                  Affiche un sélecteur d'application dans le champ de chat
+                  d'accueil pour commencer un chat referencing an existing app.
                 </div>
               </div>
             </div>
@@ -293,7 +296,8 @@ export default function SettingsPage() {
                     Tout réinitialiser
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Cela supprimera toutes vos applications, chats et paramètres. Cette action ne peut pas être annulée.
+                    Cela supprimera toutes vos applications, chats et
+                    paramètres. Cette action ne peut pas être annulée.
                   </p>
                 </div>
                 <button
@@ -349,10 +353,11 @@ export function GeneralSettings({ appVersion }: { appVersion: string | null }) {
                 className={`
                 px-4 py-1.5 text-sm font-medium rounded-md
                 transition-all duration-200
-                ${theme === option
+                ${
+                  theme === option
                     ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                  }
+                }
               `}
               >
                 {option.charAt(0).toUpperCase() + option.slice(1)}
@@ -373,7 +378,8 @@ export function GeneralSettings({ appVersion }: { appVersion: string | null }) {
       <div id={SETTING_IDS.autoUpdate} className="space-y-1 mt-4">
         <AutoUpdateSwitch />
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          Cela mettra automatiquement à jour l'application lorsque de nouvelles versions seront disponibles.
+          Cela mettra automatiquement à jour l'application lorsque de nouvelles
+          versions seront disponibles.
         </div>
       </div>
 
@@ -418,7 +424,8 @@ export function WorkflowSettings() {
       <div id={SETTING_IDS.autoApprove} className="space-y-1 mt-4">
         <AutoApproveSwitch showToast={false} />
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          Cela approuvera automatiquement les changements de code et les exécutera.
+          Cela approuvera automatiquement les changements de code et les
+          exécutera.
         </div>
       </div>
 
@@ -432,14 +439,17 @@ export function WorkflowSettings() {
       <div id={SETTING_IDS.autoExpandPreview} className="space-y-1 mt-4">
         <AutoExpandPreviewSwitch />
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          Agrandit automatiquement le panneau d'aperçu lorsque des changements de code sont effectués.
+          Agrandit automatiquement le panneau d'aperçu lorsque des changements
+          de code sont effectués.
         </div>
       </div>
 
       <div id={SETTING_IDS.chatEventNotification} className="space-y-1 mt-4">
         <ChatEventNotificationSwitch />
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          Affiche les notifications natives lorsqu'une réponse de chat est terminée ou qu'un questionnaire nécessite votre saisie alors que l'application n'est pas active.
+          Affiche les notifications natives lorsqu'une réponse de chat est
+          terminée ou qu'un questionnaire nécessite votre saisie alors que
+          l'application n'est pas active.
         </div>
       </div>
     </div>
@@ -470,7 +480,9 @@ export function AISettings() {
       <div id={SETTING_IDS.contextCompaction} className="space-y-1 mt-4">
         <ContextCompactionSwitch />
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          Compact automatiquement les longues conversations pour rester dans les limites de contexte. Les messages originaux sont conservés dans le répertoire de données de l'application.
+          Compact automatiquement les longues conversations pour rester dans les
+          limites de contexte. Les messages originaux sont conservés dans le
+          répertoire de données de l'application.
         </div>
       </div>
 
@@ -482,7 +494,9 @@ export function AISettings() {
         </div>
         <SmartContextStrategySelector />
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          Détermine avec quelle agressivité l'IA inclut les fichiers dans le contexte. L'option équilibrée est recommandée pour la plupart des workflows.
+          Détermine avec quelle agressivité l'IA inclut les fichiers dans le
+          contexte. L'option équilibrée est recommandée pour la plupart des
+          workflows.
         </div>
       </div>
     </div>

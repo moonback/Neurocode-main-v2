@@ -294,13 +294,15 @@ function SecurityHeader({
                       d="m4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Correction de {selectedCount} problème{selectedCount !== 1 ? "s" : ""}
+                  Correction de {selectedCount} problème
+                  {selectedCount !== 1 ? "s" : ""}
                   ...
                 </>
               ) : (
                 <>
                   <Wrench className="w-4 h-4" />
-                  Correction de {selectedCount} problème{selectedCount !== 1 ? "s" : ""}
+                  Correction de {selectedCount} problème
+                  {selectedCount !== 1 ? "s" : ""}
                 </>
               )}
             </Button>
@@ -415,7 +417,8 @@ function NoReviewCard({
             Aucune analyse de sécurité n'a été trouvée
           </h3>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Lancez une analyse de sécurité pour identifier les vulnérabilités potentielles de votre application.
+            Lancez une analyse de sécurité pour identifier les vulnérabilités
+            potentielles de votre application.
           </p>
           <RunReviewButton isRunning={isRunning} onRun={onRun} />
         </div>
@@ -436,7 +439,8 @@ function NoIssuesCard({ data }: { data?: SecurityReviewResult }) {
             Aucun problème de sécurité trouvé
           </h3>
           <p className="text-gray-600 dark:text-gray-400">
-            Votre application a réussi l'analyse de sécurité sans aucune vulnérabilité détectée.
+            Votre application a réussi l'analyse de sécurité sans aucune
+            vulnérabilité détectée.
           </p>
           {data && (
             <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
@@ -508,7 +512,7 @@ function FindingsTable({
               finding.description.length > DESCRIPTION_PREVIEW_LENGTH;
             const displayDescription = isLongDescription
               ? finding.description.substring(0, DESCRIPTION_PREVIEW_LENGTH) +
-              "..."
+                "..."
               : finding.description;
             const findingKey = createFindingKey(finding);
             const isFixing = fixingFindingKey === findingKey;

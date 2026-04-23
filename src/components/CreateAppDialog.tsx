@@ -93,7 +93,10 @@ export function CreateAppDialog({
           <form onSubmit={handleSubmit}>
             <div className="grid gap-5 mb-8">
               <div className="grid gap-2">
-                <Label htmlFor="appName" className="text-sm font-medium text-foreground">
+                <Label
+                  htmlFor="appName"
+                  className="text-sm font-medium text-foreground"
+                >
                   {t("home:appName")}
                 </Label>
                 <Input
@@ -102,8 +105,8 @@ export function CreateAppDialog({
                   onChange={(e) => setAppName(e.target.value)}
                   placeholder={t("home:enterAppName")}
                   className={`h-11 shadow-sm transition-all duration-200 focus-visible:ring-2 ${
-                    nameExists 
-                      ? "border-red-500 focus-visible:ring-red-500/20" 
+                    nameExists
+                      ? "border-red-500 focus-visible:ring-red-500/20"
                       : "focus-visible:border-blue-500 focus-visible:ring-blue-500/20 hover:border-border/80"
                   }`}
                   disabled={isSubmitting}

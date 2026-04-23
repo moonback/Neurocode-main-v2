@@ -51,6 +51,15 @@ export type UpdatePromptParamsDto = z.infer<typeof UpdatePromptParamsDtoSchema>;
 // Prompt Contracts
 // =============================================================================
 
+export const OptimizePromptParamsDtoSchema = z.object({
+  prompt: z.string(),
+  context: z.string().optional(),
+});
+
+export type OptimizePromptParamsDto = z.infer<
+  typeof OptimizePromptParamsDtoSchema
+>;
+
 export const promptContracts = {
   list: defineContract({
     channel: "prompts:list",
@@ -74,6 +83,12 @@ export const promptContracts = {
     channel: "prompts:delete",
     input: z.number(), // id
     output: z.void(),
+  }),
+
+  optimize: defineContract({
+    channel: "prompts:optimize",
+    input: OptimizePromptParamsDtoSchema,
+    output: z.string(),
   }),
 } as const;
 
