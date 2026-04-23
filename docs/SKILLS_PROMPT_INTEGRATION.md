@@ -13,6 +13,7 @@ Les instructions sur l'utilisation des skills ont été intégrées dans tous le
 **Emplacement** : Après la section "App Preview / Commands", avant "Guidelines"
 
 **Contenu** :
+
 - Instructions sur quand utiliser les skills
 - Format du tag `<dyad-skill>`
 - Placement du tag (au début de la réponse)
@@ -20,6 +21,7 @@ Les instructions sur l'utilisation des skills ont été intégrées dans tous le
 - Règles importantes pour l'utilisation des skills
 
 **Modes concernés** :
+
 - ✅ Build mode
 - ✅ Ask mode (via ASK_MODE_SYSTEM_PROMPT)
 
@@ -30,12 +32,14 @@ Les instructions sur l'utilisation des skills ont été intégrées dans tous le
 **Emplacement** : Après `APP_COMMANDS_BLOCK`, avant `GENERAL_GUIDELINES_BLOCK`
 
 **Contenu** :
+
 - Version condensée des instructions sur les skills
 - Format du tag avec exemple
 - Liste des skills d'exemple
 - Règle de placement du tag
 
 **Modes concernés** :
+
 - ✅ Local Agent Pro mode
 - ✅ Local Agent Basic mode (free tier)
 - ✅ Local Agent Ask mode (read-only)
@@ -80,6 +84,7 @@ Les prompts mentionnent les 6 skills d'exemple :
 ## Exemple d'utilisation
 
 ### Entrée utilisateur
+
 ```
 /lint
 ```
@@ -95,35 +100,43 @@ Run pre-commit checks including formatting, linting, and type-checking, and fix 
 ## Instructions
 
 1. **Run formatting check and fix:**
-   ```
-   npm run fmt
-   ```
+```
+
+npm run fmt
+
+```
 
 2. **Run linting with auto-fix:**
-   ```
-   npm run lint:fix
-   ```
+```
+
+npm run lint:fix
+
+```
 
 3. **Fix remaining lint errors manually:**
-   If there are lint errors that could not be auto-fixed, read the affected files and fix the errors manually.
+If there are lint errors that could not be auto-fixed, read the affected files and fix the errors manually.
 
 4. **Run type-checking:**
-   ```
-   npm run ts
-   ```
+```
+
+npm run ts
+
+```
 
 5. **Fix any type errors:**
-   If there are type errors, read the affected files and fix them.
+If there are type errors, read the affected files and fix them.
 
 6. **Re-run all checks to verify:**
-   ```
-   npm run fmt && npm run lint && npm run ts
-   ```
+```
+
+npm run fmt && npm run lint && npm run ts
+
+```
 
 7. **Summarize the results:**
-   - Report which checks passed
-   - List any fixes that were made manually
-   - If all checks pass, confirm the code is ready to commit
+- Report which checks passed
+- List any fixes that were made manually
+- If all checks pass, confirm the code is ready to commit
 </dyad-skill>
 
 Je vais exécuter les vérifications pré-commit pour votre code.
@@ -189,23 +202,27 @@ Quand un skill est invoqué, l'IA doit :
 ### Erreurs courantes à éviter
 
 ❌ **Placer le tag au milieu ou à la fin**
+
 ```
 Je vais faire un lint.
 <dyad-skill name="lint">...</dyad-skill>  ← INCORRECT
 ```
 
 ✅ **Placer le tag au début**
+
 ```
 <dyad-skill name="lint">...</dyad-skill>
 Je vais faire un lint.  ← CORRECT
 ```
 
 ❌ **Omettre le contenu du skill**
+
 ```
 <dyad-skill name="lint" description="Run checks"></dyad-skill>  ← INCORRECT
 ```
 
 ✅ **Inclure le contenu complet**
+
 ```
 <dyad-skill name="lint" description="Run checks">
 # Lint
@@ -214,6 +231,7 @@ Je vais faire un lint.  ← CORRECT
 ```
 
 ❌ **Modifier les instructions du skill**
+
 ```
 <dyad-skill name="lint">
 # Lint (version modifiée)  ← INCORRECT
@@ -222,6 +240,7 @@ Je vais faire un lint.  ← CORRECT
 ```
 
 ✅ **Garder les instructions originales**
+
 ```
 <dyad-skill name="lint">
 # Lint  ← CORRECT (tel quel du fichier SKILL.md)

@@ -258,8 +258,6 @@ export function SkillsSettings() {
           queryClient.invalidateQueries({ queryKey: queryKeys.skills.all });
         }}
       />
-
-
     </div>
   );
 }

@@ -1,5 +1,11 @@
 import { sql } from "drizzle-orm";
-import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import {
+  integer,
+  real,
+  sqliteTable,
+  text,
+  unique,
+} from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
 import type { ModelMessage } from "ai";
 
@@ -113,6 +119,10 @@ export const messages = sqliteTable("messages", {
   }),
   // Indicates this message is a compaction summary
   isCompactionSummary: integer("is_compaction_summary", { mode: "boolean" }),
+  // Token optimization fields
+  isPinned: integer("is_pinned", { mode: "boolean" }),
+  lastPriorityScore: real("last_priority_score"),
+  referenceCount: integer("reference_count"),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -144,6 +154,8 @@ export const versions = sqliteTable(
 export const appsRelations = relations(apps, ({ many }) => ({
   chats: many(chats),
   versions: many(versions),
+  tokenOptimizationConfigs: many(tokenOptimizationConfig),
+  costRecords: many(costRecords),
 }));
 
 export const chatsRelations = relations(chats, ({ many, one }) => ({
@@ -152,13 +164,16 @@ export const chatsRelations = relations(chats, ({ many, one }) => ({
     fields: [chats.appId],
     references: [apps.id],
   }),
+  costRecords: many(costRecords),
 }));
 
-export const messagesRelations = relations(messages, ({ one }) => ({
+export const messagesRelations = relations(messages, ({ one, many }) => ({
   chat: one(chats, {
     fields: [messages.chatId],
     references: [chats.id],
   }),
+  costRecords: many(costRecords),
+  priorities: many(messagePriorities),
 }));
 
 export const language_model_providers = sqliteTable(
@@ -281,3 +296,132 @@ export const customThemes = sqliteTable("custom_themes", {
     .notNull()
     .default(sql`(unixepoch())`),
 });
+
+// --- Token Optimization tables ---
+
+// Token optimization configuration (per-app or global)
+export const tokenOptimizationConfig = sqliteTable(
+  "token_optimization_config",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    appId: integer("app_id").references(() => apps.id, {
+      onDelete: "cascade",
+    }), // null for global config
+    config: text("config", { mode: "json" }).$type<{
+      pruningStrategy: "conservative" | "balanced" | "aggressive";
+      enableAutoPruning: boolean;
+      pruningThreshold: number;
+      tokenAllocation: {
+        inputContextRatio: number;
+        systemInstructionsRatio: number;
+        outputGenerationRatio: number;
+      };
+      enableCostTracking: boolean;
+      costBudget?: {
+        amount: number;
+        period: "daily" | "weekly" | "monthly";
+        warningThreshold: number;
+      };
+      enableMessagePinning: boolean;
+      slidingWindowSize?: number;
+      coordinateWithCompaction: boolean;
+      coordinateWithSmartContext: boolean;
+    }>(),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+);
+
+// Cost records for token usage tracking
+export const costRecords = sqliteTable("cost_records", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  timestamp: integer("timestamp", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  provider: text("provider").notNull(),
+  appId: integer("app_id")
+    .notNull()
+    .references(() => apps.id, { onDelete: "cascade" }),
+  chatId: integer("chat_id")
+    .notNull()
+    .references(() => chats.id, { onDelete: "cascade" }),
+  messageId: integer("message_id").references(() => messages.id, {
+    onDelete: "cascade",
+  }),
+  inputTokens: integer("input_tokens").notNull(),
+  outputTokens: integer("output_tokens").notNull(),
+  inputCost: real("input_cost").notNull(), // USD
+  outputCost: real("output_cost").notNull(), // USD
+  totalCost: real("total_cost").notNull(), // USD
+  model: text("model").notNull(),
+});
+
+// Message priority scores for intelligent history management
+export const messagePriorities = sqliteTable("message_priorities", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  messageId: integer("message_id")
+    .notNull()
+    .references(() => messages.id, { onDelete: "cascade" }),
+  score: real("score").notNull(), // 0-100
+  recencyFactor: real("recency_factor").notNull(),
+  interactionFactor: real("interaction_factor").notNull(),
+  relevanceFactor: real("relevance_factor").notNull(),
+  referenceCount: integer("reference_count").notNull().default(0),
+  isPinned: integer("is_pinned", { mode: "boolean" })
+    .notNull()
+    .default(sql`0`),
+  calculatedAt: integer("calculated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+// Provider pricing information
+export const providerPricing = sqliteTable("provider_pricing", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  providerId: text("provider_id").notNull().unique(),
+  inputTokensPerMillion: real("input_tokens_per_million").notNull(),
+  outputTokensPerMillion: real("output_tokens_per_million").notNull(),
+  lastUpdated: integer("last_updated", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+// Token optimization relations
+export const tokenOptimizationConfigRelations = relations(
+  tokenOptimizationConfig,
+  ({ one }) => ({
+    app: one(apps, {
+      fields: [tokenOptimizationConfig.appId],
+      references: [apps.id],
+    }),
+  }),
+);
+
+export const costRecordsRelations = relations(costRecords, ({ one }) => ({
+  app: one(apps, {
+    fields: [costRecords.appId],
+    references: [apps.id],
+  }),
+  chat: one(chats, {
+    fields: [costRecords.chatId],
+    references: [chats.id],
+  }),
+  message: one(messages, {
+    fields: [costRecords.messageId],
+    references: [messages.id],
+  }),
+}));
+
+export const messagePrioritiesRelations = relations(
+  messagePriorities,
+  ({ one }) => ({
+    message: one(messages, {
+      fields: [messagePriorities.messageId],
+      references: [messages.id],
+    }),
+  }),
+);
