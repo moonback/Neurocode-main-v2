@@ -33,7 +33,7 @@ export function PromptOptimizerButton({
       });
       onChange(optimizedPrompt);
     } catch (error) {
-      console.error("Error optimizing prompt:", error);
+      console.error("Erreur lors de l'optimisation du prompt :", error);
       showError(
         t("optimizePromptError", {
           defaultValue: "Échec de l'optimisation du prompt",
