@@ -897,19 +897,21 @@ export function ChatInput({ chatId }: { chatId?: number }) {
               onResumeQueue={resumeQueue}
             />
           )}
-          {/* Show skill suggestions */}
-          {matchedSkills.length > 0 && !isStreaming && (
-            <div className="border-b border-border p-2 space-y-2">
-              {matchedSkills.map((match) => (
+          {/* Show skill suggestions - only the most relevant one */}
+          {matchedSkills.length > 0 && !isStreaming && (() => {
+            const topMatch = matchedSkills.reduce((best, current) => 
+              current.relevance > best.relevance ? current : best
+            );
+            return (
+              <div className="border-b border-border p-2">
                 <SkillMatcherSuggestion
-                  key={match.skill.name}
-                  match={match}
+                  match={topMatch}
                   onAccept={handleAcceptSkill}
                   onDismiss={handleDismissSkill}
                 />
-              ))}
-            </div>
-          )}
+              </div>
+            );
+          })()}
           {/* Show editing indicator when editing a queued message */}
           {editingQueuedMessageId && (
             <div className="border-b border-border p-2 bg-yellow-500/10 flex items-center justify-between">

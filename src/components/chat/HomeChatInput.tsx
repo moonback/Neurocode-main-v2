@@ -213,19 +213,21 @@ export function HomeChatInput({
             onRemove={removeAttachment}
           />
 
-          {/* Show skill suggestions */}
-          {matchedSkills.length > 0 && !isStreaming && (
-            <div className="border-b border-border p-2 space-y-2">
-              {matchedSkills.map((match) => (
+          {/* Show skill suggestions - only the most relevant one */}
+          {matchedSkills.length > 0 && !isStreaming && (() => {
+            const topMatch = matchedSkills.reduce((best, current) => 
+              current.relevance > best.relevance ? current : best
+            );
+            return (
+              <div className="border-b border-border p-2">
                 <SkillMatcherSuggestion
-                  key={match.skill.name}
-                  match={match}
+                  match={topMatch}
                   onAccept={handleAcceptSkill}
                   onDismiss={handleDismissSkill}
                 />
-              ))}
-            </div>
-          )}
+              </div>
+            );
+          })()}
 
           {/* Drag and drop overlay */}
           <DragDropOverlay isDraggingOver={isDraggingOver} />
