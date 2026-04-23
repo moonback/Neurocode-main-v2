@@ -261,7 +261,7 @@ const AppCommandsSection = ({
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Using default install and start commands
+              Utilisation des commandes d'installation et de démarrage par défaut
             </p>
             <Button
               data-testid="configure-app-commands"
@@ -270,7 +270,7 @@ const AppCommandsSection = ({
               className="w-full"
             >
               <Plus size={14} />
-              Configure Custom Commands
+              Configurer les commandes personnalisées
             </Button>
           </div>
         )}
@@ -524,11 +524,11 @@ export const ConfigurePanel = () => {
                   disabled={saveEnvVarsMutation.isPending}
                 >
                   <Save size={14} />
-                  {saveEnvVarsMutation.isPending ? "Saving..." : "Save"}
+                  {saveEnvVarsMutation.isPending ? "Enregistrer..." : "Enregistrer"}
                 </Button>
                 <Button onClick={handleCancelAdd} variant="outline" size="sm">
                   <X size={14} />
-                  Cancel
+                  Annuler
                 </Button>
               </div>
             </div>
@@ -539,7 +539,7 @@ export const ConfigurePanel = () => {
               className="w-full"
             >
               <Plus size={14} />
-              Add Environment Variable
+              Ajouter une variable d'environnement
             </Button>
           )}
 
@@ -547,7 +547,7 @@ export const ConfigurePanel = () => {
           <div className="space-y-2">
             {envVars.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">
-                No environment variables configured
+                Aucune variable d'environnement configurée
               </p>
             ) : (
               envVars.map((envVar) => (
@@ -643,7 +643,7 @@ export const ConfigurePanel = () => {
                 }
               }}
             >
-              <span>More app settings</span>
+              <span>Autres paramètres de configuration</span>
               <ArrowRight size={16} />
             </Button>
           </div>
