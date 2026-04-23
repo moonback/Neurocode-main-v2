@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, BookOpen, Trash2, Edit, Play, RefreshCw } from "lucide-react";
 import { showSuccess, showError } from "@/lib/toast";
 import { CreateSkillDialog } from "./CreateSkillDialog";
+import { EditSkillDialog } from "./EditSkillDialog";
 import { useState } from "react";
 import { ipc } from "@/ipc/types";
 import { queryKeys } from "@/lib/queryKeys";
@@ -10,6 +11,8 @@ import { queryKeys } from "@/lib/queryKeys";
 export function SkillsSettings() {
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingSkillName, setEditingSkillName] = useState<string | null>(null);
 
   // ── Fetch skills list ────────────────────────────────────────────────────
   const {
@@ -60,7 +63,8 @@ export function SkillsSettings() {
   };
 
   const handleEditSkill = (name: string) => {
-    showError(`Édition du skill "${name}" — à implémenter`);
+    setEditingSkillName(name);
+    setIsEditDialogOpen(true);
   };
 
   const handleInvokeSkill = (name: string) => {
@@ -238,6 +242,20 @@ export function SkillsSettings() {
           setIsCreateDialogOpen(false);
           queryClient.invalidateQueries({ queryKey: queryKeys.skills.all });
           showSuccess("Skill créé avec succès !");
+        }}
+      />
+
+      <EditSkillDialog
+        isOpen={isEditDialogOpen}
+        skillName={editingSkillName}
+        onClose={() => {
+          setIsEditDialogOpen(false);
+          setEditingSkillName(null);
+        }}
+        onSkillUpdated={() => {
+          setIsEditDialogOpen(false);
+          setEditingSkillName(null);
+          queryClient.invalidateQueries({ queryKey: queryKeys.skills.all });
         }}
       />
 
