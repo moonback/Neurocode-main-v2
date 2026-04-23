@@ -2,7 +2,6 @@ import {
   Home,
   Inbox,
   Settings,
-  HelpCircle,
   Store,
   BookOpen,
 } from "lucide-react";
@@ -26,7 +25,6 @@ import {
 } from "@/components/ui/sidebar";
 import { ChatList } from "./ChatList";
 import { AppList } from "./AppList";
-import { HelpDialog } from "./HelpDialog"; // Import the new dialog
 import { SettingsList } from "./SettingsList";
 import { LibraryList } from "./LibraryList";
 
@@ -72,7 +70,6 @@ export function AppSidebar() {
   const { state, toggleSidebar } = useSidebar(); // retrieve current sidebar state
   const [hoverState, setHoverState] = useState<HoverState>("no-hover");
   const expandedByHover = useRef(false);
-  const [isHelpDialogOpen, setIsHelpDialogOpen] = useState(false); // State for dialog
   const [isDropdownOpen] = useAtom(dropdownOpenAtom);
 
   useEffect(() => {
@@ -150,26 +147,6 @@ export function AppSidebar() {
           </div>
         </div>
       </SidebarContent>
-
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            {/* Change button to open dialog instead of linking */}
-            <SidebarMenuButton
-              size="sm"
-              className="font-medium w-14 flex flex-col items-center gap-1 h-14 mb-2 rounded-2xl"
-              onClick={() => setIsHelpDialogOpen(true)} // Open dialog on click
-            >
-              <HelpCircle className="h-5 w-5" />
-              <span className={"text-xs"}>Help</span>
-            </SidebarMenuButton>
-            <HelpDialog
-              isOpen={isHelpDialogOpen}
-              onClose={() => setIsHelpDialogOpen(false)}
-            />
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
 
       <SidebarRail />
     </Sidebar>
