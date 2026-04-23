@@ -65,6 +65,8 @@ import { mcpServers } from "../../db/schema";
 import { requireMcpToolConsent } from "../utils/mcp_consent";
 
 import { handleLocalAgentStream } from "../../pro/main/ipc/handlers/local_agent/local_agent_handler";
+import { tokenOptimizer } from "./token_optimization/token_optimizer";
+import type { Message as TokenOptMessage } from "./token_optimization/message_history_manager";
 
 import { safeSend } from "../utils/safe_sender";
 import { cleanFullResponse } from "../utils/cleanFullResponse";
@@ -1019,6 +1021,48 @@ This conversation includes one or more image attachments. When the user uploads 
             } satisfies ModelMessage,
           ];
         }
+        
+        // Helper function to convert ModelMessage to TokenOptMessage format
+        const convertToTokenOptMessages = (
+          modelMessages: ModelMessage[],
+        ): TokenOptMessage[] => {
+          return modelMessages.map((msg, index) => {
+            const role = msg.role === "tool" ? "user" : msg.role;
+            // Ensure role is one of the allowed types
+            if (role !== "user" && role !== "assistant" && role !== "system") {
+              throw new Error(`Invalid role: ${role}`);
+            }
+            return {
+              id: index, // Use index as temporary ID since we don't have actual message IDs
+              role,
+              content:
+                typeof msg.content === "string"
+                  ? msg.content
+                  : JSON.stringify(msg.content),
+              createdAt: new Date(),
+              isPinned: false,
+              isCompactionSummary: false,
+              referenceCount: 0,
+            };
+          });
+        };
+
+        // Helper function to apply optimization result back to ModelMessage array
+        const applyOptimizationResult = (
+          originalMessages: ModelMessage[],
+          optimizedMessages: TokenOptMessage[],
+        ): ModelMessage[] => {
+          // Create a set of optimized message indices for quick lookup
+          const optimizedIndices = new Set(
+            optimizedMessages.map((msg) => msg.id),
+          );
+
+          // Filter original messages to only include optimized ones
+          return originalMessages.filter((_, index) =>
+            optimizedIndices.has(index),
+          );
+        };
+
         const simpleStreamText = async ({
           chatMessages,
           modelClient,
@@ -1042,11 +1086,57 @@ This conversation includes one or more image attachments. When the user uploads 
           } else {
             logger.log("sending AI request");
           }
+
+          // Token Optimization: Check if we should optimize before compaction
+          let optimizedChatMessages = chatMessages;
+          try {
+            // Check if token optimization should run before compaction
+            const tokenOptMessages = convertToTokenOptMessages(chatMessages);
+            const shouldOptimize =
+              await tokenOptimizer.shouldRunBeforeCompaction(
+                tokenOptMessages,
+                settings.selectedModel.provider,
+                updatedChat.app.id,
+              );
+
+            if (shouldOptimize) {
+              logger.log("Running token optimization before LLM call");
+
+              // Perform token optimization
+              const optimizationResult = await tokenOptimizer.optimizeContext(
+                tokenOptMessages,
+                settings.selectedModel.provider,
+                updatedChat.app.id,
+                [], // No user interactions for now
+              );
+
+              // Apply optimization result to chat messages
+              optimizedChatMessages = applyOptimizationResult(
+                chatMessages,
+                optimizationResult.optimizedMessages,
+              );
+
+              logger.log(
+                `Token optimization: ${optimizationResult.pruningResult.originalMessageCount} → ${optimizationResult.pruningResult.prunedMessageCount} messages, ${optimizationResult.pruningResult.tokensRemoved} tokens removed`,
+              );
+
+              // Log cost estimate if available
+              if (optimizationResult.costEstimate) {
+                logger.log(
+                  `Estimated cost: $${optimizationResult.costEstimate.totalCost.toFixed(6)}`,
+                );
+              }
+            }
+          } catch (error) {
+            logger.error("Token optimization failed, using original messages:", error);
+            // Continue with original messages if optimization fails
+          }
+
           let versionedFiles: VersionedFiles | undefined;
           if (isDeepContextEnabled) {
             versionedFiles = await getVersionedFiles({
               files,
-              chatMessages,
+              chatMessages: optimizedChatMessages,
               appPath,
             });
           }
@@ -1077,9 +1167,11 @@ This conversation includes one or more image attachments. When the user uploads 
             providerOptions,
             system: systemPromptOverride,
             tools,
-            messages: chatMessages.filter((m) => m.content),
-            onFinish: (response) => {
+            messages: optimizedChatMessages.filter((m) => m.content),
+            onFinish: async (response) => {
               const totalTokens = response.usage?.totalTokens;
+              const inputTokens = response.usage?.inputTokens;
+              const outputTokens = response.usage?.outputTokens;
 
               if (typeof totalTokens === "number") {
                 // We use the highest total tokens used (we are *not* accumulating)
@@ -1101,6 +1193,26 @@ This conversation includes one or more image attachments. When the user uploads 
                 logger.log(
                   `Total tokens used (aggregated for message ${placeholderAssistantMessage.id}): ${maxTokensUsed}`,
                 );
+
+                // Report token usage to cost tracker if we have input/output breakdown
+                if (
+                  typeof inputTokens === "number" &&
+                  typeof outputTokens === "number"
+                ) {
+                  try {
+                    await tokenOptimizer.recordTokenUsage({
+                      provider: settings.selectedModel.provider,
+                      model: settings.selectedModel.name,
+                      appId: updatedChat.app.id,
+                      chatId: req.chatId,
+                      messageId: placeholderAssistantMessage.id,
+                      inputTokens,
+                      outputTokens,
+                    });
+                  } catch (error) {
+                    logger.error("Failed to record token usage:", error);
+                  }
+                }
               } else {
                 logger.log("Total tokens used: unknown");
               }

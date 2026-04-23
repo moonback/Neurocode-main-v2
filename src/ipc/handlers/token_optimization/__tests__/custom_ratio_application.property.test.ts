@@ -53,7 +53,8 @@ describe("Property 15: Custom Ratio Application", () => {
           const allocated = allocateTokens(totalTokens, allocation);
 
           // Calculate expected allocations (ideal, without floor)
-          const expectedInputContext = totalTokens * allocation.inputContextRatio;
+          const expectedInputContext =
+            totalTokens * allocation.inputContextRatio;
           const expectedSystemInstructions =
             totalTokens * allocation.systemInstructionsRatio;
           const expectedOutputGeneration =
@@ -122,7 +123,8 @@ describe("Property 15: Custom Ratio Application", () => {
           const allocated = allocateTokens(totalTokens, allocation);
 
           // Calculate expected allocations
-          const expectedInputContext = totalTokens * allocation.inputContextRatio;
+          const expectedInputContext =
+            totalTokens * allocation.inputContextRatio;
           const expectedSystemInstructions =
             totalTokens * allocation.systemInstructionsRatio;
           const expectedOutputGeneration =
@@ -224,7 +226,8 @@ describe("Property 15: Custom Ratio Application", () => {
           const allocated = allocateTokens(totalTokens, allocation);
 
           // Calculate expected allocations
-          const expectedInputContext = totalTokens * allocation.inputContextRatio;
+          const expectedInputContext =
+            totalTokens * allocation.inputContextRatio;
           const expectedSystemInstructions =
             totalTokens * allocation.systemInstructionsRatio;
           const expectedOutputGeneration =
@@ -322,7 +325,8 @@ describe("Property 15: Custom Ratio Application", () => {
           const allocated = allocateTokens(totalTokens, allocation);
 
           // Calculate expected allocations
-          const expectedInputContext = totalTokens * allocation.inputContextRatio;
+          const expectedInputContext =
+            totalTokens * allocation.inputContextRatio;
           const expectedSystemInstructions =
             totalTokens * allocation.systemInstructionsRatio;
           const expectedOutputGeneration =
