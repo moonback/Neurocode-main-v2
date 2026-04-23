@@ -169,6 +169,7 @@ Disponible via IPC :
 - **Recherche Web :** Recherche sur le web pour des informations à jour
 - **Budget de réflexion :** Support des modèles de raisonnement (o1/o3)
 - **Contexte intelligent :** Sélection intelligente de fichiers pour le contexte
+- **Optimisation des tokens et coûts :** Suivi en temps réel, élagage intelligent et épinglage de messages ([documentation](docs/token_optimization.md))
 
 ---
 

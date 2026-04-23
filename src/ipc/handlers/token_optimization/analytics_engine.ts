@@ -245,8 +245,8 @@ export function calculatePruningEffectiveness(
   // Calculate average for each strategy
   const strategyAverages: Record<string, number> = {};
   for (const [strategy, values] of Object.entries(strategyBreakdown)) {
-    strategyAverages[strategy] =
-      values.reduce((sum, val) => sum + val, 0) / values.length;
+    const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
+    strategyAverages[strategy] = Number(avg.toFixed(2));
   }
 
   return {
@@ -411,7 +411,7 @@ function calculateTokenUsageFromRecords(
   const byApp: Record<number, number> = {};
 
   for (const record of records) {
-    const tokens = record.inputTokens + record.outputTokens;
+    const tokens = record.inputTokens + record.outputTokens + (record.toolTokens ?? 0);
     total += tokens;
 
     // By provider
@@ -508,7 +508,7 @@ function identifyHighConsumptionFromRecords(
 
   for (const record of records) {
     const existing = chatMap.get(record.chatId);
-    const tokens = record.inputTokens + record.outputTokens;
+    const tokens = record.inputTokens + record.outputTokens + (record.toolTokens ?? 0);
 
     if (existing) {
       existing.totalTokens += tokens;
@@ -578,7 +578,7 @@ function aggregateByTimePeriod(
       Math.floor(record.timestamp.getTime() / bucketSize) * bucketSize;
 
     const existing = buckets.get(bucketKey);
-    const tokens = record.inputTokens + record.outputTokens;
+    const tokens = record.inputTokens + record.outputTokens + (record.toolTokens ?? 0);
 
     if (existing) {
       existing.tokens += tokens;

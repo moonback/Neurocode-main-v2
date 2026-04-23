@@ -50,3 +50,5 @@ Sending the entire codebase is the simplest approach and quite effective for sma
 However, both of these approaches require users to manually select the right files which isn't always practical. Dyad's [Smart Context](https://www.dyad.sh/docs/guides/ai-models/pro-modes#smart-context) feature essentially uses smaller models to filter out the most important files in the given chat. That said, we are constantly experimenting with new approaches to context selection as it's quite a difficult problem.
 
 One approach that we don't use is a more agentic-style like what Claude Code and Cursor does where it iteratively searches and navigates through a codebase using tool calls. The main reason we don't do this is due to cost (see the above question: [Why isn't Dyad more agentic](#why-isnt-dyad-more-agentic)).
+
+To mitigate the costs while still providing a good experience, we implemented a **Token Optimization System** which tracks costs in real-time, provides budget alerts, and uses intelligent pruning strategies to keep the context window efficient without losing critical information (see [Token Optimization Docs](token_optimization.md)).

@@ -45,6 +45,7 @@ import { mediaContracts } from "../types/media";
 import { imageGenerationContracts } from "../types/image_generation";
 import { smartContextContracts } from "../types/smart-context";
 import { skillContracts } from "../types/skills";
+import { tokenOptimizationContracts } from "../types/token-optimization";
 
 // =============================================================================
 // Invoke Channels (derived from all contracts)
@@ -105,6 +106,7 @@ export const VALID_INVOKE_CHANNELS = [
   ...getInvokeChannels(imageGenerationContracts),
   ...getInvokeChannels(smartContextContracts),
   ...getInvokeChannels(skillContracts),
+  ...getInvokeChannels(tokenOptimizationContracts),
 
   // Test-only channels
   ...TEST_INVOKE_CHANNELS,

@@ -47,6 +47,17 @@ import { mcpManager } from "@/ipc/utils/mcp_manager";
 import { mcpServers } from "@/db/schema";
 import { requireMcpToolConsent } from "@/ipc/utils/mcp_consent";
 import { getAiMessagesJsonIfWithinLimit } from "@/ipc/utils/ai_messages_utils";
+import { tokenOptimizer } from "@/ipc/handlers/chat_stream_handlers";
+import {
+  isChatPendingCompaction,
+  performCompaction,
+  checkAndMarkForCompaction,
+  clearPendingCompaction,
+} from "@/ipc/handlers/compaction/compaction_handler";
+import {
+  getContextWindow,
+  shouldTriggerCompaction,
+} from "@/ipc/utils/token_utils";
 
 import type { ChatStreamParams, ChatResponseEnd } from "@/ipc/types";
 import {
@@ -85,6 +96,7 @@ import {
   isChatPendingCompaction,
   performCompaction,
   checkAndMarkForCompaction,
+  clearPendingCompaction,
 } from "@/ipc/handlers/compaction/compaction_handler";
 import { getPostCompactionMessages } from "@/ipc/handlers/compaction/compaction_utils";
 import { DEFAULT_MAX_TOOL_CALL_STEPS } from "@/constants/settings_constants";
@@ -364,14 +376,53 @@ export async function handleLocalAgentStream(
   const appPath = getDyadAppPath(chat.app.path);
 
   const maybePerformPendingCompaction = async (options?: {
-    showOnTopOfCurrentResponse?: boolean;
     force?: boolean;
+    showOnTopOfCurrentResponse?: boolean;
+    tools?: any[];
   }) => {
     if (
       settings.enableContextCompaction === false ||
       (!options?.force && !(await isChatPendingCompaction(req.chatId)))
     ) {
       return false;
+    }
+
+    // Coordination with Token Optimization: Check if optimization can handle it
+    const config = await tokenOptimizer.loadConfig(chat.app.id);
+    if (config.coordinateWithCompaction && config.enableAutoPruning) {
+      const tokenOptMessages = tokenOptimizer.convertToTokenOptMessages(
+        buildChatMessageHistory(chat.messages),
+      );
+      const shouldPrune = await tokenOptimizer.shouldRunBeforeCompaction(
+        tokenOptMessages,
+        settings.selectedModel.provider,
+        chat.app.id,
+        options?.tools || [],
+      );
+
+      if (shouldPrune) {
+        // Run optimization first
+        const optimizationResult = await tokenOptimizer.optimizeContext(
+          tokenOptMessages,
+          settings.selectedModel.provider,
+          chat.app.id,
+          [],
+          options?.tools || [],
+        );
+
+        // If optimization reduced tokens below threshold, skip compaction
+        const optimizedTokens = tokenOptimizer.estimateTokenCount(
+          optimizationResult.optimizedMessages,
+        );
+        const contextWindow = await getContextWindow();
+        if (!shouldTriggerCompaction(optimizedTokens, contextWindow)) {
+          logger.info(
+            "Skipping compaction because token optimization reduced tokens below threshold",
+          );
+          await clearPendingCompaction(req.chatId);
+          return false;
+        }
+      }
     }
 
     logger.info(`Performing pending compaction for chat ${req.chatId}`);
@@ -457,8 +508,117 @@ export async function handleLocalAgentStream(
     return compactionResult.success;
   };
 
+  const maxOutputTokens = await getMaxTokens(settings.selectedModel);
+  const temperature = await getTemperature(settings.selectedModel);
+
+  // Load persisted todos from a previous turn (if any)
+  const persistedTodos = await loadTodos(appPath, chat.id);
+  // Ensure .dyad/ is gitignored (idempotent; also done by compaction/plans)
+  // Skip in read-only/plan-only mode to avoid modifying the workspace
+  if (!readOnly && !planModeOnly) {
+    await ensureDyadGitignored(appPath).catch((err: unknown) =>
+      logger.warn("Failed to ensure .dyad gitignored:", err),
+    );
+  }
+  if (persistedTodos.length > 0) {
+    // Emit loaded todos to the renderer so the UI shows them immediately
+    safeSend(event.sender, "agent-tool:todos-update", {
+      chatId: chat.id,
+      todos: persistedTodos,
+    });
+  }
+
+  // Track pending user messages to inject after tool results
+  const pendingUserMessages: UserMessageContentPart[][] = [];
+  // Store injected messages with their insertion index to re-inject at the same spot each step
+  const allInjectedMessages: InjectedMessage[] = [];
+  const warningMessages: string[] = [];
+
+  // Build tool execute context
+  const fileEditTracker: FileEditTracker = Object.create(null);
+  const ctx: AgentContext = {
+    event,
+    appId: chat.app.id,
+    appPath,
+    chatId: chat.id,
+    supabaseProjectId: chat.app.supabaseProjectId,
+    supabaseOrganizationSlug: chat.app.supabaseOrganizationSlug,
+    neonProjectId: chat.app.neonProjectId,
+    neonActiveBranchId:
+      chat.app.neonActiveBranchId ?? chat.app.neonDevelopmentBranchId,
+    frameworkType: detectFrameworkType(appPath),
+    messageId: placeholderMessageId,
+    isSharedModulesChanged: false,
+    todos: persistedTodos,
+    dyadRequestId,
+    fileEditTracker,
+    isDyadPro: isDyadProEnabled(settings),
+    onXmlStream: (accumulatedXml: string) => {
+      // Stream accumulated XML to UI without persisting
+      streamingPreview = accumulatedXml;
+      sendResponseChunk(
+        event,
+        req.chatId,
+        chat,
+        fullResponse + streamingPreview,
+        placeholderMessageId,
+        hiddenMessageIdsForStreaming,
+      );
+    },
+    onXmlComplete: (finalXml: string) => {
+      // Write final XML to DB and UI
+      const xmlChunk = `${finalXml}\n`;
+      fullResponse += xmlChunk;
+      streamingPreview = ""; // Clear preview
+      updateResponseInDb(placeholderMessageId, fullResponse);
+      sendResponseChunk(
+        event,
+        req.chatId,
+        chat,
+        fullResponse,
+        placeholderMessageId,
+        hiddenMessageIdsForStreaming,
+      );
+    },
+    requireConsent: async (params: {
+      toolName: string;
+      toolDescription?: string | null;
+      inputPreview?: string | null;
+    }) => {
+      return requireAgentToolConsent(event, {
+        chatId: chat.id,
+        toolName: params.toolName as AgentToolName,
+        toolDescription: params.toolDescription,
+        inputPreview: params.inputPreview,
+      });
+    },
+    appendUserMessage: (content: UserMessageContentPart[]) => {
+      pendingUserMessages.push(content);
+    },
+    onUpdateTodos: (todos) => {
+      safeSend(event.sender, "agent-tool:todos-update", {
+        chatId: chat.id,
+        todos,
+      });
+    },
+    onWarningMessage: (message) => {
+      warningMessages.push(message);
+    },
+  };
+
+  // Build tool set (agent tools + MCP tools)
+  const agentTools = buildAgentToolSet(ctx, {
+    readOnly,
+    planModeOnly,
+    basicAgentMode: !readOnly && !planModeOnly && isBasicAgentMode(settings),
+  });
+  const mcpTools =
+    readOnly || planModeOnly ? {} : await getMcpTools(event, ctx);
+  const allTools: ToolSet = { ...agentTools, ...mcpTools };
+  const allToolsList = Object.values(allTools);
+
   // Check if compaction is pending and enabled before processing the message
-  await maybePerformPendingCompaction();
+  await maybePerformPendingCompaction({ tools: allToolsList });
 
   // Send initial message update
   safeSend(event.sender, "chat:response:chunk", {
@@ -468,12 +628,6 @@ export async function handleLocalAgentStream(
     ),
   });
 
-  // Track pending user messages to inject after tool results
-  const pendingUserMessages: UserMessageContentPart[][] = [];
-  // Store injected messages with their insertion index to re-inject at the same spot each step
-  const allInjectedMessages: InjectedMessage[] = [];
-  const warningMessages: string[] = [];
-
   try {
     // Get model client
     const { modelClient } = await getModelClient(
@@ -481,107 +635,6 @@ export async function handleLocalAgentStream(
       settings,
     );
 
-    // Load persisted todos from a previous turn (if any)
-    const persistedTodos = await loadTodos(appPath, chat.id);
-    // Ensure .dyad/ is gitignored (idempotent; also done by compaction/plans)
-    // Skip in read-only/plan-only mode to avoid modifying the workspace
-    if (!readOnly && !planModeOnly) {
-      await ensureDyadGitignored(appPath).catch((err: unknown) =>
-        logger.warn("Failed to ensure .dyad gitignored:", err),
-      );
-    }
-    if (persistedTodos.length > 0) {
-      // Emit loaded todos to the renderer so the UI shows them immediately
-      safeSend(event.sender, "agent-tool:todos-update", {
-        chatId: chat.id,
-        todos: persistedTodos,
-      });
-    }
-
-    // Build tool execute context
-    const fileEditTracker: FileEditTracker = Object.create(null);
-    const ctx: AgentContext = {
-      event,
-      appId: chat.app.id,
-      appPath,
-      chatId: chat.id,
-      supabaseProjectId: chat.app.supabaseProjectId,
-      supabaseOrganizationSlug: chat.app.supabaseOrganizationSlug,
-      neonProjectId: chat.app.neonProjectId,
-      neonActiveBranchId:
-        chat.app.neonActiveBranchId ?? chat.app.neonDevelopmentBranchId,
-      frameworkType: detectFrameworkType(appPath),
-      messageId: placeholderMessageId,
-      isSharedModulesChanged: false,
-      todos: persistedTodos,
-      dyadRequestId,
-      fileEditTracker,
-      isDyadPro: isDyadProEnabled(settings),
-      onXmlStream: (accumulatedXml: string) => {
-        // Stream accumulated XML to UI without persisting
-        streamingPreview = accumulatedXml;
-        sendResponseChunk(
-          event,
-          req.chatId,
-          chat,
-          fullResponse + streamingPreview,
-          placeholderMessageId,
-          hiddenMessageIdsForStreaming,
-        );
-      },
-      onXmlComplete: (finalXml: string) => {
-        // Write final XML to DB and UI
-        const xmlChunk = `${finalXml}\n`;
-        fullResponse += xmlChunk;
-        streamingPreview = ""; // Clear preview
-        updateResponseInDb(placeholderMessageId, fullResponse);
-        sendResponseChunk(
-          event,
-          req.chatId,
-          chat,
-          fullResponse,
-          placeholderMessageId,
-          hiddenMessageIdsForStreaming,
-        );
-      },
-      requireConsent: async (params: {
-        toolName: string;
-        toolDescription?: string | null;
-        inputPreview?: string | null;
-      }) => {
-        return requireAgentToolConsent(event, {
-          chatId: chat.id,
-          toolName: params.toolName as AgentToolName,
-          toolDescription: params.toolDescription,
-          inputPreview: params.inputPreview,
-        });
-      },
-      appendUserMessage: (content: UserMessageContentPart[]) => {
-        pendingUserMessages.push(content);
-      },
-      onUpdateTodos: (todos) => {
-        safeSend(event.sender, "agent-tool:todos-update", {
-          chatId: chat.id,
-          todos,
-        });
-      },
-      onWarningMessage: (message) => {
-        warningMessages.push(message);
-      },
-    };
-
-    // Build tool set (agent tools + MCP tools)
-    // In read-only mode, only include read-only tools and skip MCP tools
-    // (since we can't determine if MCP tools modify state)
-    // In plan mode, only include planning tools (read + questionnaire/plan tools)
-    const agentTools = buildAgentToolSet(ctx, {
-      readOnly,
-      planModeOnly,
-      basicAgentMode: !readOnly && !planModeOnly && isBasicAgentMode(settings),
-    });
-    const mcpTools =
-      readOnly || planModeOnly ? {} : await getMcpTools(event, ctx);
-    const allTools: ToolSet = { ...agentTools, ...mcpTools };
 
     // Prepare message history with graceful fallback
     // Use messageOverride if provided (e.g., for summarization)
@@ -680,6 +733,37 @@ export async function handleLocalAgentStream(
               buildTerminatedRetryContinuationInstruction(),
             ]
           : currentMessageHistory;
+
+        // Token Optimization: Check if we should optimize before each pass/retry
+        let optimizedAttemptMessages = attemptMessages;
+        try {
+          const tokenOptMessages =
+            tokenOptimizer.convertToTokenOptMessages(attemptMessages);
+          const shouldOptimize = await tokenOptimizer.shouldRunBeforeCompaction(
+            tokenOptMessages,
+            settings.selectedModel.provider,
+            chat.app.id,
+            Object.values(allTools),
+          );
+
+          if (shouldOptimize) {
+            logger.info("Running token optimization before local agent LLM call");
+            const optimizationResult = await tokenOptimizer.optimizeContext(
+              tokenOptMessages,
+              settings.selectedModel.provider,
+              chat.app.id,
+              [],
+              Object.values(allTools),
+            );
+            optimizedAttemptMessages = tokenOptimizer.applyOptimizationResult(
+              attemptMessages,
+              optimizationResult.optimizedMessages,
+            );
+          }
+        } catch (error) {
+          logger.error("Token optimization failed in local agent loop:", error);
+        }
+
         const attemptToolInputIds = new Set<string>();
         const cleanupAttemptToolStreamingEntries = () => {
           for (const toolCallId of attemptToolInputIds) {
@@ -710,7 +794,7 @@ export async function handleLocalAgentStream(
             temperature,
             maxRetries: 2,
             system: systemPrompt,
-            messages: attemptMessages,
+            messages: optimizedAttemptMessages,
             tools: allTools,
             stopWhen: [
               stepCountIs(maxToolCallSteps),
@@ -883,12 +967,15 @@ export async function handleLocalAgentStream(
             onFinish: async (response) => {
               const totalTokens = response.usage?.totalTokens;
               const inputTokens = response.usage?.inputTokens;
+              const outputTokens = response.usage?.outputTokens;
               const cachedInputTokens = response.usage?.cachedInputTokens;
               logger.log(
                 "Total tokens used:",
                 totalTokens,
                 "Input tokens:",
                 inputTokens,
+                "Output tokens:",
+                outputTokens,
                 "Cached input tokens:",
                 cachedInputTokens,
                 "Cache hit ratio:",
@@ -902,8 +989,62 @@ export async function handleLocalAgentStream(
                   .set({ maxTokensUsed: totalTokens })
                   .where(eq(messages.id, placeholderMessageId))
                   .catch((err) =>
-                    logger.error("Failed to save token count", err),
+                    logger.error("Failed to update maxTokensUsed:", err),
                   );
+
+                // Report token usage to cost tracker
+                if (
+                  typeof inputTokens === "number" &&
+                  typeof outputTokens === "number"
+                ) {
+                  try {
+                    await tokenOptimizer.recordTokenUsage({
+                      provider: settings.selectedModel.provider,
+                      model: settings.selectedModel.name,
+                      appId: chat.app.id,
+                      chatId: chat.id,
+                      messageId: placeholderMessageId,
+                      inputTokens,
+                      outputTokens,
+                    });
+
+                    // Compaction coordination: Check if token optimization is enabled and can handle it
+                    const config = await tokenOptimizer.loadConfig(chat.app.id);
+                    const shouldMarkForCompactionFlag =
+                      await checkAndMarkForCompaction(chat.id, totalTokens);
+
+                    if (
+                      shouldMarkForCompactionFlag &&
+                      config.coordinateWithCompaction &&
+                      config.enableAutoPruning
+                    ) {
+                      // Check if optimization would handle this on the next turn
+                      const tokenOptMessages =
+                        tokenOptimizer.convertToTokenOptMessages(
+                          currentMessageHistory,
+                        );
+                      const canOptimizeNextTurn =
+                        await tokenOptimizer.shouldRunBeforeCompaction(
+                          tokenOptMessages,
+                          settings.selectedModel.provider,
+                          chat.app.id,
+                          allToolsList,
+                        );
+
+                      if (canOptimizeNextTurn) {
+                        logger.info(
+                          "Skipping compaction mark in local agent because token optimization will handle it on next turn",
+                        );
+                        await clearPendingCompaction(chat.id);
+                      }
+                    }
+                  } catch (error) {
+                    logger.error(
+                      "Failed to record token usage or check compaction in local agent:",
+                      error,
+                    );
+                  }
+                }
               }
             },
             onError: (error: any) => {

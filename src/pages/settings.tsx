@@ -38,6 +38,8 @@ import { SmartContextStrategySelector } from "@/components/SmartContextStrategyS
 import { BlockUnsafeNpmPackagesSwitch } from "@/components/BlockUnsafeNpmPackagesSwitch";
 import { CloudSandboxExperimentSwitch } from "@/components/CloudSandboxExperimentSwitch";
 import { SkillsSettings } from "@/components/settings/SkillsSettings";
+import { TokenOptimizationSettings } from "@/components/settings/TokenOptimizationSettings";
+import { TokenObservabilityDashboard } from "@/components/settings/TokenObservabilityDashboard";
 import { useSetAtom } from "jotai";
 import { activeSettingsSectionAtom } from "@/atoms/viewAtoms";
 import { SECTION_IDS, SETTING_IDS } from "@/lib/settingsSearchIndex";
@@ -498,6 +500,14 @@ export function AISettings() {
           contexte. L'option équilibrée est recommandée pour la plupart des
           workflows.
         </div>
+      </div>
+
+      <div id={SETTING_IDS.tokenOptimization} className="mt-8 pt-8 border-t border-muted/30">
+        <TokenOptimizationSettings />
+      </div>
+
+      <div className="mt-8 pt-8 border-t border-muted/30">
+        <TokenObservabilityDashboard />
       </div>
     </div>
   );

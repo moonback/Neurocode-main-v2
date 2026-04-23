@@ -1,0 +1,1 @@
+ALTER TABLE `cost_records` ADD `tool_tokens` integer DEFAULT 0 NOT NULL;

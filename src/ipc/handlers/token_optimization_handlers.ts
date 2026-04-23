@@ -24,8 +24,10 @@ import type {
   TokenOptimizationConfig,
   MessagePriority,
 } from "./token_optimization/types";
-import type { Period } from "./token_optimization/cost_tracker";
 import { ipcMain } from "electron";
+import { calculateTokenBreakdown } from "./token_count_handlers";
+import { readSettings } from "@/main/settings";
+import { findLanguageModel } from "../utils/findLanguageModel";
 
 /**
  * Register all token optimization IPC handlers
@@ -648,6 +650,56 @@ export function registerTokenOptimizationHandlers() {
         }
         throw new DyadError(
           `Failed to export analytics: ${error instanceof Error ? error.message : String(error)}`,
+          DyadErrorKind.Internal,
+        );
+      }
+    },
+  );
+
+  /**
+   * Estimate the cost of the next message
+   * Channel: token-optimization:estimate-cost
+   */
+  ipcMain.handle(
+    "token-optimization:estimate-cost",
+    async (event, { chatId, input }: { chatId: number; input: string }) => {
+      try {
+        const breakdown = await calculateTokenBreakdown(chatId, input);
+        const settings = readSettings();
+        const modelInfo = await findLanguageModel(settings.selectedModel);
+
+        if (!modelInfo) {
+          throw new DyadError("Current model not found", DyadErrorKind.NotFound);
+        }
+
+        const pricing = await getModelPricing(
+          modelInfo.apiName,
+          modelInfo.providerId,
+        );
+
+        // Estimate output tokens (simple heuristic: 20% of input or 500 tokens)
+        const estimatedOutputTokens = Math.max(
+          500,
+          Math.floor(breakdown.estimatedTotalTokens * 0.2),
+        );
+
+        const inputCost =
+          (breakdown.estimatedTotalTokens / 1_000_000) *
+          pricing.inputTokensPerMillion;
+        const outputCost =
+          (estimatedOutputTokens / 1_000_000) * pricing.outputTokensPerMillion;
+
+        return {
+          inputTokens: breakdown.estimatedTotalTokens,
+          estimatedOutputTokens,
+          estimatedTotalCost: Number((inputCost + outputCost).toFixed(6)),
+          model: modelInfo.apiName,
+          currency: "USD",
+        };
+      } catch (error) {
+        if (error instanceof DyadError) throw error;
+        throw new DyadError(
+          `Failed to estimate cost: ${error instanceof Error ? error.message : String(error)}`,
           DyadErrorKind.Internal,
         );
       }

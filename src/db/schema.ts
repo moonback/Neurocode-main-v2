@@ -354,6 +354,7 @@ export const costRecords = sqliteTable("cost_records", {
   }),
   inputTokens: integer("input_tokens").notNull(),
   outputTokens: integer("output_tokens").notNull(),
+  toolTokens: integer("tool_tokens").notNull().default(0),
   inputCost: real("input_cost").notNull(), // USD
   outputCost: real("output_cost").notNull(), // USD
   totalCost: real("total_cost").notNull(), // USD

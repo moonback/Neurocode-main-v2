@@ -1,12 +1,17 @@
 // Property-Based Tests for Cost Aggregation Correctness
 // Feature: token-optimization
 import * as fc from "fast-check";
-import { describe, it, expect, beforeAll, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from "vitest";
 import { getCosts, recordCost, getCostSummary } from "../cost_tracker";
 import { initializeDatabase, db } from "@/db";
 import { costRecords, apps, chats } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { PROVIDER_CONFIGS } from "../provider_registry";
+
+// Mock dependencies
+vi.mock("@/paths/paths", () => ({
+  getUserDataPath: vi.fn(() => require("os").tmpdir()),
+}));
 
 describe("Property 12: Cost Aggregation Correctness", () => {
   // Initialize database before all tests
@@ -85,6 +90,7 @@ describe("Property 12: Cost Aggregation Correctness", () => {
             messageId: null,
             inputTokens: record.inputTokens,
             outputTokens: record.outputTokens,
+            toolTokens: 0,
             inputCost: record.totalCost * 0.4, // Arbitrary split
             outputCost: record.totalCost * 0.6,
             totalCost: record.totalCost,

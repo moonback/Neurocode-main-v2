@@ -109,6 +109,7 @@ export interface CostRecord {
   messageId: number;
   inputTokens: number;
   outputTokens: number;
+  toolTokens: number;
   inputCost: number; // USD
   outputCost: number; // USD
   totalCost: number; // USD
@@ -394,6 +395,10 @@ export const CostRecordSchema = z.object({
     .number()
     .int("Output tokens must be an integer")
     .nonnegative("Output tokens must be non-negative"),
+  toolTokens: z
+    .number()
+    .int("Tool tokens must be an integer")
+    .nonnegative("Tool tokens must be non-negative"),
   inputCost: z.number().nonnegative("Input cost must be non-negative"),
   outputCost: z.number().nonnegative("Output cost must be non-negative"),
   totalCost: z.number().nonnegative("Total cost must be non-negative"),

@@ -98,6 +98,16 @@ import { replaceSlashSkillReference } from "../utils/replaceSlashSkillReference"
 import { resolveMediaMentions } from "../utils/resolve_media_mentions";
 import { parsePlanFile, validatePlanId } from "./planUtils";
 import { ensureDyadGitignored } from "./gitignoreUtils";
+import {
+  isChatPendingCompaction,
+  performCompaction,
+  checkAndMarkForCompaction,
+  clearPendingCompaction,
+} from "./compaction/compaction_handler";
+import {
+  getContextWindow,
+  shouldTriggerCompaction,
+} from "../utils/token_utils";
 import { DYAD_MEDIA_DIR_NAME } from "../utils/media_path_utils";
 import { mcpManager } from "../utils/mcp_manager";
 import z from "zod";
@@ -584,6 +594,79 @@ ${componentSnippet}
         messages: updatedChat.messages,
       });
 
+      // Compaction check and coordination
+      // Validates: Requirements 7.1
+      if (
+        settings.enableContextCompaction !== false &&
+        (await isChatPendingCompaction(req.chatId))
+      ) {
+        // Coordination with Token Optimization: Check if optimization can handle it
+        const config = await tokenOptimizer.loadConfig(updatedChat.app.id);
+        let skipCompaction = false;
+
+        if (config.coordinateWithCompaction && config.enableAutoPruning) {
+          const tokenOptMessages = tokenOptimizer.convertToTokenOptMessages(
+            updatedChat.messages,
+          );
+          const shouldPrune = await tokenOptimizer.shouldRunBeforeCompaction(
+            tokenOptMessages,
+            settings.selectedModel.provider,
+            updatedChat.app.id,
+            Object.values(tools || {}),
+          );
+
+          if (shouldPrune) {
+            const optimizationResult = await tokenOptimizer.optimizeContext(
+              tokenOptMessages,
+              settings.selectedModel.provider,
+              updatedChat.app.id,
+              [],
+              Object.values(tools || {}),
+            );
+
+            const optimizedTokens = tokenOptimizer.estimateTokenCount(
+              optimizationResult.optimizedMessages,
+            );
+            const contextWindow = await getContextWindow();
+            if (!shouldTriggerCompaction(optimizedTokens, contextWindow)) {
+              logger.info(
+                "Skipping compaction because token optimization reduced tokens below threshold",
+              );
+              await clearPendingCompaction(req.chatId);
+              skipCompaction = true;
+            }
+          }
+        }
+
+        if (!skipCompaction) {
+          logger.info(`Performing pending compaction for chat ${req.chatId}`);
+          const compactionResult = await performCompaction(
+            event,
+            req.chatId,
+            getDyadAppPath(updatedChat.app.path),
+            dyadRequestId ?? "[no-request-id]",
+          );
+
+          if (compactionResult.success) {
+            // Refresh updatedChat after compaction
+            const refreshedChat = await db.query.chats.findFirst({
+              where: eq(chats.id, req.chatId),
+              with: {
+                messages: {
+                  orderBy: (messages, { asc }) => [asc(messages.createdAt)],
+                },
+                app: true,
+              },
+            });
+            if (refreshedChat) {
+              // Note: We don't strictly need to update the local updatedChat variable here
+              // because subsequent logic uses refreshedChat.messages or fetches from DB.
+              // But we should at least update chatMessages if it was already defined.
+            }
+          }
+        }
+      }
+
       let fullResponse = "";
       let maxTokensUsed: number | undefined;
 
@@ -1022,46 +1105,6 @@ This conversation includes one or more image attachments. When the user uploads 
           ];
         }
         
-        // Helper function to convert ModelMessage to TokenOptMessage format
-        const convertToTokenOptMessages = (
-          modelMessages: ModelMessage[],
-        ): TokenOptMessage[] => {
-          return modelMessages.map((msg, index) => {
-            const role = msg.role === "tool" ? "user" : msg.role;
-            // Ensure role is one of the allowed types
-            if (role !== "user" && role !== "assistant" && role !== "system") {
-              throw new Error(`Invalid role: ${role}`);
-            }
-            return {
-              id: index, // Use index as temporary ID since we don't have actual message IDs
-              role,
-              content:
-                typeof msg.content === "string"
-                  ? msg.content
-                  : JSON.stringify(msg.content),
-              createdAt: new Date(),
-              isPinned: false,
-              isCompactionSummary: false,
-              referenceCount: 0,
-            };
-          });
-        };
-
-        // Helper function to apply optimization result back to ModelMessage array
-        const applyOptimizationResult = (
-          originalMessages: ModelMessage[],
-          optimizedMessages: TokenOptMessage[],
-        ): ModelMessage[] => {
-          // Create a set of optimized message indices for quick lookup
-          const optimizedIndices = new Set(
-            optimizedMessages.map((msg) => msg.id),
-          );
-
-          // Filter original messages to only include optimized ones
-          return originalMessages.filter((_, index) =>
-            optimizedIndices.has(index),
-          );
-        };
 
         const simpleStreamText = async ({
           chatMessages,
@@ -1091,12 +1134,13 @@ This conversation includes one or more image attachments. When the user uploads 
           let optimizedChatMessages = chatMessages;
           try {
             // Check if token optimization should run before compaction
-            const tokenOptMessages = convertToTokenOptMessages(chatMessages);
+            const tokenOptMessages = tokenOptimizer.convertToTokenOptMessages(chatMessages);
             const shouldOptimize =
               await tokenOptimizer.shouldRunBeforeCompaction(
                 tokenOptMessages,
                 settings.selectedModel.provider,
                 updatedChat.app.id,
+                Object.values(tools || {}),
               );
 
             if (shouldOptimize) {
@@ -1108,10 +1152,11 @@ This conversation includes one or more image attachments. When the user uploads 
                 settings.selectedModel.provider,
                 updatedChat.app.id,
                 [], // No user interactions for now
+                Object.values(tools || {}),
               );
 
               // Apply optimization result to chat messages
-              optimizedChatMessages = applyOptimizationResult(
+              optimizedChatMessages = tokenOptimizer.applyOptimizationResult(
                 chatMessages,
                 optimizationResult.optimizedMessages,
               );
@@ -1209,8 +1254,45 @@ This conversation includes one or more image attachments. When the user uploads 
                       inputTokens,
                       outputTokens,
                     });
+
+                    // Compaction coordination: Check if token optimization is enabled and can handle it
+                    const config = await tokenOptimizer.loadConfig(updatedChat.app.id);
+                    const shouldMarkForCompactionFlag = await checkAndMarkForCompaction(
+                      req.chatId,
+                      totalTokens,
+                    );
+
+                    if (
+                      shouldMarkForCompactionFlag &&
+                      config.coordinateWithCompaction &&
+                      config.enableAutoPruning
+                    ) {
+                      // Check if optimization would handle this on the next turn
+                      const tokenOptMessages =
+                        tokenOptimizer.convertToTokenOptMessages(
+                          optimizedChatMessages,
+                        );
+                      const canOptimizeNextTurn =
+                        await tokenOptimizer.shouldRunBeforeCompaction(
+                          tokenOptMessages,
+                          settings.selectedModel.provider,
+                          updatedChat.app.id,
+                          Object.values(tools || {}),
+                        );
+
+                      if (canOptimizeNextTurn) {
+                        // Skip marking for compaction if optimization will likely handle it
+                        logger.info(
+                          "Skipping compaction mark because token optimization will handle it on next turn",
+                        );
+                        await clearPendingCompaction(req.chatId);
+                      }
+                    }
                   } catch (error) {
-                    logger.error("Failed to record token usage:", error);
+                    logger.error(
+                      "Failed to record token usage or check compaction:",
+                      error,
+                    );
                   }
                 }
               } else {

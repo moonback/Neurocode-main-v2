@@ -3,8 +3,17 @@
 import * as fc from "fast-check";
 import { describe, it, expect } from "vitest";
 import { calculateTokenUsage } from "../analytics_engine";
+// Mock dependencies
+vi.mock("@/paths/paths", () => ({
+  getUserDataPath: vi.fn(() => require("os").tmpdir()),
+}));
+
+import { initializeDatabase } from "@/db";
 
 describe("Property 19: Token Distribution Completeness", () => {
+  beforeAll(() => {
+    initializeDatabase();
+  });
   /**
    * **Validates: Requirements 6.5**
    *

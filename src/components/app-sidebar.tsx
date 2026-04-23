@@ -29,6 +29,11 @@ import { AppList } from "./AppList";
 import { HelpDialog } from "./HelpDialog"; // Import the new dialog
 import { SettingsList } from "./SettingsList";
 import { LibraryList } from "./LibraryList";
+import { useQuery } from "@tanstack/react-query";
+import { ipc } from "@/ipc/types";
+import { queryKeys } from "@/lib/queryKeys";
+import { useSettings } from "@/hooks/useSettings";
+import { DollarSign, Zap } from "lucide-react";
 
 // Menu items.
 const items = [
@@ -151,17 +156,18 @@ export function AppSidebar() {
         </div>
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="p-4 border-t border-sidebar-border/50">
+        <TokenMiniStats />
         <SidebarMenu>
           <SidebarMenuItem>
             {/* Change button to open dialog instead of linking */}
             <SidebarMenuButton
               size="sm"
-              className="font-medium w-14 flex flex-col items-center gap-1 h-14 mb-2 rounded-2xl"
+              className="font-medium w-full flex items-center gap-3 h-10 px-3 rounded-xl hover:bg-sidebar-accent transition-colors"
               onClick={() => setIsHelpDialogOpen(true)} // Open dialog on click
             >
-              <HelpCircle className="h-5 w-5" />
-              <span className={"text-xs"}>Help</span>
+              <HelpCircle className="h-4 w-4" />
+              <span className={"text-xs"}>Help & Support</span>
             </SidebarMenuButton>
             <HelpDialog
               isOpen={isHelpDialogOpen}
@@ -228,5 +234,46 @@ function AppIcons({
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
+  );
+}
+
+function TokenMiniStats() {
+  const { settings } = useSettings();
+  const { data: dashboard } = useQuery({
+    queryKey: [queryKeys.settings.all, "token-dashboard-mini"],
+    queryFn: () => ipc.chat.getTokenUsageDashboard({ days: 30 }),
+    refetchInterval: 60000, // Refresh every minute
+  });
+
+  if (!settings?.enableTokenOptimization) return null;
+
+  const totalCost = dashboard?.totalCost || 0;
+  const budget = settings.tokenOptimizationCostAmount || 10;
+  const percentage = Math.min((totalCost / budget) * 100, 100);
+
+  return (
+    <div className="mb-4 space-y-2 px-1">
+      <div className="flex items-center justify-between text-[10px]">
+        <div className="flex items-center gap-1 text-muted-foreground">
+          <Zap className="h-3 w-3 text-amber-500" />
+          <span>Tokens</span>
+        </div>
+        <div className="font-medium">
+          ${totalCost.toFixed(2)} / ${budget}
+        </div>
+      </div>
+      <div className="w-full h-1.5 bg-sidebar-accent/50 rounded-full overflow-hidden">
+        <div
+          className={`h-full transition-all duration-1000 ${
+            percentage > 90
+              ? "bg-red-500"
+              : percentage > 70
+                ? "bg-amber-500"
+                : "bg-primary"
+          }`}
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+    </div>
   );
 }

@@ -25,6 +25,7 @@ export const MessageSchema = z.object({
   requestId: z.string().nullable().optional(),
   totalTokens: z.number().nullable().optional(),
   model: z.string().nullable().optional(),
+  isPinned: z.boolean().optional().default(false),
 });
 
 export type Message = z.infer<typeof MessageSchema>;
@@ -174,6 +175,47 @@ export const TokenCountResultSchema = z.object({
 
 export type TokenCountResult = z.infer<typeof TokenCountResultSchema>;
 
+/**
+ * Schema for token usage record.
+ */
+export const TokenUsageSchema = z.object({
+  chatId: z.number().optional(),
+  inputTokens: z.number(),
+  outputTokens: z.number(),
+  toolTokens: z.number(),
+  cost: z.number().optional(),
+  model: z.string().optional(),
+  timestamp: z.union([z.date(), z.string()]),
+});
+
+export type TokenUsage = z.infer<typeof TokenUsageSchema>;
+
+/**
+ * Schema for token usage dashboard data.
+ */
+export const TokenUsageDashboardSchema = z.object({
+  totalTokens: z.number(),
+  totalCost: z.number(),
+  usageByDay: z.array(
+    z.object({
+      date: z.string(),
+      inputTokens: z.number(),
+      outputTokens: z.number(),
+      toolTokens: z.number(),
+      cost: z.number(),
+    }),
+  ),
+  usageByModel: z.array(
+    z.object({
+      model: z.string(),
+      tokens: z.number(),
+      cost: z.number(),
+    }),
+  ),
+});
+
+export type TokenUsageDashboard = z.infer<typeof TokenUsageDashboardSchema>;
+
 // =============================================================================
 // Chat Contracts (Invoke/Response)
 // =============================================================================
@@ -246,9 +288,25 @@ export const chatContracts = {
   }),
 
   cancelStream: defineContract({
-    channel: "chat:cancel",
     input: z.number(), // chatId
     output: z.boolean(),
+  }),
+
+  getTokenUsage: defineContract({
+    channel: "chat:get-token-usage",
+    input: z.object({
+      chatId: z.number().optional(),
+      days: z.number().optional(),
+    }),
+    output: z.array(TokenUsageSchema),
+  }),
+
+  getTokenUsageDashboard: defineContract({
+    channel: "chat:get-token-usage-dashboard",
+    input: z.object({
+      days: z.number().optional(),
+    }),
+    output: TokenUsageDashboardSchema,
   }),
 } as const;
 

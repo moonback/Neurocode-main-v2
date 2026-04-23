@@ -1,13 +1,28 @@
 // Property-Based Tests for Time-Series Aggregation Correctness
 // Feature: token-optimization
 import * as fc from "fast-check";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { generateTrendData } from "../analytics_engine";
-import type { Period } from "../cost_tracker";
-import { db } from "@/db";
-import { costRecords, apps, chats } from "@/db/schema";
+import { db, initializeDatabase } from "@/db";
+import { costRecords } from "@/db/schema";
+import { sql, gte } from "drizzle-orm";
+
+// Mock dependencies
+vi.mock("@/paths/paths", () => ({
+  getUserDataPath: vi.fn(() => require("os").tmpdir()),
+}));
 
 describe("Property 16: Time-Series Aggregation Correctness", () => {
+  beforeAll(() => {
+    initializeDatabase();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-01-01T12:00:00Z"));
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
   /**
    * **Validates: Requirements 6.2**
    *
@@ -68,14 +83,12 @@ describe("Property 16: Time-Series Aggregation Correctness", () => {
         const records = db
           .select()
           .from(costRecords)
-          .where(
-            db.sql`${costRecords.timestamp} >= ${startDate.getTime() / 1000}`,
-          )
+          .where(gte(costRecords.timestamp, startDate))
           .all();
 
         // Calculate total tokens from raw records
         const totalTokensFromRecords = records.reduce(
-          (sum, record) => sum + record.inputTokens + record.outputTokens,
+          (sum, record) => sum + record.inputTokens + record.outputTokens + (record.toolTokens ?? 0),
           0,
         );
 

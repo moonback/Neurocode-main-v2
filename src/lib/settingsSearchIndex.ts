@@ -42,6 +42,7 @@ export const SETTING_IDS = {
   enableMcpServersForBuildMode: "setting-enable-mcp-servers-for-build-mode",
   enableSelectAppFromHomeChatInput:
     "setting-enable-select-app-from-home-chat-input",
+  tokenOptimization: "setting-token-optimization",
   reset: "setting-reset",
 } as const;
 
@@ -233,6 +234,24 @@ export const SETTINGS_SEARCH_INDEX: SearchableSettingItem[] = [
       "balanced",
       "deep",
       "pro",
+    ],
+    sectionId: SECTION_IDS.ai,
+    sectionLabel: "AI",
+  },
+
+  {
+    id: SETTING_IDS.tokenOptimization,
+    label: "Token Optimization",
+    description:
+      "Intelligently manage token usage through pruning, pinning, and cost tracking",
+    keywords: [
+      "token",
+      "optimization",
+      "pruning",
+      "cost",
+      "budget",
+      "pinning",
+      "allocation",
     ],
     sectionId: SECTION_IDS.ai,
     sectionLabel: "AI",

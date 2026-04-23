@@ -57,6 +57,7 @@ const MINIMUM_OUTPUT_TOKENS = 1024;
 export function calculateTokenBudget(
   provider: string,
   userConfig: TokenOptimizationConfig,
+  tools: any[] = [],
 ): TokenBudget {
   // Get provider configuration (throws DyadError if provider not found)
   const providerConfig = getProviderConfig(provider);
@@ -80,13 +81,19 @@ export function calculateTokenBudget(
     );
   }
 
+  // Account for tool tokens in the available budget (Requirement 7.6)
+  const toolTokens = estimateToolTokens(tools);
+  const availableForAllocation = Math.max(0, totalTokens - toolTokens);
+
   // Allocate tokens based on ratios
-  const allocated = allocateTokens(totalTokens, allocation);
+  const allocated = allocateTokens(availableForAllocation, allocation);
 
   // Validate minimum output allocation (Requirement 3.5)
-  if (allocated.outputGeneration < MINIMUM_OUTPUT_TOKENS) {
+  // If tools are so large that we can't meet the minimum, we still report it
+  // but let the caller handle the validation error.
+  if (allocated.outputGeneration < MINIMUM_OUTPUT_TOKENS && availableForAllocation > 0) {
     throw new DyadError(
-      `Output generation allocation (${allocated.outputGeneration}) is below minimum threshold (${MINIMUM_OUTPUT_TOKENS})`,
+      `Output generation allocation (${allocated.outputGeneration}) is below minimum threshold (${MINIMUM_OUTPUT_TOKENS}) due to large tool definitions or small context window`,
       DyadErrorKind.Validation,
     );
   }
@@ -99,9 +106,25 @@ export function calculateTokenBudget(
       systemInstructions: 0,
       outputGeneration: 0,
     },
-    remaining: totalTokens,
+    remaining: availableForAllocation,
     provider,
   };
+}
+
+/**
+ * Estimate tokens used by tool definitions
+ * Validates: Requirements 7.6
+ *
+ * @param tools - Array of tool definitions
+ * @returns Estimated token count for tools
+ */
+function estimateToolTokens(tools: any[]): number {
+  if (!tools || tools.length === 0) {
+    return 0;
+  }
+  // Heuristic: ~4 characters per token for JSON representation
+  const toolsJson = JSON.stringify(tools);
+  return Math.ceil(toolsJson.length / 4);
 }
 
 /**

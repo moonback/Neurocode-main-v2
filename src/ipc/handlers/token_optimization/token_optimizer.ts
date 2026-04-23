@@ -27,6 +27,7 @@ import {
 } from "./message_history_manager";
 import { calculateCost, recordCost } from "./cost_tracker";
 import { collectMetrics } from "./analytics_engine";
+import { ModelMessage } from "ai";
 
 /**
  * Optimization Result
@@ -93,6 +94,7 @@ export class TokenOptimizer {
     provider: string,
     appId: number,
     userInteractions: UserInteraction[] = [],
+    tools: any[] = [],
   ): Promise<OptimizationResult> {
     // Load configuration (app-scoped or global)
     const config = await this.loadConfig(appId);
@@ -100,7 +102,7 @@ export class TokenOptimizer {
     // Check if auto-pruning is enabled
     if (!config.enableAutoPruning) {
       // Return original messages without optimization
-      const tokenBudget = calculateTokenBudget(provider, config);
+      const tokenBudget = calculateTokenBudget(provider, config, tools);
       return {
         optimizedMessages: messages,
         pruningResult: {
@@ -117,7 +119,7 @@ export class TokenOptimizer {
     }
 
     // Step 1: Calculate token budget based on provider
-    const tokenBudget = calculateTokenBudget(provider, config);
+    const tokenBudget = calculateTokenBudget(provider, config, tools);
 
     // Step 2: Calculate message priorities
     const priorities: MessagePriority[] = messages.map((msg) =>
@@ -310,6 +312,7 @@ export class TokenOptimizer {
     messages: Message[],
     provider: string,
     appId: number,
+    tools: any[] = [],
   ): Promise<boolean> {
     // Load configuration
     const config = await this.loadConfig(appId);
@@ -325,7 +328,7 @@ export class TokenOptimizer {
     }
 
     // Calculate token budget
-    const tokenBudget = calculateTokenBudget(provider, config);
+    const tokenBudget = calculateTokenBudget(provider, config, tools);
 
     // Select pruning strategy
     const strategy = this.selectPruningStrategy(config.pruningStrategy);
@@ -442,6 +445,54 @@ export class TokenOptimizer {
       0,
     );
     return Math.ceil(totalChars / 4);
+  }
+
+  /**
+   * Convert ModelMessage to TokenOptMessage format
+   * Validates: Requirements 7.1
+   *
+   * @param modelMessages - AI SDK ModelMessage array
+   * @returns Token optimization Message array
+   */
+  convertToTokenOptMessages(modelMessages: ModelMessage[]): Message[] {
+    return modelMessages.map((msg, index) => {
+      const role = msg.role === "tool" ? "user" : msg.role;
+      // Ensure role is one of the allowed types
+      if (role !== "user" && role !== "assistant" && role !== "system") {
+        throw new Error(`Invalid role: ${role}`);
+      }
+      return {
+        id: index, // Use index as temporary ID since we don't have actual message IDs
+        role,
+        content:
+          typeof msg.content === "string"
+            ? msg.content
+            : JSON.stringify(msg.content),
+        createdAt: new Date(),
+        isPinned: false,
+        isCompactionSummary: false,
+        referenceCount: 0,
+      };
+    });
+  }
+
+  /**
+   * Apply Optimization Result to ModelMessage array
+   * Validates: Requirements 7.1
+   *
+   * @param originalMessages - Original ModelMessage array
+   * @param optimizedMessages - Optimized Token optimization Message array
+   * @returns Optimized ModelMessage array
+   */
+  applyOptimizationResult(
+    originalMessages: ModelMessage[],
+    optimizedMessages: Message[],
+  ): ModelMessage[] {
+    // Create a set of optimized message indices for quick lookup
+    const optimizedIndices = new Set(optimizedMessages.map((msg) => msg.id));
+
+    // Filter original messages to only include optimized ones
+    return originalMessages.filter((_, index) => optimizedIndices.has(index));
   }
 }
 

@@ -284,7 +284,7 @@ Note: This file may be large. Read only the sections you need or use grep to sea
 /**
  * Clear the pending compaction flag for a chat.
  */
-async function clearPendingCompaction(chatId: number): Promise<void> {
+export async function clearPendingCompaction(chatId: number): Promise<void> {
   try {
     await db
       .update(chats)

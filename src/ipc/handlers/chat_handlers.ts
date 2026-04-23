@@ -62,6 +62,9 @@ export function registerChatHandlers() {
       with: {
         messages: {
           orderBy: (messages, { asc }) => [asc(messages.createdAt)],
+          with: {
+            priorities: true,
+          },
         },
       },
     });
@@ -76,6 +79,7 @@ export function registerChatHandlers() {
       messages: chat.messages.map((m) => ({
         ...m,
         role: m.role as "user" | "assistant",
+        isPinned: m.priorities?.[0]?.isPinned ?? false,
       })),
     };
   });

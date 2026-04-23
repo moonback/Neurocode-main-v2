@@ -340,6 +340,7 @@ describe("Token Optimization Type Schemas", () => {
         messageId: 1,
         inputTokens: 1000,
         outputTokens: 500,
+        toolTokens: 200,
         inputCost: 0.03,
         outputCost: 0.03,
         totalCost: 0.06,

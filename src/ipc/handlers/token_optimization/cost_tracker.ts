@@ -160,8 +160,10 @@ export async function recordCost(
   if (
     costRecord.inputTokens < 0 ||
     costRecord.outputTokens < 0 ||
+    costRecord.toolTokens < 0 ||
     !Number.isInteger(costRecord.inputTokens) ||
-    !Number.isInteger(costRecord.outputTokens)
+    !Number.isInteger(costRecord.outputTokens) ||
+    !Number.isInteger(costRecord.toolTokens)
   ) {
     throw new DyadError(
       "Token counts must be non-negative integers",
@@ -211,6 +213,7 @@ export async function recordCost(
         messageId: costRecord.messageId,
         inputTokens: costRecord.inputTokens,
         outputTokens: costRecord.outputTokens,
+        toolTokens: costRecord.toolTokens,
         inputCost: costRecord.inputCost,
         outputCost: costRecord.outputCost,
         totalCost: costRecord.totalCost,
@@ -427,6 +430,7 @@ export async function exportCosts(params: ExportParams): Promise<string> {
         "Message ID",
         "Input Tokens",
         "Output Tokens",
+        "Tool Tokens",
         "Input Cost",
         "Output Cost",
         "Total Cost",
@@ -442,6 +446,7 @@ export async function exportCosts(params: ExportParams): Promise<string> {
         cost.messageId || "",
         cost.inputTokens,
         cost.outputTokens,
+        cost.toolTokens,
         cost.inputCost.toFixed(6),
         cost.outputCost.toFixed(6),
         cost.totalCost.toFixed(6),
@@ -475,4 +480,26 @@ export async function exportCosts(params: ExportParams): Promise<string> {
       DyadErrorKind.Internal,
     );
   }
+}
+
+/**
+ * Get the current pricing for a model.
+ */
+export async function getModelPricing(model: string, provider: string) {
+  // Normalize provider
+  const providerId = provider.toLowerCase();
+
+  const pricing = await db.query.providerPricing.findFirst({
+    where: eq(providerPricing.providerId, providerId),
+  });
+
+  if (!pricing) {
+    // Default pricing if not found
+    return {
+      inputTokensPerMillion: 10,
+      outputTokensPerMillion: 30,
+    };
+  }
+
+  return pricing;
 }

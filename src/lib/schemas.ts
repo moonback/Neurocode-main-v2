@@ -384,6 +384,24 @@ const BaseUserSettingsFields = {
   enableContextCompaction: z.boolean().optional(),
   skipNotificationBanner: z.boolean().optional(),
   enableSelectAppFromHomeChatInput: z.boolean().optional(),
+  // Token Optimization Settings
+  enableTokenOptimization: z.boolean().optional(),
+  tokenOptimizationPruningStrategy: z
+    .enum(["conservative", "balanced", "aggressive"])
+    .optional(),
+  enableTokenOptimizationAutoPruning: z.boolean().optional(),
+  tokenOptimizationPruningThreshold: z.number().optional(),
+  tokenOptimizationInputContextRatio: z.number().optional(),
+  tokenOptimizationSystemInstructionsRatio: z.number().optional(),
+  tokenOptimizationOutputGenerationRatio: z.number().optional(),
+  enableTokenOptimizationCostTracking: z.boolean().optional(),
+  tokenOptimizationCostAmount: z.number().optional(),
+  tokenOptimizationCostPeriod: z
+    .enum(["daily", "weekly", "monthly"])
+    .optional(),
+  tokenOptimizationCostWarningThreshold: z.number().optional(),
+  enableTokenOptimizationMessagePinning: z.boolean().optional(),
+  tokenOptimizationCoordinateWithCompaction: z.boolean().optional(),
 };
 
 /**

@@ -107,6 +107,7 @@ import { useSkillContextMatcher } from "@/hooks/useSkillContextMatcher";
 import { SkillMatcherSuggestion } from "@/components/skills/SkillMatcherSuggestion";
 import { matchedSkillsAtom, dismissedSkillsAtom } from "@/atoms/chatAtoms";
 import type { MatchedSkill } from "@/skills/types";
+import { TokenUsageIndicator } from "./TokenUsageIndicator";
 
 const showTokenBarAtom = atom(false);
 
@@ -1086,8 +1087,9 @@ export function ChatInput({ chatId }: { chatId?: number }) {
             )}
           </div>
           <div className="px-2 flex items-center justify-between pb-0.5 pt-0.5">
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               <ChatInputControls showContextFilesPicker={false} />
+              <TokenUsageIndicator chatId={chatId} input={inputValue} />
             </div>
 
             <AuxiliaryActionsMenu

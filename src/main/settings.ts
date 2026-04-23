@@ -49,6 +49,20 @@ const DEFAULT_SETTINGS: UserSettings = {
   autoExpandPreviewPanel: true,
   enableContextCompaction: true,
   enableDyadPro: true,
+  // Token Optimization Defaults
+  enableTokenOptimization: true,
+  tokenOptimizationPruningStrategy: "balanced",
+  enableTokenOptimizationAutoPruning: true,
+  tokenOptimizationPruningThreshold: 0.8,
+  tokenOptimizationInputContextRatio: 0.6,
+  tokenOptimizationSystemInstructionsRatio: 0.2,
+  tokenOptimizationOutputGenerationRatio: 0.2,
+  enableTokenOptimizationCostTracking: true,
+  tokenOptimizationCostAmount: 10.0,
+  tokenOptimizationCostPeriod: "monthly",
+  tokenOptimizationCostWarningThreshold: 0.8,
+  enableTokenOptimizationMessagePinning: true,
+  tokenOptimizationCoordinateWithCompaction: true,
 };
 
 const SETTINGS_FILE = "user-settings.json";

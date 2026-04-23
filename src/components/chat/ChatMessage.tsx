@@ -16,7 +16,10 @@ import {
   Info,
   Bot,
   Ban,
+  Pin,
+  PinOff,
 } from "lucide-react";
+import { useMessagePinning } from "@/hooks/useMessagePinning";
 import { formatDistanceToNow, format } from "date-fns";
 import { useVersions } from "@/hooks/useVersions";
 import { useAtomValue } from "jotai";
@@ -100,6 +103,16 @@ const ChatMessage = ({
     message.role === "assistant" && assistantTextContent.length > 0;
   //handle copy chat
   const { copyMessageContent, copied } = useCopyToClipboard();
+  const { pinMessage, unpinMessage, isPinning, isUnpinning } = useMessagePinning();
+
+  const handleTogglePin = async () => {
+    if (!message.id) return;
+    if (message.isPinned) {
+      await unpinMessage(message.id);
+    } else {
+      await pinMessage(message.id);
+    }
+  };
   const handleCopyFormatted = async () => {
     await copyMessageContent(
       message.role === "assistant" ? assistantTextContent : message.content,
@@ -192,9 +205,14 @@ const ChatMessage = ({
               </div>
             ) : (
               <div
-                className="prose dark:prose-invert prose-headings:mb-2 prose-p:my-1 prose-pre:my-0 max-w-none break-words text-[15px]"
+                className="relative prose dark:prose-invert prose-headings:mb-2 prose-p:my-1 prose-pre:my-0 max-w-none break-words text-[15px]"
                 suppressHydrationWarning
               >
+                {message.isPinned && (
+                  <div className="absolute top-2 right-2 flex items-center text-blue-500" title="Pinned to context">
+                    <Pin className="h-3.5 w-3.5 fill-current" />
+                  </div>
+                )}
                 {message.role === "assistant" ? (
                   <>
                     <DyadMarkdownParser content={assistantTextContent} />
@@ -237,6 +255,38 @@ const ChatMessage = ({
                     </TooltipContent>
                   </Tooltip>
                 )}
+                {message.role === "user" && !isStreaming && (
+                  <div className="flex gap-2">
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <button
+                            data-testid="pin-message-button"
+                            onClick={handleTogglePin}
+                            disabled={isPinning || isUnpinning}
+                            aria-label={message.isPinned ? "Unpin" : "Pin"}
+                            className={`flex items-center space-x-1 px-2 py-1 text-xs transition-colors duration-200 cursor-pointer rounded ${
+                              message.isPinned
+                                ? "text-blue-500 hover:text-blue-600 bg-blue-50 dark:bg-blue-900/20"
+                                : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                            }`}
+                          />
+                        }
+                      >
+                        {message.isPinned ? (
+                          <PinOff className="h-4 w-4" />
+                        ) : (
+                          <Pin className="h-4 w-4" />
+                        )}
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {message.isPinned
+                          ? "Unpin from context"
+                          : "Pin to context (prevent pruning)"}
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                )}
                 <div className="flex flex-wrap gap-2">
                   {message.approvalState && (
                     <div className="flex items-center space-x-1">
@@ -259,6 +309,34 @@ const ChatMessage = ({
                       <span>{message.model}</span>
                     </div>
                   )}
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <button
+                          data-testid="pin-message-button"
+                          onClick={handleTogglePin}
+                          disabled={isPinning || isUnpinning}
+                          aria-label={message.isPinned ? "Unpin" : "Pin"}
+                          className={`flex items-center space-x-1 px-2 py-1 text-xs transition-colors duration-200 cursor-pointer rounded ${
+                            message.isPinned
+                              ? "text-blue-500 hover:text-blue-600 bg-blue-50 dark:bg-blue-900/20"
+                              : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                          }`}
+                        />
+                      }
+                    >
+                      {message.isPinned ? (
+                        <PinOff className="h-4 w-4" />
+                      ) : (
+                        <Pin className="h-4 w-4" />
+                      )}
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {message.isPinned
+                        ? "Unpin from context"
+                        : "Pin to context (prevent pruning)"}
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
               </div>
             ) : null}
