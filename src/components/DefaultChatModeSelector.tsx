@@ -75,17 +75,17 @@ export function DefaultChatModeSelector() {
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {isProEnabled
-                      ? "Better at bigger tasks"
-                      : "Free tier (10 messages/day)"}
+                      ? "Meilleur pour les tâches plus importantes"
+                      : "Essai gratuit (10 messages/jour) "}
                   </span>
                 </div>
               </SelectItem>
             )}
             <SelectItem value="build">
               <div className="flex flex-col items-start">
-                <span className="font-medium">Build</span>
+                <span className="font-medium">Générer</span>
                 <span className="text-xs text-muted-foreground">
-                  Generate and edit code
+                  Générer et modifier le code
                 </span>
               </div>
             </SelectItem>

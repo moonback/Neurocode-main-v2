@@ -80,11 +80,11 @@ export default function SettingsPage() {
           className="flex items-center gap-2 mb-4 bg-(--background-lightest) py-5"
         >
           <ArrowLeft className="h-4 w-4" />
-          Go Back
+          <p>Retourner</p>
         </Button>
         <div className="flex justify-between mb-4">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Settings
+            Réglages
           </h1>
         </div>
 
@@ -106,17 +106,17 @@ export default function SettingsPage() {
               className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
             >
               <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                Telemetry
+                Télémetry
               </h2>
               <div id={SETTING_IDS.telemetry} className="space-y-2">
                 <TelemetrySwitch />
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  This records anonymous usage data to improve the product.
+                  Ceci enregistre des données d'utilisation anonymes pour améliorer le produit.
                 </div>
               </div>
 
               <div className="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400">
-                <span className="mr-2 font-medium">Telemetry ID:</span>
+                <span className="mr-2 font-medium">ID de Télémétrie:</span>
                 <span className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-gray-800 dark:text-gray-200 font-mono">
                   {settings ? settings.telemetryUserId : "n/a"}
                 </span>
@@ -130,7 +130,7 @@ export default function SettingsPage() {
             className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
           >
             <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-              Integrations
+              Intégrations
             </h2>
             <div className="space-y-4">
               <div id={SETTING_IDS.github}>
@@ -168,7 +168,7 @@ export default function SettingsPage() {
             className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
           >
             <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-              Agent Permissions (Pro)
+              Permissions d'agent
             </h2>
             <AgentToolsSettings />
           </div>
@@ -190,7 +190,7 @@ export default function SettingsPage() {
             className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
           >
             <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-              Experiments
+              Expériments
             </h2>
             <div className="space-y-4">
               <div id={SETTING_IDS.nativeGit} className="space-y-1 mt-4">
@@ -205,11 +205,11 @@ export default function SettingsPage() {
                       });
                     }}
                   />
-                  <Label htmlFor="enable-native-git">Enable Native Git</Label>
+                  <Label htmlFor="enable-native-git">Activer Native Git</Label>
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  This doesn't require any external Git installation and offers
-                  a faster, native-Git performance experience.
+                  Ceci ne requiert aucune installation Git externe et offre
+                  une expérience de performance Git native plus rapide.
                 </div>
               </div>
               <div
@@ -231,7 +231,7 @@ export default function SettingsPage() {
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="enable-mcp-servers-for-build-mode"
-                    aria-label="Enable MCP servers for Build mode"
+                    aria-label="Activer les serveurs MCP pour le mode Build"
                     checked={!!settings?.enableMcpServersForBuildMode}
                     onCheckedChange={(checked) => {
                       updateSettings({
@@ -240,12 +240,11 @@ export default function SettingsPage() {
                     }}
                   />
                   <Label htmlFor="enable-mcp-servers-for-build-mode">
-                    Enable MCP servers for Build mode
+                    Activer les serveurs MCP pour le mode Build
                   </Label>
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Allow MCP servers to be used when in Build mode. Note: MCP
-                  servers are always enabled in Agent mode.
+                  Permet aux serveurs MCP d'être utilisés en mode Build. Note: Les serveurs MCP sont toujours activés en mode Agent.
                 </div>
               </div>
               <div
@@ -255,7 +254,7 @@ export default function SettingsPage() {
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="enable-select-app-from-home-chat-input"
-                    aria-label="Enable Select App from Home Chat Input"
+                    aria-label="Activer la sélection d'application depuis le champ de chat d'accueil"
                     checked={!!settings?.enableSelectAppFromHomeChatInput}
                     onCheckedChange={(checked) => {
                       updateSettings({
@@ -264,11 +263,11 @@ export default function SettingsPage() {
                     }}
                   />
                   <Label htmlFor="enable-select-app-from-home-chat-input">
-                    Enable Select App from Home Chat Input
+                    Activer la sélection d'application depuis le champ de chat d'accueil
                   </Label>
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Show an app selector in the home chat input to start a chat
+                  Affiche un sélecteur d'application dans le champ de chat d'accueil pour commencer un chat
                   referencing an existing app.
                 </div>
               </div>
@@ -291,11 +290,10 @@ export default function SettingsPage() {
               >
                 <div>
                   <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-                    Reset Everything
+                    Tout réinitialiser
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    This will delete all your apps, chats, and settings. This
-                    action cannot be undone.
+                    Cela supprimera toutes vos applications, chats et paramètres. Cette action ne peut pas être annulée.
                   </p>
                 </div>
                 <button
@@ -303,7 +301,7 @@ export default function SettingsPage() {
                   disabled={isResetting}
                   className="rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isResetting ? "Resetting..." : "Reset Everything"}
+                  {isResetting ? "Réinitialisation..." : "Tout réinitialiser"}
                 </button>
               </div>
             </div>
@@ -313,10 +311,10 @@ export default function SettingsPage() {
 
       <ConfirmationDialog
         isOpen={isResetDialogOpen}
-        title="Reset Everything"
-        message="Are you sure you want to reset everything? This will delete all your apps, chats, and settings. This action cannot be undone."
-        confirmText={isResetting ? "Resetting..." : "Reset Everything"}
-        cancelText="Cancel"
+        title="Tout réinitialiser"
+        message="Êtes-vous sûr de vouloir tout réinitialiser ? Cela supprimera toutes vos applications, chats et paramètres. Cette action ne peut pas être annulée."
+        confirmText={isResetting ? "Resetting..." : "Tout réinitialiser"}
+        cancelText="Annuler"
         confirmDisabled={isResetting}
         onConfirm={handleResetEverything}
         onCancel={() => setIsResetDialogOpen(false)}
@@ -334,7 +332,7 @@ export function GeneralSettings({ appVersion }: { appVersion: string | null }) {
       className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
     >
       <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-        General Settings
+        Paramètres généraux
       </h2>
 
       <div className="space-y-4 mb-4">
@@ -375,8 +373,7 @@ export function GeneralSettings({ appVersion }: { appVersion: string | null }) {
       <div id={SETTING_IDS.autoUpdate} className="space-y-1 mt-4">
         <AutoUpdateSwitch />
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          This will automatically update the app when new versions are
-          available.
+          Cela mettra automatiquement à jour l'application lorsque de nouvelles versions seront disponibles.
         </div>
       </div>
 
@@ -411,7 +408,7 @@ export function WorkflowSettings() {
       className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
     >
       <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-        Workflow Settings
+        Paramètres du workflow
       </h2>
 
       <div id={SETTING_IDS.defaultChatMode} className="mt-4">
@@ -421,29 +418,28 @@ export function WorkflowSettings() {
       <div id={SETTING_IDS.autoApprove} className="space-y-1 mt-4">
         <AutoApproveSwitch showToast={false} />
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          This will automatically approve code changes and run them.
+          Cela approuvera automatiquement les changements de code et les exécutera.
         </div>
       </div>
 
       <div id={SETTING_IDS.autoFix} className="space-y-1 mt-4">
         <AutoFixProblemsSwitch />
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          This will automatically fix TypeScript errors.
+          Cela corrigera automatiquement les erreurs TypeScript.
         </div>
       </div>
 
       <div id={SETTING_IDS.autoExpandPreview} className="space-y-1 mt-4">
         <AutoExpandPreviewSwitch />
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          Automatically expand the preview panel when code changes are made.
+          Agrandit automatiquement le panneau d'aperçu lorsque des changements de code sont effectués.
         </div>
       </div>
 
       <div id={SETTING_IDS.chatEventNotification} className="space-y-1 mt-4">
         <ChatEventNotificationSwitch />
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          Show native notifications when a chat response completes or a
-          questionnaire needs your input while the app is not focused.
+          Affiche les notifications natives lorsqu'une réponse de chat est terminée ou qu'un questionnaire nécessite votre saisie alors que l'application n'est pas active.
         </div>
       </div>
     </div>
@@ -456,7 +452,7 @@ export function AISettings() {
       className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
     >
       <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-        AI Settings
+        Paramètres de l'IA
       </h2>
 
       <div id={SETTING_IDS.thinkingBudget} className="mt-4">
@@ -474,21 +470,19 @@ export function AISettings() {
       <div id={SETTING_IDS.contextCompaction} className="space-y-1 mt-4">
         <ContextCompactionSwitch />
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          Automatically compact long conversations to stay within context
-          limits. Original messages are preserved in the app data directory.
+          Compact automatiquement les longues conversations pour rester dans les limites de contexte. Les messages originaux sont conservés dans le répertoire de données de l'application.
         </div>
       </div>
 
       <div id={SETTING_IDS.smartContextStrategy} className="space-y-1 mt-4">
         <div className="mb-2">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Smart Context Strategy
+            Stratégie de contexte intelligent
           </label>
         </div>
         <SmartContextStrategySelector />
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          Choose how aggressively the AI includes files in context. Balanced is
-          recommended for most workflows.
+          Détermine avec quelle agressivité l'IA inclut les fichiers dans le contexte. L'option équilibrée est recommandée pour la plupart des workflows.
         </div>
       </div>
     </div>
