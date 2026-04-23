@@ -241,55 +241,7 @@ export function SkillsSettings() {
         }}
       />
 
-      {/* Example skills */}
-      <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-        <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
-          Skills d'exemple
-        </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-          Des skills prêts à l'emploi pour les workflows courants :
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          {[
-            {
-              name: "examples:code-review",
-              description: "Revue de code approfondie",
-            },
-            {
-              name: "examples:debug-error",
-              description: "Débogage systématique d'erreurs",
-            },
-            {
-              name: "examples:write-tests",
-              description: "Écriture de tests complets",
-            },
-            {
-              name: "examples:refactor-code",
-              description: "Refactorisation sécurisée",
-            },
-            {
-              name: "examples:add-feature",
-              description: "Ajout de nouvelles fonctionnalités",
-            },
-            {
-              name: "examples:optimize-performance",
-              description: "Optimisation des performances",
-            },
-          ].map((example) => (
-            <div
-              key={example.name}
-              className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-sm"
-            >
-              <code className="text-blue-600 dark:text-blue-400">
-                /{example.name}
-              </code>
-              <p className="text-gray-600 dark:text-gray-400 text-xs mt-1">
-                {example.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
+
     </div>
   );
 }
