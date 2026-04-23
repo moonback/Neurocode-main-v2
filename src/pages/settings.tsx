@@ -80,7 +80,7 @@ export default function SettingsPage() {
           className="flex items-center gap-2 mb-4 bg-(--background-lightest) py-5"
         >
           <ArrowLeft className="h-4 w-4" />
-          <p>Retourner</p>
+          <p>Retour</p>
         </Button>
         <div className="flex justify-between mb-4">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -106,7 +106,7 @@ export default function SettingsPage() {
               className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
             >
               <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                Télémetry
+                Télémetrie
               </h2>
               <div id={SETTING_IDS.telemetry} className="space-y-2">
                 <TelemetrySwitch />
