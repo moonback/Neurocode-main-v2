@@ -153,7 +153,7 @@ Ce document décrit la feuille de route du développement de NeuroCode, incluant
 
 ### Performance et Optimisation
 
-- [ ] **Améliorations du mode Smart Context**
+- [x] **Améliorations du mode Smart Context**
   - Algorithmes de sélection de fichiers améliorés
   - Meilleur scoring de pertinence du contexte
   - Utilisation réduite de jetons sans perte de qualité
