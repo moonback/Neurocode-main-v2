@@ -18,7 +18,7 @@ export function SkillsSettings() {
     isError,
   } = useQuery({
     queryKey: queryKeys.skills.list(),
-    queryFn: () => ipc.skills.list(),
+    queryFn: () => ipc.skills.list(undefined),
   });
 
   // ── Discover mutation ────────────────────────────────────────────────────
