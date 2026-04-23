@@ -351,11 +351,10 @@ export function GeneralSettings({ appVersion }: { appVersion: string | null }) {
                 className={`
                 px-4 py-1.5 text-sm font-medium rounded-md
                 transition-all duration-200
-                ${
-                  theme === option
+                ${theme === option
                     ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                }
+                  }
               `}
               >
                 {option.charAt(0).toUpperCase() + option.slice(1)}
@@ -483,7 +482,7 @@ export function AISettings() {
       <div id={SETTING_IDS.smartContextStrategy} className="space-y-1 mt-4">
         <div className="mb-2">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Smart Context Strategy (Pro)
+            Smart Context Strategy
           </label>
         </div>
         <SmartContextStrategySelector />

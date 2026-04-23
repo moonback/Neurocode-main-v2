@@ -90,7 +90,7 @@ Ce document décrit la feuille de route du développement de NeuroCode, incluant
   - Flux de travail d'affinage du plan
   - Passage au mode Build pour l'exécution
 
-- [x] **Mode Agent Local (Pro)** (v0.43)
+- [x] **Mode Agent Local** (v0.43)
   - Agent autonome avec exécution d'outils
   - Appels d'outils en parallèle
   - Gestion des tâches multi-étapes
@@ -431,7 +431,7 @@ Nous accueillons les contributions de la communauté ! Voici comment vous pouvez
 
 ### v0.43.0
 
-- Mode Agent Local (Pro)
+- Mode Agent Local
 - Compactage du contexte
 - Turbo Edits v2
 - Améliorations de performance
@@ -463,7 +463,6 @@ Nous accueillons les contributions de la communauté ! Voici comment vous pouvez
 
 - Cette feuille de route est susceptible de changer en fonction des retours des utilisateurs et des contraintes techniques
 - Les dates sont des estimations et peuvent varier en fonction de l'avancement du développement
-- Les fonctionnalités Pro sont marquées par (Pro) et nécessitent un abonnement Dyad Pro
 - Les contributions de la communauté peuvent accélérer le développement des fonctionnalités
 
 ---

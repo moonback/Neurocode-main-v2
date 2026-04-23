@@ -8,25 +8,25 @@ const STRATEGY_OPTIONS: Array<{
   label: string;
   description: string;
 }> = [
-  {
-    value: "conservative",
-    label: "Conservative",
-    description:
-      "Minimal context — only the active file and highly relevant files (score ≥ 0.7). Uses up to 25% of token budget. Best for focused tasks.",
-  },
-  {
-    value: "balanced",
-    label: "Balanced",
-    description:
-      "Moderate context — includes files with score ≥ 0.4. Uses up to 50% of token budget. Recommended for most workflows.",
-  },
-  {
-    value: "deep",
-    label: "Deep",
-    description:
-      "Maximum context — includes all relevant files (score > 0.1). Uses up to 80% of token budget. Best for complex refactoring.",
-  },
-];
+    {
+      value: "conservative",
+      label: "Conservative",
+      description:
+        "Contexte minimal : seul le fichier actif et les fichiers très pertinents (score ≥ 0,7) sont inclus. Utilise jusqu’à 25 % du budget de jetons.",
+    },
+    {
+      value: "balanced",
+      label: "Balanced",
+      description:
+        "Contexte modéré — inclut les fichiers avec un score ≥ 0,4. Utilise jusqu’à 50 % du budget de jetons.",
+    },
+    {
+      value: "deep",
+      label: "Deep",
+      description:
+        "Contexte maximal — inclut tous les fichiers pertinents (score > 0,1). Utilise jusqu’à 80 % du budget de jetons.",
+    },
+  ];
 
 export function SmartContextStrategySelector() {
   const { settings, updateSettings } = useSettings();
@@ -42,22 +42,29 @@ export function SmartContextStrategySelector() {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <ToggleGroup
         value={[currentStrategy]}
         onValueChange={handleStrategyChange}
         variant="outline"
-        className="grid grid-cols-1 gap-3 sm:grid-cols-3"
+        className="flex flex-col gap-3"
       >
         {STRATEGY_OPTIONS.map((option) => (
           <ToggleGroupItem
             key={option.value}
             value={option.value}
             aria-label={`${option.label} strategy`}
-            className="flex h-auto flex-col items-start gap-2 px-4 py-4 text-left transition-all hover:bg-accent/50 data-[state=on]:border-primary data-[state=on]:bg-primary/10 data-[state=on]:ring-1 data-[state=on]:ring-primary"
+            className="flex h-auto w-full flex-col items-start gap-2 rounded-xl border-2 px-6 py-5 text-left transition-all hover:bg-gray-50 dark:hover:bg-gray-800/50 data-[state=on]:border-blue-500 data-[state=on]:bg-blue-50/50 dark:data-[state=on]:border-blue-400 dark:data-[state=on]:bg-blue-900/20"
           >
-            <span className="text-sm font-semibold">{option.label}</span>
-            <span className="text-xs leading-relaxed text-muted-foreground">
+            <div className="flex w-full items-center justify-between">
+              <span className="text-base font-bold text-gray-900 dark:text-white">
+                {option.label}
+              </span>
+              {currentStrategy === option.value && (
+                <div className="h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-400" />
+              )}
+            </div>
+            <span className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
               {option.description}
             </span>
           </ToggleGroupItem>

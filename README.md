@@ -42,7 +42,7 @@ NeuroCode est une puissante application de bureau qui permet aux développeurs d
 - **Mode Build :** Génération et modification interactive de code avec aperçu en direct
 - **Mode Ask :** Questions-réponses sur votre base de code
 - **Mode Plan :** Planification assistée par l'IA et décomposition des tâches avec collecte des besoins
-- **Mode Agent Local (Pro) :** Agent autonome qui exécute des outils et prend des décisions
+- **Mode Agent Local :** Agent autonome qui exécute des outils et prend des décisions
 
 #### 💻 Édition de code et aperçu
 
@@ -142,7 +142,7 @@ Le système fonctionne en 4 étapes :
 | **Balanced**     | Équilibre (par défaut)       |
 | **Deep**         | Contexte large, plus complet |
 
-#### 🔍 Observabilité (Pro)
+#### 🔍 Observabilité
 
 Accédez aux décisions du Context Manager :
 
@@ -166,7 +166,7 @@ Disponible via IPC :
 - **Revue de sécurité :** Analyse de sécurité du code par l'IA
 - **Correction automatique des problèmes :** Détection et résolution automatique des erreurs
 - **Gestion des jetons :** Gestion intelligente du contexte pour les longs chats
-- **Recherche Web (Pro) :** Recherche sur le web pour des informations à jour
+- **Recherche Web :** Recherche sur le web pour des informations à jour
 - **Budget de réflexion :** Support des modèles de raisonnement (o1/o3)
 - **Contexte intelligent :** Sélection intelligente de fichiers pour le contexte
 
@@ -267,7 +267,7 @@ Vous : "Je veux ajouter des profils utilisateurs"
 IA : [Pose des questions sur les besoins, crée un plan détaillé]
 ```
 
-#### Mode Agent Local (Pro)
+#### Mode Agent Local
 
 Agent autonome capable d'exécuter des tâches multi-étapes de manière indépendante avec appels d'outils et prise de décision.
 
