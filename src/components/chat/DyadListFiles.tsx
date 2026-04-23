@@ -30,7 +30,7 @@ export function DyadListFiles({ node, children }: DyadListFilesProps) {
   const content = typeof children === "string" ? children : "";
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const title = directory ? directory : "List Files";
+  const title = directory ? directory : "Liste des fichiers";
 
   return (
     <DyadCard
@@ -44,8 +44,8 @@ export function DyadListFiles({ node, children }: DyadListFilesProps) {
         <span className="font-medium text-sm text-foreground truncate">
           {title}
         </span>
-        {isRecursive && <DyadBadge color="slate">recursive</DyadBadge>}
-        {isIncludeHidden && <DyadBadge color="slate">include hidden</DyadBadge>}
+        {isRecursive && <DyadBadge color="slate">Récursif</DyadBadge>}
+        {isIncludeHidden && <DyadBadge color="slate">Inclure les fichiers cachés</DyadBadge>}
         {isLoading && (
           <DyadStateIndicator state="pending" pendingLabel="Listing..." />
         )}

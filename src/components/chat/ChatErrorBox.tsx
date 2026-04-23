@@ -34,13 +34,13 @@ export function ChatErrorBox({
         {error}
         <span className="ml-1">
           <ExternalLink
-            href="https://dyad.sh/pro?utm_source=dyad-app&utm_medium=app&utm_campaign=free-quota-error"
+            href="https://neurocode.ai/pro?utm_source=dyad-app&utm_medium=app&utm_campaign=free-quota-error"
             variant="primary"
           >
-            Access with Dyad Pro
+            Accéder avec Neurocode Pro
           </ExternalLink>
         </span>{" "}
-        or switch to another model.
+        ou basculez vers un autre modèle.
       </ChatErrorContainer>
     );
   }
@@ -62,14 +62,14 @@ export function ChatErrorBox({
         {error}
         <div className="mt-2 space-y-2 space-x-2">
           <ExternalLink
-            href="https://dyad.sh/pro?utm_source=dyad-app&utm_medium=app&utm_campaign=rate-limit-error"
+            href="https://neurocode.ai/pro?utm_source=dyad-app&utm_medium=app&utm_campaign=rate-limit-error"
             variant="primary"
           >
-            Upgrade to Dyad Pro
+            Accéder avec Neurocode Pro
           </ExternalLink>
 
-          <ExternalLink href="https://dyad.sh/docs/help/ai-rate-limit">
-            Troubleshooting guide
+          <ExternalLink href="https://neurocode.ai/docs/help/ai-rate-limit">
+            Guide de dépannage
           </ExternalLink>
         </div>
       </ChatErrorContainer>
@@ -80,14 +80,14 @@ export function ChatErrorBox({
     return (
       <ChatInfoContainer onDismiss={onDismiss}>
         <span>
-          Looks like you don't have a valid Dyad Pro key.{" "}
+          Vous n'avez pas de clé Neurocode Pro valide.{" "}
           <ExternalLink
-            href="https://dyad.sh/pro?utm_source=dyad-app&utm_medium=app&utm_campaign=invalid-pro-key-error"
+            href="https://neurocode.ai/pro?utm_source=dyad-app&utm_medium=app&utm_campaign=invalid-pro-key-error"
             variant="primary"
           >
-            Upgrade to Dyad Pro
+            Accéder avec Neurocode Pro
           </ExternalLink>{" "}
-          today.
+          aujourd'hui.
         </span>
       </ChatInfoContainer>
     );
@@ -96,14 +96,7 @@ export function ChatErrorBox({
     return (
       <ChatInfoContainer onDismiss={onDismiss}>
         <span>
-          You have used all of your Dyad AI credits this month.{" "}
-          <ExternalLink
-            href="https://academy.dyad.sh/subscription?utm_source=dyad-app&utm_medium=app&utm_campaign=exceeded-budget-error"
-            variant="primary"
-          >
-            Reload or upgrade your subscription
-          </ExternalLink>{" "}
-          and get more AI credits
+          Vous avez utilisé tous vos crédits IA ce mois-ci. Rechargez ou améliorez votre abonnement pour obtenir plus de crédits IA.
         </span>
       </ChatInfoContainer>
     );
@@ -121,15 +114,10 @@ export function ChatErrorBox({
   if (error.includes("FREE_AGENT_QUOTA_EXCEEDED")) {
     return (
       <ChatErrorContainer onDismiss={onDismiss}>
-        You have used all {messagesLimit} free Agent messages for today. Please
-        upgrade to Dyad Pro for unlimited access or switch to Build mode.
+        Vous avez atteint la limite de messages gratuits pour aujourd'hui. Veuillez
+        passer à Neurocode Pro pour un accès illimité ou basculer en mode Création.
         <div className="mt-2 space-y-2 space-x-2">
-          <ExternalLink
-            href="https://dyad.sh/pro?utm_source=dyad-app&utm_medium=app&utm_campaign=free-agent-quota-exceeded"
-            variant="primary"
-          >
-            Upgrade to Dyad Pro
-          </ExternalLink>
+
         </div>
       </ChatErrorContainer>
     );
@@ -139,33 +127,22 @@ export function ChatErrorBox({
     <ChatErrorContainer onDismiss={onDismiss}>
       {error}
       <div className="mt-2 space-y-2 space-x-2">
-        {!isDyadProEnabled &&
-          error.includes(AI_STREAMING_ERROR_MESSAGE_PREFIX) &&
-          !error.includes("TypeError: terminated") && (
-            <ExternalLink
-              href="https://dyad.sh/pro?utm_source=dyad-app&utm_medium=app&utm_campaign=general-error"
-              variant="primary"
-            >
-              Upgrade to Dyad Pro
-            </ExternalLink>
-          )}
+
         {isDyadProEnabled && onStartNewChat && (
           <Tooltip>
             <TooltipTrigger
               onClick={onStartNewChat}
               className="cursor-pointer inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
             >
-              <span>Start new chat</span>
+              <span>Nouveau chat</span>
               <MessageSquarePlus size={18} />
             </TooltipTrigger>
             <TooltipContent>
-              Starting a new chat can fix some issues
+              La création d'un nouveau chat peut résoudre certains problèmes
             </TooltipContent>
           </Tooltip>
         )}
-        <ExternalLink href="https://www.dyad.sh/docs/faq">
-          Read docs
-        </ExternalLink>
+
       </div>
     </ChatErrorContainer>
   );

@@ -152,12 +152,12 @@ function RunReviewButton({
               d="m4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             />
           </svg>
-          Running Security Review...
+          Exécution de la revue de sécurité...
         </>
       ) : (
         <>
           <Shield className="w-4 h-4" />
-          Run Security Review
+          Lancer la revue de sécurité
         </>
       )}
     </Button>
@@ -245,31 +245,18 @@ function SecurityHeader({
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1 flex items-center gap-2">
             <Shield className="w-5 h-5" />
-            Security Review
+            Revue de Sécurité
             <Badge variant="secondary" className="uppercase tracking-wide">
-              experimental
+              Expérimental
             </Badge>
           </h1>
-          <div className="text-sm">
-            <p>
-              <a
-                className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-                onClick={() =>
-                  ipc.system.openExternalUrl(
-                    "https://www.dyad.sh/docs/guides/security-review",
-                  )
-                }
-              >
-                Open Security Review docs
-              </a>
-            </p>
-          </div>
+
           {data && data.findings.length > 0 && <ReviewSummary data={data} />}
         </div>
         <div className="flex flex-col items-end gap-2">
           <Button variant="outline" onClick={onOpenEditRules}>
             <Pencil className="w-4 h-4" />
-            Edit Security Rules
+            Modifier les règles de sécurité
           </Button>
           <div className="flex items-center gap-2">
             <Button
@@ -307,13 +294,13 @@ function SecurityHeader({
                       d="m4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Fixing {selectedCount} Issue{selectedCount !== 1 ? "s" : ""}
+                  Correction de {selectedCount} problème{selectedCount !== 1 ? "s" : ""}
                   ...
                 </>
               ) : (
                 <>
                   <Wrench className="w-4 h-4" />
-                  Fix {selectedCount} Issue{selectedCount !== 1 ? "s" : ""}
+                  Correction de {selectedCount} problème{selectedCount !== 1 ? "s" : ""}
                 </>
               )}
             </Button>
@@ -350,7 +337,7 @@ function LoadingView() {
         </svg>
       </div>
       <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mt-4">
-        Loading...
+        Chargement...
       </h2>
     </div>
   );
@@ -363,10 +350,10 @@ function NoAppSelectedView() {
         <Shield className="w-8 h-8 text-gray-400" />
       </div>
       <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-        No App Selected
+        Aucune application sélectionnée
       </h2>
       <p className="text-gray-600 dark:text-gray-400 max-w-md">
-        Select an app to run a security review
+        Sélectionnez une application pour lancer une revue de sécurité
       </p>
     </div>
   );
@@ -399,10 +386,10 @@ function RunningReviewCard() {
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            Security review is running
+            La revue de sécurité est en cours
           </h3>
           <p className="text-gray-600 dark:text-gray-400">
-            Results will be available soon.
+            Les résultats seront bientôt disponibles.
           </p>
         </div>
       </CardContent>
@@ -425,11 +412,10 @@ function NoReviewCard({
             <Shield className="w-8 h-8 text-gray-400" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            No Security Review Found
+            Aucune analyse de sécurité n'a été trouvée
           </h3>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Run a security review to identify potential vulnerabilities in your
-            application.
+            Lancez une analyse de sécurité pour identifier les vulnérabilités potentielles de votre application.
           </p>
           <RunReviewButton isRunning={isRunning} onRun={onRun} />
         </div>
@@ -447,14 +433,14 @@ function NoIssuesCard({ data }: { data?: SecurityReviewResult }) {
             <Shield className="w-8 h-8 text-green-600 dark:text-green-400" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            No Security Issues Found
+            Aucun problème de sécurité trouvé
           </h3>
           <p className="text-gray-600 dark:text-gray-400">
-            Your application passed the security review with no issues detected.
+            Votre application a réussi l'analyse de sécurité sans aucune vulnérabilité détectée.
           </p>
           {data && (
             <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-              Last reviewed {formatTimeAgo(data.timestamp)}
+              Dernière analyse : {formatTimeAgo(data.timestamp)}
             </p>
           )}
         </div>
@@ -502,14 +488,14 @@ function FindingsTable({
               <Checkbox
                 checked={allSelected}
                 onCheckedChange={onToggleSelectAll}
-                aria-label="Select all issues"
+                aria-label="Sélectionner tous les problèmes"
               />
             </th>
             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider w-24">
-              Level
+              Niveau
             </th>
             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-              Issue
+              Problème
             </th>
             <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider w-32">
               Action
@@ -522,7 +508,7 @@ function FindingsTable({
               finding.description.length > DESCRIPTION_PREVIEW_LENGTH;
             const displayDescription = isLongDescription
               ? finding.description.substring(0, DESCRIPTION_PREVIEW_LENGTH) +
-                "..."
+              "..."
               : finding.description;
             const findingKey = createFindingKey(finding);
             const isFixing = fixingFindingKey === findingKey;
@@ -574,7 +560,7 @@ function FindingsTable({
                         className="h-7 px-2 py-0 gap-1"
                       >
                         <ChevronDown className="w-3 h-3" />
-                        Show more
+                        Voir plus
                       </Button>
                     )}
                   </div>
@@ -608,10 +594,10 @@ function FindingsTable({
                             d="m4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                           />
                         </svg>
-                        Fixing Issue...
+                        Réparation en cours...
                       </>
                     ) : (
-                      <>Fix Issue</>
+                      <>Corriger le problème</>
                     )}
                   </Button>
                 </td>
@@ -682,10 +668,10 @@ function FindingDetailsDialog({
                     d="m4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                Fixing Issue...
+                Réparation en cours...
               </>
             ) : (
-              <>Fix Issue</>
+              <>Corriger le problème</>
             )}
           </Button>
           <DialogClose className={cn(buttonVariants({ variant: "outline" }))}>
@@ -971,14 +957,16 @@ ${issuesList}`;
         <Dialog open={isEditRulesOpen} onOpenChange={setIsEditRulesOpen}>
           <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl">
             <DialogHeader>
-              <DialogTitle>Edit Security Rules</DialogTitle>
+              <DialogTitle>Modifier les règles de sécurité</DialogTitle>
             </DialogHeader>
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              This allows you to add additional context about your project
-              specifically for security reviews. This content is saved to the{" "}
-              <code className="text-xs">SECURITY_RULES.md</code> file. This can
-              help catch additional issues or avoid flagging issues that are not
-              relevant for your app.
+              Cela vous permet d'ajouter un contexte supplémentaire à votre
+              projet spécifiquement pour les revues de sécurité. Ce contenu est
+              enregistré dans le fichier{" "}
+              <code className="text-xs">SECURITY_RULES.md</code>. Cela peut
+              aider à détecter des problèmes supplémentaires ou à éviter de
+              signaler des problèmes qui ne sont pas pertinents pour votre
+              application.
             </div>
             <div className="mt-3">
               <textarea
@@ -998,7 +986,7 @@ ${issuesList}`;
                 onClick={handleSaveRules}
                 disabled={isSaving || isFetchingRules}
               >
-                {isSaving ? "Saving..." : "Save"}
+                {isSaving ? "Enregistrement..." : "Enregistrer"}
               </Button>
             </DialogFooter>
           </DialogContent>

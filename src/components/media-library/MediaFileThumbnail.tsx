@@ -90,7 +90,7 @@ export function MediaFileThumbnail({
               disabled={isBusy}
             >
               <MessageSquarePlus className="mr-2 h-4 w-4" />
-              Start New Chat With Image
+              Nouveau chat avec cette image
             </DropdownMenuItem>
             <DropdownMenuItem
               data-testid="media-rename-image"
@@ -98,7 +98,7 @@ export function MediaFileThumbnail({
               disabled={isBusy}
             >
               <Pencil className="mr-2 h-4 w-4" />
-              Rename Image
+              Renommer l'image
             </DropdownMenuItem>
             <DropdownMenuItem
               data-testid="media-move-to-submenu"
@@ -106,7 +106,7 @@ export function MediaFileThumbnail({
               disabled={isBusy}
             >
               <MoveRight className="mr-2 h-4 w-4" />
-              Move To
+              Déplacer vers
             </DropdownMenuItem>
             <DropdownMenuItem
               data-testid="media-delete-image"
@@ -115,7 +115,7 @@ export function MediaFileThumbnail({
               disabled={isBusy}
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              Delete Image
+              Supprimer l'image
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

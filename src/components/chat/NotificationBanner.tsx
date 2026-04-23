@@ -22,8 +22,8 @@ export function NotificationBanner() {
       {showBanner && (
         <SkippableBanner
           icon={Bell}
-          message="Get notified about chat events."
-          enableLabel="Enable"
+          message="Recevez des notifications pour les evenements du chat."
+          enableLabel="Activer"
           onEnable={enable}
           onSkip={handleSkip}
           data-testid="notification-tip-banner"

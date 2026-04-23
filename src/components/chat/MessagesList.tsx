@@ -101,9 +101,9 @@ function FooterComponent({ context }: { context?: FooterContext }) {
                     const userMessage = messages[messages.length - 2];
                     const currentCommitIndex = currentMessage?.commitHash
                       ? versions.findIndex(
-                          (version) =>
-                            version.oid === currentMessage.commitHash,
-                        )
+                        (version) =>
+                          version.oid === currentMessage.commitHash,
+                      )
                       : -1;
                     const previousVersionId =
                       currentCommitIndex >= 0
@@ -121,9 +121,9 @@ function FooterComponent({ context }: { context?: FooterContext }) {
                         versionId: revertTargetVersionId,
                         currentChatMessageId: userMessage
                           ? {
-                              chatId: selectedChatId,
-                              messageId: userMessage.id,
-                            }
+                            chatId: selectedChatId,
+                            messageId: userMessage.id,
+                          }
                           : undefined,
                       });
                       const chat = await ipc.chat.getChat(selectedChatId);
@@ -410,7 +410,7 @@ export const MessagesList = forwardRef<HTMLDivElement, MessagesListProps>(
         >
           <div className="flex flex-col items-center justify-center h-full max-w-2xl mx-auto">
             <div className="flex flex-1 items-center justify-center text-gray-500">
-              No messages yet
+              Aucun message pour le moment
             </div>
           </div>
         </div>
