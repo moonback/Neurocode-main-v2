@@ -36,7 +36,7 @@ export function PromptOptimizerButton({
       console.error("Error optimizing prompt:", error);
       showError(
         t("optimizePromptError", {
-          defaultValue: "Failed to optimize prompt",
+          defaultValue: "Échec de l'optimisation du prompt",
           message: (error as Error).message,
         }),
       );
@@ -55,7 +55,7 @@ export function PromptOptimizerButton({
             onClick={handleOptimize}
             disabled={isDisabled}
             aria-label={t("optimizePrompt", {
-              defaultValue: "Optimize prompt",
+              defaultValue: "Optimisation du prompt",
             })}
             className="px-2 py-1.5 text-muted-foreground hover:text-primary rounded-lg transition-colors duration-150 disabled:opacity-30 disabled:hover:text-muted-foreground cursor-pointer disabled:cursor-default"
           />
@@ -69,10 +69,10 @@ export function PromptOptimizerButton({
       </TooltipTrigger>
       <TooltipContent>
         {isOptimizing
-          ? t("optimizingPrompt", { defaultValue: "Optimizing..." })
+          ? t("optimizingPrompt", { defaultValue: "Optimisation du prompt..." })
           : t("optimizePromptTooltip", {
-              defaultValue: "Optimize prompt for better results",
-            })}
+            defaultValue: "Améliorer le prompt pour de meilleurs résultats",
+          })}
       </TooltipContent>
     </Tooltip>
   );
