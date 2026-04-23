@@ -56,6 +56,7 @@ export { mediaContracts } from "./media";
 export { imageGenerationContracts } from "./image_generation";
 export { smartContextContracts } from "./smart-context";
 export { skillContracts } from "./skills";
+export { suggestionContracts } from "./suggestions";
 
 // =============================================================================
 // Client Exports
@@ -91,6 +92,7 @@ export { mediaClient } from "./media";
 export { imageGenerationClient } from "./image_generation";
 export { smartContextClient } from "./smart-context";
 export { skillClient } from "./skills";
+export { suggestionClient } from "./suggestions";
 
 // =============================================================================
 // Type Exports
@@ -358,6 +360,22 @@ export {
   ValidationResultSchema,
 } from "./skills";
 
+// Suggestion types
+export type {
+  Suggestion,
+  TaskContext,
+  GeneratedSuggestion,
+  GenerateSuggestionsInput,
+  GenerateSuggestionsOutput,
+} from "./suggestions";
+export {
+  SuggestionSchema,
+  SuggestionCategory,
+  UserAction,
+  TaskContextSchema,
+  GeneratedSuggestionSchema,
+} from "./suggestions";
+
 // =============================================================================
 // Schema Exports (for validation in handlers/components)
 // =============================================================================
@@ -420,6 +438,7 @@ import { mediaClient } from "./media";
 import { imageGenerationClient } from "./image_generation";
 import { smartContextClient } from "./smart-context";
 import { skillClient } from "./skills";
+import { suggestionClient } from "./suggestions";
 
 /**
  * Unified IPC client with all domains organized by namespace.
@@ -481,6 +500,7 @@ export const ipc = {
   imageGeneration: imageGenerationClient,
   smartContext: smartContextClient,
   skills: skillClient,
+  suggestions: suggestionClient,
 
   // Event clients for main->renderer pub/sub
   events: {

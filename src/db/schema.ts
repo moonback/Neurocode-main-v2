@@ -1,5 +1,11 @@
 import { sql } from "drizzle-orm";
-import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import {
+  index,
+  integer,
+  sqliteTable,
+  text,
+  unique,
+} from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
 import type { ModelMessage } from "ai";
 
@@ -281,3 +287,75 @@ export const customThemes = sqliteTable("custom_themes", {
     .notNull()
     .default(sql`(unixepoch())`),
 });
+
+// --- Settings table ---
+export const settings = sqliteTable("settings", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+
+  // Suggestion settings
+  suggestionGenerationEnabled: integer("suggestion_generation_enabled", {
+    mode: "boolean",
+  })
+    .notNull()
+    .default(sql`1`),
+  suggestionDisplayEnabled: integer("suggestion_display_enabled", {
+    mode: "boolean",
+  })
+    .notNull()
+    .default(sql`1`),
+  maxSuggestionsPerTask: integer("max_suggestions_per_task")
+    .notNull()
+    .default(5), // 1-10 range
+
+  // Metadata
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+// --- Task Completion Suggestions table ---
+export const taskCompletionSuggestions = sqliteTable(
+  "task_completion_suggestions",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+
+    // Task context
+    taskId: text("task_id").notNull(),
+    taskDescription: text("task_description").notNull(),
+    specType: text("spec_type", {
+      enum: ["feature", "bugfix", "other"],
+    }).notNull(),
+    specPath: text("spec_path").notNull(),
+
+    // Suggestion content
+    category: text("category", {
+      enum: ["new_feature", "bug_fix", "improvement"],
+    }).notNull(),
+    description: text("description").notNull(),
+    priorityScore: integer("priority_score").notNull(), // 1-10
+
+    // User action
+    userAction: text("user_action", {
+      enum: ["pending", "accepted", "dismissed"],
+    })
+      .notNull()
+      .default("pending"),
+    actionTimestamp: integer("action_timestamp", { mode: "timestamp" }),
+
+    // Metadata
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+
+    // Optional: created task ID if accepted
+    createdTaskId: text("created_task_id"),
+  },
+  (table) => [
+    // Indexes for efficient querying
+    index("task_id_idx").on(table.taskId),
+    index("created_at_idx").on(table.createdAt),
+  ],
+);

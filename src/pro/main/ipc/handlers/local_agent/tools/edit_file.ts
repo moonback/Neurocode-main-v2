@@ -112,8 +112,7 @@ function applyEditLocally(
       } else {
         // Just replace from the anchor to end of that line
         const lineEnd = after.indexOf("\n");
-        result =
-          before + trimmed + (lineEnd >= 0 ? after.slice(lineEnd) : "");
+        result = before + trimmed + (lineEnd >= 0 ? after.slice(lineEnd) : "");
       }
     } else {
       // Can't find anchor — append the block (best effort)

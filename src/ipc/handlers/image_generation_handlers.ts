@@ -93,7 +93,9 @@ export function registerImageGenerationHandlers() {
           body: JSON.stringify({
             prompt: fullPrompt,
             model: dyadApiKey ? "gpt-image-1.5" : "dall-e-3",
-            ...(dyadApiKey ? {} : { response_format: "b64_json", size: "1024x1024" }),
+            ...(dyadApiKey
+              ? {}
+              : { response_format: "b64_json", size: "1024x1024" }),
           }),
           signal: controller.signal,
         });

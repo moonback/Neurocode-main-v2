@@ -1,0 +1,524 @@
+# Implementation Plan: Task Completion Suggestions
+
+## Overview
+
+This implementation plan breaks down the Task Completion Suggestions feature into discrete, incremental coding tasks. The feature provides intelligent, LLM-powered recommendations to users after they complete tasks in the spec workflow system. The implementation follows a bottom-up approach: database schema → IPC contracts → core engine → UI components → integration.
+
+## Tasks
+
+- [x] 1. Set up database schema and migrations
+  - [x] 1.1 Create task_completion_suggestions table schema
+    - Add new table definition in Drizzle schema file with all required columns (id, taskId, taskDescription, specType, specPath, category, description, priorityScore, userAction, actionTimestamp, createdAt, createdTaskId)
+    - Define proper column types, constraints, and defaults
+    - Add indexes for taskId and createdAt for efficient querying
+    - _Requirements: 6.1, 6.2, 6.3_
+  - [x] 1.2 Add suggestion settings columns to settings table
+    - Extend existing settings table schema with suggestion_generation_enabled (boolean, default true), suggestion_display_enabled (boolean, default true), and max_suggestions_per_task (integer, default 5, range 1-10)
+    - _Requirements: 8.1, 8.2, 8.3, 8.4_
+  - [x] 1.3 Generate and apply database migration
+    - Run Drizzle migration generation command
+    - Review generated SQL migration file
+    - Apply migration to development database
+    - _Requirements: 6.1, 8.3_
+
+- [x] 2. Implement IPC contracts and validation schemas
+  - [x] 2.1 Create suggestion_contracts.ts with Zod schemas
+    - Define SuggestionCategory, UserAction, and SuggestionSchema Zod schemas
+    - Create TypeScript types from schemas (Suggestion, TaskContext, GeneratedSuggestion)
+    - _Requirements: 2.2, 4.1, 5.5_
+  - [x] 2.2 Define generateSuggestions IPC contract
+    - Create contract with input schema (taskId, taskDescription, specPath, specType, modifiedFiles, relatedTasks)
+    - Create contract with output schema (suggestions array, error nullable)
+    - _Requirements: 1.2, 2.1, 9.1, 9.2, 9.3, 9.4_
+  - [x] 2.3 Define acceptSuggestion and dismissSuggestion IPC contracts
+    - Create acceptSuggestion contract (input: suggestionId, specPath; output: taskId, success)
+    - Create dismissSuggestion contract (input: suggestionId; output: success)
+    - _Requirements: 5.1, 5.2, 5.3, 5.4_
+  - [x] 2.4 Define getSuggestionHistory IPC contract
+    - Create contract with input schema (optional taskId, startDate, endDate, limit with default 50)
+    - Create contract with output schema (suggestions array)
+    - _Requirements: 6.2, 6.3, 6.4_
+  - [x] 2.5 Define suggestion settings IPC contracts
+    - Create getSuggestionSettings contract (empty input, output: enabled, displayEnabled, maxSuggestionsPerTask)
+    - Create updateSuggestionSettings contract (input: optional enabled, displayEnabled, maxSuggestionsPerTask; output: success)
+    - _Requirements: 8.1, 8.2, 8.4, 8.5_
+
+- [~] 3. Implement core SuggestionEngine class
+  - [x] 3.1 Create SuggestionEngine class with constructor and dependencies
+    - Create class with constructor accepting llmClient (LanguageModel) and db (Database)
+    - Set up class structure with private methods for internal logic
+    - _Requirements: 2.1, 9.1_
+  - [x] 3.2 Implement generateSuggestions method with LLM integration
+    - Create method accepting TaskContext and optional timeoutMs (default 5000)
+    - Build structured prompt from task context (description, files, spec type, related tasks)
+    - Call LLM using AI SDK (streamText or generateText) with timeout wrapper
+    - Parse LLM response into GeneratedSuggestion array
+    - Return SuggestionEngineResult with suggestions, error, and processingTimeMs
+    - _Requirements: 2.1, 2.2, 2.3, 7.3, 9.1, 9.2, 9.3, 9.4, 9.5_
+  - [x] 3.3 Implement filterDuplicates method
+    - Create method accepting suggestions array and taskId
+    - Query database for existing suggestions for the same taskId
+    - Compare new suggestions against existing ones (case-insensitive description comparison)
+    - Remove duplicates from the input array
+    - Return filtered suggestions array
+    - _Requirements: 10.2_
+  - [ ] 3.4 Implement filterExistingTasks method
+    - Create method accepting suggestions array and specPath
+    - Load all existing tasks from the spec at specPath
+    - Compare suggestion descriptions against existing task descriptions (semantic similarity check)
+    - Remove suggestions that are too similar to existing tasks
+    - Return filtered suggestions array
+    - _Requirements: 10.3_
+  - [~] 3.5 Implement priority scoring logic
+    - Add scoring algorithm that assigns priority scores (1-10) based on relevance to completed task
+    - Consider factors: task context alignment, spec type, category type
+    - Ensure scores are integers in valid range
+    - _Requirements: 2.4, 10.4_
+  - [~] 3.6 Implement persistSuggestions method
+    - Create method accepting GeneratedSuggestion array and TaskContext
+    - Map GeneratedSuggestion objects to database schema format
+    - Insert suggestions into task_completion_suggestions table
+    - Return array of persisted Suggestion objects with generated IDs
+    - _Requirements: 6.1, 6.4_
+  - [~] 3.7 Write property test for context extraction completeness
+    - **Property 2: Context Extraction Completeness**
+    - **Validates: Requirements 1.2, 9.1, 9.2, 9.3, 9.4**
+    - Generate random task completion events with varying context
+    - Verify all required fields (taskDescription, modifiedFiles, specType, relatedTasks) are extracted and non-null when source data is available
+    - Tag: `Feature: task-completion-suggestions, Property 2: Context extraction completeness`
+  - [~] 3.8 Write property test for suggestion category validity
+    - **Property 3: Suggestion Category Validity**
+    - **Validates: Requirements 2.2, 4.1**
+    - Generate random suggestions
+    - Verify category is exactly one of: "new_feature", "bug_fix", "improvement"
+    - Tag: `Feature: task-completion-suggestions, Property 3: Suggestion category validity`
+  - [~] 3.9 Write property test for suggestion description length
+    - **Property 4: Suggestion Description Length**
+    - **Validates: Requirements 2.3**
+    - Generate random suggestions
+    - Verify description length >= 20 characters
+    - Tag: `Feature: task-completion-suggestions, Property 4: Suggestion description length`
+  - [~] 3.10 Write property test for priority score range
+    - **Property 5: Priority Score Range**
+    - **Validates: Requirements 10.4**
+    - Generate random suggestions
+    - Verify priority score is integer in range [1, 10]
+    - Tag: `Feature: task-completion-suggestions, Property 5: Priority score range`
+  - [~] 3.11 Write property test for suggestion uniqueness
+    - **Property 7: Suggestion Uniqueness**
+    - **Validates: Requirements 10.2**
+    - Generate random suggestions for a task
+    - Verify no duplicate descriptions or semantically identical suggestions
+    - Tag: `Feature: task-completion-suggestions, Property 7: Suggestion uniqueness`
+  - [~] 3.12 Write unit tests for SuggestionEngine
+    - Test successful suggestion generation with mock LLM
+    - Test LLM timeout handling (5 second limit)
+    - Test LLM error response handling
+    - Test duplicate filtering logic
+    - Test existing task filtering logic
+    - Test priority scoring edge cases
+
+- [~] 4. Implement task completion monitoring and event queue
+  - [~] 4.1 Create TaskCompletionMonitor class
+    - Create class that watches for task status changes to "completed"
+    - Emit completion events with full task context within 100ms
+    - _Requirements: 1.1, 1.2_
+  - [~] 4.2 Implement event queue for sequential processing
+    - Create queue that buffers completion events during rapid task completions
+    - Process events sequentially (one at a time) to prevent race conditions
+    - Preserve task completion order in processing
+    - _Requirements: 1.3, 1.4_
+  - [~] 4.3 Write property test for event order preservation
+    - **Property 1: Event Order Preservation**
+    - **Validates: Requirements 1.3, 1.4**
+    - Generate random sequences of completion events
+    - Verify processing order matches input order
+    - Tag: `Feature: task-completion-suggestions, Property 1: Event order preservation`
+  - [~] 4.4 Write unit tests for event queue
+    - Test single event processing
+    - Test multiple rapid events are queued
+    - Test queue preserves order
+    - Test event delivered within 100ms (integration test)
+
+- [~] 5. Implement IPC handlers for all contracts
+  - [~] 5.1 Create generateSuggestions IPC handler
+    - Implement handler that receives task context from renderer
+    - Validate input using Zod schema
+    - Check if suggestion generation is enabled in settings
+    - Call SuggestionEngine.generateSuggestions with timeout
+    - Apply filterDuplicates and filterExistingTasks
+    - Sort suggestions by priority score (descending)
+    - Limit results to maxSuggestionsPerTask from settings
+    - Persist suggestions using persistSuggestions
+    - Return suggestions array and error (if any)
+    - _Requirements: 2.1, 2.4, 2.5, 8.1, 8.4, 10.5_
+  - [~] 5.2 Create acceptSuggestion IPC handler
+    - Implement handler that receives suggestionId and specPath
+    - Validate input using Zod schema
+    - Retrieve suggestion from database by ID
+    - Create new task in spec based on suggestion description and category
+    - Update suggestion record with userAction="accepted", actionTimestamp, and createdTaskId
+    - Return created taskId and success status
+    - _Requirements: 5.3, 5.5, 6.1_
+  - [~] 5.3 Create dismissSuggestion IPC handler
+    - Implement handler that receives suggestionId
+    - Validate input using Zod schema
+    - Update suggestion record with userAction="dismissed" and actionTimestamp
+    - Return success status
+    - _Requirements: 5.4, 5.5, 6.1_
+  - [~] 5.4 Create getSuggestionHistory IPC handler
+    - Implement handler that receives optional taskId, startDate, endDate, and limit
+    - Validate input using Zod schema
+    - Build database query with filters (taskId, date range)
+    - Apply limit (default 50)
+    - Return suggestions array with all fields
+    - _Requirements: 6.2, 6.3, 6.4, 6.5_
+  - [~] 5.5 Create getSuggestionSettings IPC handler
+    - Implement handler that retrieves current suggestion settings from database
+    - Return enabled, displayEnabled, and maxSuggestionsPerTask
+    - _Requirements: 8.1, 8.2, 8.4_
+  - [~] 5.6 Create updateSuggestionSettings IPC handler
+    - Implement handler that receives optional setting updates
+    - Validate input using Zod schema (maxSuggestionsPerTask must be 1-10)
+    - Update settings in database
+    - Return success status
+    - _Requirements: 8.4, 8.5_
+  - [~] 5.7 Write property test for priority-based ordering
+    - **Property 6: Priority-Based Ordering**
+    - **Validates: Requirements 2.4, 10.5**
+    - Generate random suggestion lists with varying priority scores
+    - Call generateSuggestions handler
+    - Verify returned suggestions are in descending priority order
+    - Tag: `Feature: task-completion-suggestions, Property 6: Priority-based ordering`
+  - [~] 5.8 Write property test for display count constraint
+    - **Property 15: Display Count Constraint**
+    - **Validates: Requirements 3.3**
+    - Generate suggestion lists of varying sizes (1 to 20)
+    - Set different maxSuggestionsPerTask values (1-10)
+    - Verify returned suggestions count is between 1 and configured max
+    - Tag: `Feature: task-completion-suggestions, Property 15: Display count constraint`
+  - [~] 5.9 Write property test for settings validation
+    - **Property 16: Settings Validation**
+    - **Validates: Requirements 8.4**
+    - Generate random setting values (both valid and invalid)
+    - Verify updateSuggestionSettings accepts values in range [1, 10]
+    - Verify updateSuggestionSettings rejects values outside range
+    - Tag: `Feature: task-completion-suggestions, Property 16: Settings validation`
+  - [~] 5.10 Write unit tests for IPC handlers
+    - Test generateSuggestions with mock engine
+    - Test acceptSuggestion creates task correctly
+    - Test dismissSuggestion updates database
+    - Test getSuggestionHistory with various filters
+    - Test settings get/update operations
+
+- [~] 6. Implement error handling with DyadError
+  - [~] 6.1 Add DyadError classification for validation errors
+    - Wrap Zod validation errors in DyadError with DyadErrorKind.Validation
+    - Include task context in error messages
+    - _Requirements: 7.1_
+  - [~] 6.2 Add DyadError classification for LLM failures
+    - Wrap LLM API failures in DyadError with DyadErrorKind.External
+    - Wrap LLM timeouts in DyadError with DyadErrorKind.External
+    - Include task context in error messages
+    - _Requirements: 7.1, 7.3_
+  - [~] 6.3 Add DyadError classification for internal errors
+    - Wrap database failures in DyadError with DyadErrorKind.Internal
+    - Wrap unexpected exceptions in DyadError with DyadErrorKind.Internal
+    - Include task context in error messages
+    - _Requirements: 7.1_
+  - [~] 6.4 Implement error message mapping for UI
+    - Create getErrorMessage function that maps DyadErrorKind to user-facing messages
+    - Return "Suggestions took too long to generate" for timeout errors
+    - Return "Suggestions are currently unavailable" for other external errors
+    - Return appropriate messages for validation and internal errors
+    - _Requirements: 7.2, 7.4_
+  - [~] 6.5 Implement graceful error recovery
+    - Ensure suggestion generation failures don't throw to caller
+    - Log errors with full task context
+    - Allow system to continue processing next task completion event
+    - _Requirements: 7.1, 7.5_
+  - [~] 6.6 Write property test for error logging with context
+    - **Property 18: Error Logging with Context**
+    - **Validates: Requirements 7.1**
+    - Simulate random failures (validation, LLM, database)
+    - Verify error logs contain taskId and taskDescription
+    - Tag: `Feature: task-completion-suggestions, Property 18: Error logging with context`
+  - [~] 6.7 Write property test for system resilience after failure
+    - **Property 20: System Resilience After Failure**
+    - **Validates: Requirements 7.5**
+    - Simulate random failures on one task completion
+    - Verify system successfully processes next task completion event
+    - Tag: `Feature: task-completion-suggestions, Property 20: System resilience after failure`
+  - [~] 6.8 Write unit tests for error handling
+    - Test validation error wrapping
+    - Test LLM timeout error handling
+    - Test database error handling
+    - Test error message mapping
+    - Test system continues after errors
+
+- [~] 7. Checkpoint - Ensure backend tests pass
+  - Run all backend unit tests and property tests
+  - Verify database operations work correctly
+  - Verify IPC handlers respond correctly
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [~] 8. Implement React UI components
+  - [~] 8.1 Create Jotai atoms for suggestion state management
+    - Create suggestionsAtom (array of Suggestion objects)
+    - Create suggestionLoadingAtom (boolean)
+    - Create suggestionErrorAtom (nullable string)
+    - Create suggestionDisplayVisibleAtom (boolean)
+    - _Requirements: 3.1, 3.4_
+  - [~] 8.2 Create SuggestionCard component
+    - Create component accepting SuggestionCardProps (suggestion, onAccept, onDismiss)
+    - Render category badge with distinct styling for each category type
+    - Render suggestion description
+    - Render priority indicator (1-10 score)
+    - Render Accept button that calls onAccept
+    - Render Dismiss button that calls onDismiss
+    - Use Base UI primitives for buttons and layout
+    - _Requirements: 3.2, 4.5, 5.1, 5.2_
+  - [~] 8.3 Create SuggestionDisplay component
+    - Create component accepting SuggestionDisplayProps (taskId, specPath, onClose)
+    - Use Jotai atoms for state management
+    - Fetch suggestions on mount using IPC call to generateSuggestions
+    - Display loading state while fetching
+    - Display error message if generation fails or times out
+    - Render list of SuggestionCard components for each suggestion
+    - Implement onAccept handler that calls acceptSuggestion IPC and updates state
+    - Implement onDismiss handler that calls dismissSuggestion IPC and removes from display
+    - Remain visible until user dismisses or navigates away
+    - Use Base UI primitives for panel/dialog structure
+    - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 5.3, 5.4, 7.2, 7.4_
+  - [~] 8.4 Write property test for UI action presence
+    - **Property 14: UI Action Presence**
+    - **Validates: Requirements 5.1, 5.2**
+    - Generate random suggestions
+    - Render SuggestionCard components
+    - Verify each rendered card contains both Accept and Dismiss actions
+    - Tag: `Feature: task-completion-suggestions, Property 14: UI action presence`
+  - [~] 8.5 Write unit tests for UI components
+    - Test SuggestionCard renders correctly with all props
+    - Test category badges have distinct styles
+    - Test Accept/Dismiss buttons trigger callbacks
+    - Test SuggestionDisplay fetches suggestions on mount
+    - Test loading state displays correctly
+    - Test error state displays correct messages
+    - Test suggestion list renders correctly
+
+- [~] 9. Integrate suggestion display with task completion flow
+  - [~] 9.1 Wire TaskCompletionMonitor to trigger suggestion generation
+    - Connect monitor to event queue
+    - Ensure completion events trigger generateSuggestions IPC call
+    - Pass full task context (description, files, spec type, related tasks)
+    - _Requirements: 1.1, 1.2, 9.1, 9.2, 9.3, 9.4_
+  - [~] 9.2 Wire suggestion generation to display component
+    - Check displayEnabled setting before showing UI
+    - Show SuggestionDisplay component when suggestions are generated and displayEnabled is true
+    - Display within 500ms of suggestion generation completion
+    - _Requirements: 3.1, 8.1, 8.2_
+  - [~] 9.3 Implement display timing constraint
+    - Ensure suggestions are presented to user within 500ms of generation completion
+    - Add performance monitoring to track display latency
+    - _Requirements: 3.1_
+  - [~] 9.4 Write property test for settings effect on subsequent operations
+    - **Property 17: Settings Effect on Subsequent Operations**
+    - **Validates: Requirements 8.5**
+    - Generate random setting changes
+    - Complete tasks after settings change
+    - Verify subsequent operations use new settings values
+    - Tag: `Feature: task-completion-suggestions, Property 17: Settings effect on subsequent operations`
+
+- [~] 10. Add suggestion settings to Settings page
+  - [~] 10.1 Add suggestion settings section to Settings UI
+    - Add "Task Completion Suggestions" section to Settings page
+    - Add toggle for "Enable suggestion generation" (suggestion_generation_enabled)
+    - Add toggle for "Display suggestions automatically" (suggestion_display_enabled)
+    - Add number input for "Maximum suggestions per task" (range 1-10, default 5)
+    - Use Base UI components for form controls
+    - _Requirements: 8.1, 8.2, 8.3, 8.4_
+  - [~] 10.2 Wire settings UI to IPC handlers
+    - Load current settings on Settings page mount using getSuggestionSettings
+    - Update settings on user input using updateSuggestionSettings
+    - Show validation errors for invalid maxSuggestionsPerTask values
+    - _Requirements: 8.4, 8.5_
+  - [~] 10.3 Write unit tests for settings UI
+    - Test settings section renders correctly
+    - Test settings load on mount
+    - Test settings update on user input
+    - Test validation for maxSuggestionsPerTask range
+
+- [~] 11. Implement database persistence and history queries
+  - [~] 11.1 Implement suggestion persistence logic
+    - Ensure all generated suggestions are persisted with timestamps
+    - Store task context (taskId, taskDescription, specType, specPath)
+    - Store suggestion content (category, description, priorityScore)
+    - Store user action state (userAction, actionTimestamp, createdTaskId)
+    - _Requirements: 6.1, 6.4_
+  - [~] 11.2 Implement history query by task ID
+    - Create database query that filters by taskId
+    - Return all suggestions for the specified task
+    - Include all fields (category, description, priority, userAction)
+    - _Requirements: 6.2, 6.4_
+  - [~] 11.3 Implement history query by date range
+    - Create database query that filters by createdAt timestamp
+    - Support startDate (inclusive) and endDate (exclusive)
+    - Return all suggestions within date range
+    - _Requirements: 6.3, 6.4_
+  - [~] 11.4 Implement 90-day retention policy
+    - Add cleanup job that deletes suggestions older than 90 days
+    - Schedule cleanup to run periodically (e.g., daily)
+    - _Requirements: 6.5_
+  - [~] 11.5 Write property test for persistence round-trip
+    - **Property 8: Persistence Round-Trip**
+    - **Validates: Requirements 6.1, 6.4**
+    - Generate random suggestions, persist them, retrieve by ID
+    - Verify all fields match original values
+    - Tag: `Feature: task-completion-suggestions, Property 8: Persistence round-trip`
+  - [~] 11.6 Write property test for query by task ID
+    - **Property 9: Query by Task ID**
+    - **Validates: Requirements 6.2**
+    - Generate random tasks with suggestions
+    - Query by taskId
+    - Verify query returns all and only suggestions for that task
+    - Tag: `Feature: task-completion-suggestions, Property 9: Query by task ID`
+  - [~] 11.7 Write property test for date range filtering
+    - **Property 10: Date Range Filtering**
+    - **Validates: Requirements 6.3**
+    - Generate random suggestions with varying timestamps
+    - Query with different date ranges
+    - Verify all returned suggestions have timestamps within range
+    - Tag: `Feature: task-completion-suggestions, Property 10: Date range filtering`
+  - [~] 11.8 Write property test for user action recording
+    - **Property 11: User Action Recording**
+    - **Validates: Requirements 3.5, 5.5**
+    - Generate random accept/dismiss actions
+    - Verify actions are persisted with correct type and timestamp
+    - Verify subsequent retrieval reflects recorded action
+    - Tag: `Feature: task-completion-suggestions, Property 11: User action recording`
+  - [~] 11.9 Write unit tests for database operations
+    - Test suggestion insertion
+    - Test query by task ID
+    - Test query by date range
+    - Test user action updates
+    - Test 90-day cleanup job
+
+- [~] 12. Implement user action handlers
+  - [~] 12.1 Implement accept action logic
+    - Retrieve suggestion from database by ID
+    - Extract suggestion description and category
+    - Create new task in spec at specPath with description based on suggestion
+    - Update suggestion record with userAction="accepted", actionTimestamp, and createdTaskId
+    - Return created task ID
+    - _Requirements: 5.3, 5.5_
+  - [~] 12.2 Implement dismiss action logic
+    - Update suggestion record with userAction="dismissed" and actionTimestamp
+    - Remove suggestion from pending display list
+    - _Requirements: 5.4, 5.5_
+  - [~] 12.3 Write property test for accept creates task
+    - **Property 12: Accept Creates Task**
+    - **Validates: Requirements 5.3**
+    - Generate random suggestions, accept them
+    - Verify tasks are created with correct description
+    - Verify suggestion record is updated with createdTaskId
+    - Tag: `Feature: task-completion-suggestions, Property 12: Accept creates task`
+  - [~] 12.4 Write property test for dismiss removes from display
+    - **Property 13: Dismiss Removes from Display**
+    - **Validates: Requirements 5.4**
+    - Generate random suggestions, dismiss them
+    - Query for pending suggestions
+    - Verify dismissed suggestions don't appear in pending list
+    - Tag: `Feature: task-completion-suggestions, Property 13: Dismiss removes from display`
+  - [~] 12.5 Write unit tests for user actions
+    - Test accept creates task with correct content
+    - Test accept updates suggestion record
+    - Test dismiss updates suggestion record
+    - Test dismiss removes from display
+
+- [~] 13. Checkpoint - Ensure all tests pass
+  - Run all unit tests (backend and frontend)
+  - Run all property-based tests (20 properties)
+  - Verify all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [ ] 14. Write E2E tests for complete workflows
+  - [~] 14.1 Write E2E test for happy path (accept suggestion)
+    - Complete a task in test spec
+    - Verify suggestions appear within 500ms
+    - Accept a suggestion
+    - Verify new task is created in spec with correct description
+    - _Requirements: 3.1, 5.3_
+  - [~] 14.2 Write E2E test for dismissal flow
+    - Complete a task in test spec
+    - Verify suggestions appear
+    - Dismiss all suggestions
+    - Verify suggestions are marked as dismissed in history
+    - _Requirements: 5.4, 6.1_
+  - [~] 14.3 Write E2E test for settings configuration
+    - Disable suggestion display in settings
+    - Complete a task
+    - Verify no suggestions are shown (but generated in background)
+    - Re-enable display
+    - Complete another task
+    - Verify suggestions are shown
+    - _Requirements: 8.1, 8.2, 8.5_
+  - [ ] 14.4 Write E2E test for error recovery
+    - Mock LLM service to fail
+    - Complete a task
+    - Verify error message is shown
+    - Restore LLM service
+    - Complete another task
+    - Verify suggestions are generated successfully
+    - _Requirements: 7.2, 7.5_
+  - [ ] 14.5 Write property test for error state display
+    - **Property 19: Error State Display**
+    - **Validates: Requirements 7.2, 7.4**
+    - Simulate failures and timeouts
+    - Verify appropriate error messages are displayed ("suggestions unavailable" or "took too long")
+    - Tag: `Feature: task-completion-suggestions, Property 19: Error state display`
+
+- [ ] 15. Final integration and polish
+  - [ ] 15.1 Add performance monitoring
+    - Track suggestion generation time
+    - Track display latency (generation to UI display)
+    - Log performance metrics for analysis
+    - _Requirements: 1.1, 3.1_
+  - [ ] 15.2 Add telemetry events
+    - Track suggestion generation events
+    - Track user accept/dismiss actions
+    - Track error occurrences
+    - Use PostHog for event tracking
+  - [ ] 15.3 Review and optimize LLM prompts
+    - Ensure prompts generate high-quality, actionable suggestions
+    - Test prompts with various task contexts
+    - Refine prompts based on output quality
+    - _Requirements: 10.1_
+  - [ ] 15.4 Add logging for debugging
+    - Log task completion events
+    - Log suggestion generation requests and results
+    - Log user actions
+    - Use appropriate log levels (info, warn, error)
+
+- [ ] 16. Final checkpoint - Complete verification
+  - Run full test suite (unit, property, E2E)
+  - Verify all 20 property-based tests pass
+  - Verify all requirements are covered by implementation
+  - Test manually with various task completion scenarios
+  - Ensure all tests pass, ask the user if questions arise.
+
+## Notes
+
+- Tasks marked with `*` are optional and can be skipped for faster MVP
+- Each task references specific requirements for traceability
+- Property-based tests validate universal correctness properties (20 total)
+- Unit tests validate specific examples and edge cases
+- E2E tests validate complete user workflows
+- The implementation uses TypeScript throughout
+- Database operations use Drizzle ORM
+- IPC contracts use Zod for validation
+- UI components use Base UI primitives (not Radix UI)
+- Error handling uses DyadError with DyadErrorKind classification
+- LLM integration uses AI SDK with 5-second timeout
+- All suggestions are persisted with 90-day retention
+- Settings are configurable and affect subsequent operations
+- System continues normal operation after any failure

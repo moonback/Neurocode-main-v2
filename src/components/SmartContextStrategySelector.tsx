@@ -8,25 +8,25 @@ const STRATEGY_OPTIONS: Array<{
   label: string;
   description: string;
 }> = [
-    {
-      value: "conservative",
-      label: "Conservative",
-      description:
-        "Contexte minimal : seul le fichier actif et les fichiers très pertinents (score ≥ 0,7) sont inclus. Utilise jusqu’à 25 % du budget de jetons.",
-    },
-    {
-      value: "balanced",
-      label: "Balanced",
-      description:
-        "Contexte modéré — inclut les fichiers avec un score ≥ 0,4. Utilise jusqu’à 50 % du budget de jetons.",
-    },
-    {
-      value: "deep",
-      label: "Deep",
-      description:
-        "Contexte maximal — inclut tous les fichiers pertinents (score > 0,1). Utilise jusqu’à 80 % du budget de jetons.",
-    },
-  ];
+  {
+    value: "conservative",
+    label: "Conservative",
+    description:
+      "Contexte minimal : seul le fichier actif et les fichiers très pertinents (score ≥ 0,7) sont inclus. Utilise jusqu’à 25 % du budget de jetons.",
+  },
+  {
+    value: "balanced",
+    label: "Balanced",
+    description:
+      "Contexte modéré — inclut les fichiers avec un score ≥ 0,4. Utilise jusqu’à 50 % du budget de jetons.",
+  },
+  {
+    value: "deep",
+    label: "Deep",
+    description:
+      "Contexte maximal — inclut tous les fichiers pertinents (score > 0,1). Utilise jusqu’à 80 % du budget de jetons.",
+  },
+];
 
 export function SmartContextStrategySelector() {
   const { settings, updateSettings } = useSettings();
