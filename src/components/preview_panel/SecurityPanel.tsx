@@ -977,7 +977,18 @@ ${issuesList}`;
                 className="w-full h-72 rounded-md border border-gray-300 dark:border-gray-700 bg-transparent p-3 font-mono text-sm outline-none focus:ring-2 focus:ring-blue-500"
                 value={rulesContent}
                 onChange={(e) => setRulesContent(e.target.value)}
-                placeholder="# SECURITY_RULES.md\n\nDescribe relevant security context, accepted risks, non-issues, and environment details."
+                placeholder={`# SECURITY_RULES.md
+
+## Contexte Technologique
+- Framework: (ex: React, Next.js)
+- Base de données: (ex: Supabase, Prisma)
+
+## Exceptions (Ignorer)
+- Listez ici les éléments à ne pas signaler (ex: clés publiques)
+
+## Priorités
+1. (ex: Vérifier les politiques RLS)
+2. (ex: Chercher les secrets exposés)`}
               />
             </div>
             <DialogFooter>
