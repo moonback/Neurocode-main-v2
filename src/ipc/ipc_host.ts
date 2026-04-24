@@ -44,6 +44,8 @@ import { registerMediaHandlers } from "./handlers/media_handlers";
 import { registerImageGenerationHandlers } from "./handlers/image_generation_handlers";
 import { registerSmartContextHandlers } from "./handlers/smart_context_handlers";
 import { registerSkillHandlers } from "./handlers/skill_handlers";
+import { registerMultiAgentHandlers } from "./handlers/multi_agent_handlers";
+import { registerOrchestrationHandlers } from "@/multi-agent/main/orchestration_handler";
 
 export function registerIpcHandlers() {
   // Register all IPC handlers by category
@@ -93,4 +95,6 @@ export function registerIpcHandlers() {
   registerImageGenerationHandlers();
   registerSmartContextHandlers();
   registerSkillHandlers();
+  registerMultiAgentHandlers();
+  registerOrchestrationHandlers();
 }

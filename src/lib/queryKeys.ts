@@ -348,6 +348,19 @@ export const queryKeys = {
     /** Single-skill key by name */
     detail: ({ name }: { name: string }) => ["skills", "detail", name] as const,
   },
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Multi-Agent
+  // ─────────────────────────────────────────────────────────────────────────────
+  multiAgent: {
+    /** Base key – invalidate to refetch all multi-agent data */
+    all: ["multi-agent"] as const,
+    /** All available agents (built-in + custom) */
+    agents: ["multi-agent", "agents"] as const,
+    /** Active workflows for a chat */
+    workflows: ({ chatId }: { chatId: number | null }) =>
+      ["multi-agent", "workflows", chatId] as const,
+  },
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -416,4 +429,7 @@ export type AppQueryKey =
   | QueryKeyOf<
       (typeof queryKeys.smartContext)[keyof typeof queryKeys.smartContext]
     >
-  | QueryKeyOf<(typeof queryKeys.skills)[keyof typeof queryKeys.skills]>;
+  | QueryKeyOf<(typeof queryKeys.skills)[keyof typeof queryKeys.skills]>
+  | QueryKeyOf<
+      (typeof queryKeys.multiAgent)[keyof typeof queryKeys.multiAgent]
+    >;

@@ -15,6 +15,7 @@ import { VersionPane } from "./chat/VersionPane";
 import { ChatError } from "./chat/ChatError";
 import { FreeAgentQuotaBanner } from "./chat/FreeAgentQuotaBanner";
 import { NotificationBanner } from "./chat/NotificationBanner";
+import { AgentOrchestrationView } from "./multi-agent/AgentOrchestrationView";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -24,6 +25,7 @@ import {
 import { ArrowDown } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
 import { useFreeAgentQuota } from "@/hooks/useFreeAgentQuota";
+import { useWorkflowEvents } from "@/hooks/useMultiAgent";
 import { isBasicAgentMode } from "@/lib/schemas";
 
 interface ChatPanelProps {
@@ -46,6 +48,13 @@ export function ChatPanel({
   const isStreamingById = useAtomValue(isStreamingByIdAtom);
   const { settings, updateSettings } = useSettings();
   const { isQuotaExceeded } = useFreeAgentQuota();
+
+  const [activeWorkflow, setActiveWorkflow] = useState<any>(null);
+
+  useWorkflowEvents(chatId ?? null, {
+    onWorkflowUpdate: (w) => setActiveWorkflow(w),
+  });
+
   const showFreeAgentQuotaBanner =
     settings && isBasicAgentMode(settings) && isQuotaExceeded;
 
@@ -228,6 +237,11 @@ export function ChatPanel({
               />
             )}
             <NotificationBanner />
+            {activeWorkflow && (
+              <div className="px-4 pb-2">
+                <AgentOrchestrationView workflow={activeWorkflow} />
+              </div>
+            )}
             <ChatInput chatId={chatId} />
           </div>
         )}

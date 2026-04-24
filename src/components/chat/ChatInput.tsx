@@ -108,6 +108,9 @@ import { SkillMatcherSuggestion } from "@/components/skills/SkillMatcherSuggesti
 import { matchedSkillsAtom, dismissedSkillsAtom } from "@/atoms/chatAtoms";
 import type { MatchedSkill } from "@/skills/types";
 import { PromptOptimizerButton } from "./PromptOptimizerButton";
+import { AgentSelector } from "../multi-agent/AgentSelector";
+import { CustomAgentDialog } from "../multi-agent/CustomAgentDialog";
+import { useStartWorkflow, useMultiAgentList } from "@/hooks/useMultiAgent";
 
 const showTokenBarAtom = atom(false);
 
@@ -236,6 +239,10 @@ export function ChatInput({ chatId }: { chatId?: number }) {
   const { analyzeContext } = useSkillContextMatcher();
   const [matchedSkills, setMatchedSkills] = useAtom(matchedSkillsAtom);
   const [, setDismissedSkills] = useAtom(dismissedSkillsAtom);
+  
+  const [selectedAgentIds, setSelectedAgentIds] = useState<string[]>([]);
+  const [isCustomAgentDialogOpen, setIsCustomAgentDialogOpen] = useState(false);
+  const { mutateAsync: startWorkflow } = useStartWorkflow();
 
   const lastMessage = (chatId ? (messagesById.get(chatId) ?? []) : []).at(-1);
   const disableSendButton =
@@ -458,6 +465,30 @@ export function ChatInput({ chatId }: { chatId?: number }) {
       !chatId ||
       pendingFiles
     ) {
+      return;
+    }
+
+    if (settings?.selectedChatMode === "multi-agent" && chatId && appId) {
+      if (isRecording) await toggleRecording();
+      
+      const currentInput = inputValue;
+      setInputValue("");
+      
+      try {
+        await startWorkflow({
+          chatId,
+          appId,
+          userRequest: currentInput,
+          selectedAgentIds: selectedAgentIds.length > 0 ? selectedAgentIds : undefined,
+          strategy: "sequential", // Default for now
+        });
+        posthog.capture("chat:submit_multi_agent", { 
+          agentCount: selectedAgentIds.length,
+          strategy: "sequential" 
+        });
+      } catch (err) {
+        showErrorToast(`Erreur lors du lancement du workflow multi-agents: ${err}`);
+      }
       return;
     }
 
@@ -1000,6 +1031,19 @@ export function ChatInput({ chatId }: { chatId?: number }) {
             onCancel={cancelPendingFiles}
           />
 
+          {settings?.selectedChatMode === "multi-agent" && (
+            <div className="px-4 py-3 border-b border-border/50 bg-orange-500/5">
+              <p className="text-[11px] font-semibold text-orange-600 mb-2 uppercase tracking-wider">
+                Configuration de l'essaim d'agents
+              </p>
+              <AgentSelector
+                selectedAgentIds={selectedAgentIds}
+                onSelectionChange={setSelectedAgentIds}
+                onCreateCustom={() => setIsCustomAgentDialogOpen(true)}
+              />
+            </div>
+          )}
+
           <div className="flex items-end gap-1">
             <LexicalChatInput
               value={inputValue}
@@ -1122,6 +1166,13 @@ export function ChatInput({ chatId }: { chatId?: number }) {
         defaultAppId={appId ?? undefined}
         source="chat"
       />
+
+      {isCustomAgentDialogOpen && (
+        <CustomAgentDialog
+          open={isCustomAgentDialogOpen}
+          onOpenChange={setIsCustomAgentDialogOpen}
+        />
+      )}
     </>
   );
 }

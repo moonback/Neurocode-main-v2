@@ -45,6 +45,7 @@ import { mediaContracts } from "../types/media";
 import { imageGenerationContracts } from "../types/image_generation";
 import { smartContextContracts } from "../types/smart-context";
 import { skillContracts } from "../types/skills";
+import { multiAgentContracts, multiAgentEvents } from "../types/multi-agent";
 
 // =============================================================================
 // Invoke Channels (derived from all contracts)
@@ -105,6 +106,7 @@ export const VALID_INVOKE_CHANNELS = [
   ...getInvokeChannels(imageGenerationContracts),
   ...getInvokeChannels(smartContextContracts),
   ...getInvokeChannels(skillContracts),
+  ...getInvokeChannels(multiAgentContracts),
 
   // Test-only channels
   ...TEST_INVOKE_CHANNELS,
@@ -130,6 +132,7 @@ export const VALID_RECEIVE_CHANNELS = [
   ...getReceiveChannels(systemEvents),
   ...getReceiveChannels(miscEvents),
   ...getReceiveChannels(planEvents),
+  ...getReceiveChannels(multiAgentEvents),
 ] as const;
 
 // =============================================================================

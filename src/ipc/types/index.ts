@@ -56,6 +56,7 @@ export { mediaContracts } from "./media";
 export { imageGenerationContracts } from "./image_generation";
 export { smartContextContracts } from "./smart-context";
 export { skillContracts } from "./skills";
+export { multiAgentContracts, multiAgentEvents } from "./multi-agent";
 
 // =============================================================================
 // Client Exports
@@ -91,6 +92,7 @@ export { mediaClient } from "./media";
 export { imageGenerationClient } from "./image_generation";
 export { smartContextClient } from "./smart-context";
 export { skillClient } from "./skills";
+export { multiAgentClient, multiAgentEventClient } from "./multi-agent";
 
 // =============================================================================
 // Type Exports
@@ -349,6 +351,21 @@ export type {
   ExecuteSkillResult,
   DiscoverSkillsResult,
 } from "./skills";
+
+// Multi-agent types
+export type {
+  AgentDefinitionDto,
+  WorkflowExecutionDto,
+  CreateCustomAgentParams,
+  UpdateCustomAgentParams,
+  StartWorkflowParams,
+} from "./multi-agent";
+export {
+  AgentDefinitionSchema,
+  WorkflowExecutionSchema,
+  CreateCustomAgentParamsSchema,
+  UpdateCustomAgentParamsSchema,
+} from "./multi-agent";
 export {
   SkillSchema,
   SkillScopeSchema,
@@ -420,6 +437,7 @@ import { mediaClient } from "./media";
 import { imageGenerationClient } from "./image_generation";
 import { smartContextClient } from "./smart-context";
 import { skillClient } from "./skills";
+import { multiAgentClient, multiAgentEventClient } from "./multi-agent";
 
 /**
  * Unified IPC client with all domains organized by namespace.
@@ -489,5 +507,9 @@ export const ipc = {
     mcp: mcpEventClient,
     system: systemEventClient,
     misc: miscEventClient,
+    multiAgent: multiAgentEventClient,
   },
+
+  // Multi-agent
+  multiAgent: multiAgentClient,
 } as const;

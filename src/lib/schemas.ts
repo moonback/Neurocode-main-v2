@@ -153,13 +153,14 @@ export const StoredChatModeSchema = z.enum([
   "agent", // DEPRECATED: converted to "build" on read
   "local-agent",
   "plan",
+  "multi-agent",
 ]);
 export type StoredChatMode = z.infer<typeof StoredChatModeSchema>;
 
 /**
  * Active chat modes (excludes deprecated values)
  */
-export const ChatModeSchema = z.enum(["build", "ask", "local-agent", "plan"]);
+export const ChatModeSchema = z.enum(["build", "ask", "local-agent", "plan", "multi-agent"]);
 export type ChatMode = z.infer<typeof ChatModeSchema>;
 
 export const GitHubSecretsSchema = z.object({

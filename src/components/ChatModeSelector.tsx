@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { LocalAgentNewChatToast } from "./LocalAgentNewChatToast";
 import { useAtomValue } from "jotai";
 import { chatMessagesByIdAtom } from "@/atoms/chatAtoms";
-import { Hammer, Bot, MessageCircle, Lightbulb } from "lucide-react";
+import { Hammer, Bot, MessageCircle, Lightbulb, Users } from "lucide-react";
 
 export function ChatModeSelector() {
   const { settings, updateSettings } = useSettings();
@@ -83,6 +83,8 @@ export function ChatModeSelector() {
         return isProEnabled ? "Agent" : "Basic Agent";
       case "plan":
         return "Plan";
+      case "multi-agent":
+        return "Swarm";
       default:
         return "Build";
     }
@@ -98,6 +100,8 @@ export function ChatModeSelector() {
         return <Bot size={14} />;
       case "plan":
         return <Lightbulb size={14} />;
+      case "multi-agent":
+        return <Users size={14} />;
       default:
         return <Hammer size={14} />;
     }
@@ -123,7 +127,10 @@ export function ChatModeSelector() {
                       ? "bg-purple-500/10 text-purple-600 hover:bg-purple-500/15 dark:bg-purple-500/15 dark:text-purple-400 dark:hover:bg-purple-500/20"
                       : selectedMode === "plan"
                         ? "bg-blue-500/10 text-blue-600 hover:bg-blue-500/15 dark:bg-blue-500/15 dark:text-blue-400 dark:hover:bg-blue-500/20"
-                        : "text-foreground/80 hover:text-foreground hover:bg-muted/60",
+                        : selectedMode === "multi-agent"
+                          ? "bg-orange-500/10 text-orange-600 hover:bg-orange-500/15 dark:bg-orange-500/15 dark:text-orange-400 dark:hover:bg-orange-500/20"
+                          : "text-foreground/80 hover:text-foreground hover:bg-muted/60",
+
                 )}
                 size="sm"
               />
@@ -142,6 +149,20 @@ export function ChatModeSelector() {
         </Tooltip>
         <SelectContent align="start">
           {isProEnabled && (
+            <SelectItem value="multi-agent">
+              <div className="flex flex-col items-start">
+                <div className="flex items-center gap-1.5">
+                  <Users size={14} className="text-orange-500" />
+                  <span className="font-medium">Swarm</span>
+                </div>
+                <span className="text-xs text-muted-foreground ml-[22px]">
+                  Multi-agent collaborative workflow
+                </span>
+              </div>
+            </SelectItem>
+          )}
+          {isProEnabled && (
+
             <SelectItem value="local-agent">
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-1.5">

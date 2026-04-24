@@ -246,11 +246,11 @@ Ce document décrit la feuille de route du développement de NeuroCode, incluant
 
 ### T3 2026 : Fonctionnalités IA avancées
 
-- [ ] **Flux de travail multi-agents**
-  - Agents spécialisés pour différentes tâches
-  - Orchestration des agents
-  - Communication d'agent à agent
-  - Création d'agents personnalisés
+- [x] **Flux de travail multi-agents** (v0.46)
+  - Agents spécialisés pour différentes tâches (Code, Revue, Test, Debug, Architecte)
+  - Orchestration des agents (séquentiel, parallèle, pipeline, adaptatif)
+  - Communication d'agent à agent via bus de messages typé
+  - Création d'agents personnalisés avec prompts et capacités configurables
 
 - [ ] **Mode d'édition visuelle**
   - Édition de composants par glisser-déposer
