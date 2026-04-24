@@ -23,22 +23,22 @@ export function ReleaseChannelSelector() {
   const handleReleaseChannelChange = (value: ReleaseChannel) => {
     updateSettings({ releaseChannel: value });
     if (value === "stable") {
-      toast("Using Stable release channel", {
+      toast("Vous utilisez maintenant le canal de distribution stable", {
         description:
-          "You'll stay on your current version until a newer stable release is available, or you can manually downgrade now.",
+          "Vous resterez sur votre version actuelle jusqu'à ce qu'une nouvelle version stable soit disponible, ou vous pouvez rétrograder manuellement maintenant.",
         action: {
-          label: "Download Stable",
+          label: "Télécharger la version stable",
           onClick: () => {
             ipc.system.openExternalUrl("https://dyad.sh/download");
           },
         },
       });
     } else {
-      toast("Using Beta release channel", {
+      toast("Vous utilisez maintenant le canal de distribution bêta", {
         description:
-          "You will need to restart Dyad for your settings to take effect.",
+          "Vous devez redémarrer NeuroCode pour que vos paramètres prennent effet.",
         action: {
-          label: "Restart Dyad",
+          label: "Redémarrer NeuroCode",
           onClick: () => {
             ipc.system.restartDyad();
           },

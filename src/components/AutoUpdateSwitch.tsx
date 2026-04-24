@@ -21,11 +21,11 @@ export function AutoUpdateSwitch() {
         checked={settings.enableAutoUpdate}
         onCheckedChange={(checked) => {
           updateSettings({ enableAutoUpdate: checked });
-          toast("Auto-update settings changed", {
+          toast("Paramètres de mise à jour automatique modifiés", {
             description:
-              "You will need to restart Dyad for your settings to take effect.",
+              "Vous devez redémarrer NeuroCode pour que vos paramètres prennent effet.",
             action: {
-              label: "Restart Dyad",
+              label: "Redémarrer NeuroCode",
               onClick: () => {
                 ipc.system.restartDyad();
               },
