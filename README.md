@@ -10,6 +10,7 @@
 [![Version](https://img.shields.io/badge/version-0.45.0--beta.1-blue.svg)](package.json)
 [![Node](https://img.shields.io/badge/node-%3E%3D24-brightgreen.svg)](package.json)
 [![Electron](https://img.shields.io/badge/electron-40.0.0-blue.svg)](package.json)
+[![Tests](https://img.shields.io/badge/Tests-1565%20passing-brightgreen?logo=vitest)](__tests__/README.md)
 
 [Fonctionnalités](#fonctionnalités) • [Installation](#installation) • [Utilisation](#utilisation) • [Développement](#développement) • [Contribution](#contribution)
 
