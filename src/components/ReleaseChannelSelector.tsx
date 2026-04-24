@@ -29,7 +29,7 @@ export function ReleaseChannelSelector() {
         action: {
           label: "Télécharger la version stable",
           onClick: () => {
-            ipc.system.openExternalUrl("https://dyad.sh/download");
+            ipc.system.openExternalUrl("https://#");
           },
         },
       });
