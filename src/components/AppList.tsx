@@ -92,22 +92,22 @@ export function AppList({ show }: { show?: boolean }) {
 
             {loading ? (
               <div className="py-2 px-4 text-sm text-gray-500">
-                Loading apps...
+                Chargement des applications...
               </div>
             ) : error ? (
               <div className="py-2 px-4 text-sm text-red-500">
-                Error loading apps
+                Erreur de chargement des applications
               </div>
             ) : apps.length === 0 ? (
               <div className="py-2 px-4 text-sm text-gray-500">
-                No apps found
+                Aucune application trouvée
               </div>
             ) : (
               <SidebarMenu className="space-y-1" data-testid="app-list">
-                <SidebarGroupLabel>Favorite apps</SidebarGroupLabel>
+                <SidebarGroupLabel>Applications favorites</SidebarGroupLabel>
                 {favoriteApps.length === 0 ? (
                   <div className="px-4 text-xs text-gray-500 italic">
-                    Star an app from its details page to pin it here
+                    Ajoutez une application aux favoris à partir de sa page de détails pour l'épingler ici
                   </div>
                 ) : (
                   favoriteApps.map((app) => (
@@ -119,7 +119,7 @@ export function AppList({ show }: { show?: boolean }) {
                     />
                   ))
                 )}
-                <SidebarGroupLabel>Other apps</SidebarGroupLabel>
+                <SidebarGroupLabel>Autres applications</SidebarGroupLabel>
                 {nonFavoriteApps.map((app) => (
                   <AppItem
                     key={app.id}

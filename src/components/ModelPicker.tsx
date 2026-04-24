@@ -182,59 +182,21 @@ export function ModelPicker() {
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64" align="start">
-        <DropdownMenuLabel>Cloud Models</DropdownMenuLabel>
+        <DropdownMenuLabel>Modèles IA</DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {/* Trial user upgrade banner */}
-        {isTrial && (
-          <>
-            <div className="px-2 py-3 bg-gradient-to-r from-indigo-50 to-sky-50 dark:from-indigo-950/50 dark:to-sky-950/50">
-              <p className="text-sm text-indigo-700 dark:text-indigo-300 mb-2">
-                Upgrade from Dyad Pro trial to unlock more models.
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="cursor-pointer w-full bg-indigo-600 hover:bg-indigo-700 text-white hover:text-white border-indigo-600"
-                onClick={() => {
-                  ipc.system.openExternalUrl(
-                    "https://academy.dyad.sh/subscription",
-                  );
-                  setOpen(false);
-                }}
-              >
-                Upgrade to Dyad Pro
-              </Button>
-            </div>
-            <DropdownMenuSeparator />
-            {/* Trial users only see the auto model */}
-            <DropdownMenuItem
-              className="bg-secondary"
-              onClick={() => {
-                onModelSelect({ name: "auto", provider: "auto" });
-                setOpen(false);
-              }}
-            >
-              <div className="flex justify-between items-start w-full">
-                <span>Auto</span>
-                <span className="text-[11px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">
-                  Trial
-                </span>
-              </div>
-            </DropdownMenuItem>
-          </>
-        )}
+
 
         {/* Cloud models - only show for non-trial users */}
         {!isTrial &&
           (loading ? (
             <div className="text-xs text-center py-2 text-muted-foreground">
-              Loading models...
+              Chargement des modèles...
             </div>
           ) : !modelsByProviders ||
             Object.keys(modelsByProviders).length === 0 ? (
             <div className="text-xs text-center py-2 text-muted-foreground">
-              No cloud models available
+              Aucun modèle cloud disponible
             </div>
           ) : (
             /* Cloud models loaded */
@@ -319,12 +281,12 @@ export function ModelPicker() {
                             )}
                           {provider?.type === "custom" && (
                             <span className="text-[10px] bg-amber-500/20 text-amber-700 px-1.5 py-0.5 rounded-full font-medium">
-                              Custom
+                              Personnalisé
                             </span>
                           )}
                         </div>
                         <span className="text-xs text-muted-foreground">
-                          {models.length} models
+                          {models.length} modèles
                         </span>
                       </div>
                     </DropdownMenuSubTrigger>
@@ -375,14 +337,14 @@ export function ModelPicker() {
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger className="w-full font-normal">
                     <div className="flex flex-col items-start">
-                      <span>Other AI providers</span>
+                      <span>Autres modèles</span>
                       <span className="text-xs text-muted-foreground">
-                        {secondaryProviders.length} providers
+                        {secondaryProviders.length} modèles
                       </span>
                     </div>
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent className="w-56">
-                    <DropdownMenuLabel>Other AI providers</DropdownMenuLabel>
+                    <DropdownMenuLabel>Autres modèles</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {secondaryProviders.map(([providerId, models]) => {
                       const provider = providers?.find(
@@ -396,12 +358,12 @@ export function ModelPicker() {
                                 <span>{provider?.name ?? providerId}</span>
                                 {provider?.type === "custom" && (
                                   <span className="text-[10px] bg-amber-500/20 text-amber-700 px-1.5 py-0.5 rounded-full font-medium">
-                                    Custom
+                                    Personnalisé
                                   </span>
                                 )}
                               </div>
                               <span className="text-xs text-muted-foreground">
-                                {models.length} models
+                                {models.length} modèles
                               </span>
                             </div>
                           </DropdownMenuSubTrigger>
@@ -461,7 +423,7 @@ export function ModelPicker() {
             <DropdownMenuSub>
               <DropdownMenuSubTrigger className="w-full font-normal">
                 <div className="flex flex-col items-start">
-                  <span>Local models</span>
+                  <span>Modèles locaux</span>
                   <span className="text-xs text-muted-foreground">
                     LM Studio, Ollama
                   </span>
@@ -478,19 +440,19 @@ export function ModelPicker() {
                       <span>Ollama</span>
                       {ollamaLoading ? (
                         <span className="text-xs text-muted-foreground">
-                          Loading...
+                          Chargement...
                         </span>
                       ) : ollamaError ? (
                         <span className="text-xs text-red-500">
-                          Error loading
+                          Erreur de chargement
                         </span>
                       ) : !hasOllamaModels ? (
                         <span className="text-xs text-muted-foreground">
-                          None available
+                          Aucun modèle disponible
                         </span>
                       ) : (
                         <span className="text-xs text-muted-foreground">
-                          {ollamaModels.length} models
+                          {ollamaModels.length} modèles
                         </span>
                       )}
                     </div>
