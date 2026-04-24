@@ -183,7 +183,7 @@ function ReviewSummary({ data }: { data: SecurityReviewResult }) {
   return (
     <div className="space-y-1 mt-1">
       <div className="text-sm text-gray-600 dark:text-gray-400">
-        Last reviewed {formatTimeAgo(data.timestamp)}
+        Revue de sécurité précédente: {formatTimeAgo(data.timestamp)}
       </div>
       <div className="flex items-center gap-3 text-sm">
         {severityLevels
@@ -245,7 +245,7 @@ function SecurityHeader({
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1 flex items-center gap-2">
             <Shield className="w-5 h-5" />
-            Revue de Sécurité
+            Sécurité
             <Badge variant="secondary" className="uppercase tracking-wide">
               Expérimental
             </Badge>
@@ -355,7 +355,7 @@ function NoAppSelectedView() {
         Aucune application sélectionnée
       </h2>
       <p className="text-gray-600 dark:text-gray-400 max-w-md">
-        Sélectionnez une application pour lancer une revue de sécurité
+        Veuillez sélectionner une application pour lancer une revue de sécurité
       </p>
     </div>
   );
@@ -512,7 +512,7 @@ function FindingsTable({
               finding.description.length > DESCRIPTION_PREVIEW_LENGTH;
             const displayDescription = isLongDescription
               ? finding.description.substring(0, DESCRIPTION_PREVIEW_LENGTH) +
-                "..."
+              "..."
               : finding.description;
             const findingKey = createFindingKey(finding);
             const isFixing = fixingFindingKey === findingKey;
