@@ -141,19 +141,6 @@ export function ChatModeSelector() {
           </TooltipContent>
         </Tooltip>
         <SelectContent align="start">
-          {isProEnabled && (
-            <SelectItem value="local-agent">
-              <div className="flex flex-col items-start">
-                <div className="flex items-center gap-1.5">
-                  <Bot size={14} className="text-muted-foreground" />
-                  <span className="font-medium">Agent v2</span>
-                </div>
-                <span className="text-xs text-muted-foreground ml-[22px]">
-                  Better at bigger tasks and debugging
-                </span>
-              </div>
-            </SelectItem>
-          )}
           <SelectItem value="plan">
             <div className="flex flex-col items-start">
               <div className="flex items-center gap-1.5">
@@ -165,24 +152,17 @@ export function ChatModeSelector() {
               </span>
             </div>
           </SelectItem>
-          {!isProEnabled && (
-            <SelectItem value="local-agent" disabled={isQuotaExceeded}>
-              <div className="flex flex-col items-start">
-                <div className="flex items-center gap-1.5">
-                  <Bot size={14} className="text-muted-foreground" />
-                  <span className="font-medium">Basic Agent</span>
-                  <span className="text-xs text-muted-foreground">
-                    {`(${isQuotaExceeded ? "0" : messagesRemaining}/${messagesLimit} remaining for today)`}
-                  </span>
-                </div>
-                <span className="text-xs text-muted-foreground ml-[22px]">
-                  {isQuotaExceeded
-                    ? "Daily limit reached"
-                    : "Try our AI agent for free"}
-                </span>
+          <SelectItem value="local-agent">
+            <div className="flex flex-col items-start">
+              <div className="flex items-center gap-1.5">
+                <Bot size={14} className="text-muted-foreground" />
+                <span className="font-medium">Agent</span>
               </div>
-            </SelectItem>
-          )}
+              <span className="text-xs text-muted-foreground ml-[22px]">
+                Better at bigger tasks and debugging
+              </span>
+            </div>
+          </SelectItem>
           <SelectItem value="build">
             <div className="flex flex-col items-start">
               <div className="flex items-center gap-1.5">

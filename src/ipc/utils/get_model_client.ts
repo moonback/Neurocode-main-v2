@@ -68,7 +68,7 @@ export async function getModelClient(
   }
 
   // Handle Dyad Pro override
-  if (dyadApiKey && settings.enableDyadPro) {
+  if (dyadApiKey) {
     // Check if the selected provider supports Dyad Pro (has a gateway prefix) OR
     // we're using local engine.
     // IMPORTANT: some providers like OpenAI have an empty string gateway prefix,

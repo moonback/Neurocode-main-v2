@@ -8,7 +8,7 @@ import { themesData, type Theme } from "../../../../shared/themes";
 import { db } from "../../../../db";
 import { apps, customThemes } from "../../../../db/schema";
 import { eq, sql } from "drizzle-orm";
-import { streamText, TextPart, ImagePart } from "ai";
+import { generateText, streamText, TextPart, ImagePart } from "ai";
 import { readSettings } from "../../../../main/settings";
 import { IS_TEST_BUILD } from "@/ipc/utils/test_utils";
 import { getModelClient } from "../../../../ipc/utils/get_model_client";
@@ -612,11 +612,7 @@ Modern dark theme with purple accents for testing.
         };
       }
 
-      if (!settings.enableDyadPro) {
-        throw new Error(
-          "Dyad Pro is required for AI theme generation. Please enable Dyad Pro in Settings.",
-        );
-      }
+
 
       // Validate inputs - image paths are required
       if (params.imagePaths.length === 0) {
@@ -715,16 +711,25 @@ images: ${imagesPart}`;
           }
         }
 
-        const stream = streamText({
+        logger.info("Generating theme prompt", {
+          model: modelClient.builtinProviderId || selectedModel.providerId,
+          modelName: selectedModel.apiName,
+          imageCount: params.imagePaths.length,
+          generationMode: params.generationMode,
+        });
+
+        const { text } = await generateText({
           model: modelClient.model,
           system: systemPrompt,
           maxRetries: 1,
           messages: [{ role: "user", content: contentParts }],
         });
 
-        const result = await stream.text;
+        if (!text) {
+          throw new Error("The AI model returned an empty response. Please try again with different keywords or images.");
+        }
 
-        return { prompt: result };
+        return { prompt: text };
       } catch (error) {
         throw new Error(
           error instanceof Error
@@ -757,11 +762,7 @@ Modern theme extracted from website for testing.
         };
       }
 
-      if (!settings.enableDyadPro) {
-        throw new Error(
-          "Dyad Pro is required for AI theme generation. Please enable Dyad Pro in Settings.",
-        );
-      }
+
 
       // Validate URL format and protocol
       let parsedUrl: URL;

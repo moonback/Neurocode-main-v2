@@ -459,7 +459,8 @@ export function migrateStoredSettings(
 }
 
 export function isDyadProEnabled(settings: UserSettings): boolean {
-  return settings.enableDyadPro !== false;
+  // Retirement: All users now have access to Pro features.
+  return true;
 }
 
 export function hasDyadProKey(settings: UserSettings): boolean {

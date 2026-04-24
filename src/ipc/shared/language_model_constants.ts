@@ -21,7 +21,7 @@ export const GPT_5_2_MODEL_NAME = "gpt-5.2";
 export const SONNET_4_6 = "claude-sonnet-4-6";
 export const OPUS_4_6 = "claude-opus-4-6";
 export const GEMINI_3_FLASH = "gemini-3-flash-preview";
-export const GEMINI_3_1_PRO_PREVIEW = "gemini-3.1-pro-preview";
+export const GEMINI_3_1_PRO_PREVIEW = "gemini-3-flash-preview";
 export const GPT_5_NANO = "gpt-5-nano";
 
 export const MODEL_OPTIONS: Record<string, ModelOption[]> = {
@@ -172,9 +172,9 @@ export const MODEL_OPTIONS: Record<string, ModelOption[]> = {
     },
   ],
   google: [
-    // https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview
+    // https://ai.google.dev/gemini-api/docs/models/gemini-3-flash-preview
     {
-      name: "gemini-3.1-pro-preview",
+      name: "gemini-3-flash-preview",
       displayName: "Gemini 3.1 Pro (Preview)",
       description: "Google's most capable Gemini model",
       // See Flash 2.5 comment below (go 1 below just to be safe, even though it seems OK now).
@@ -529,28 +529,28 @@ export const MODEL_OPTIONS: Record<string, ModelOption[]> = {
   ],
 };
 
-export const TURBO_MODELS: LanguageModel[] = [
-  {
-    apiName: "glm-4.7:turbo",
-    displayName: "GLM 4.7",
-    description: "Strong coding model (very fast)",
-    maxOutputTokens: 32_000,
-    contextWindow: 131_000,
-    temperature: 0.7,
-    dollarSigns: 3,
-    type: "cloud",
-  },
-  {
-    apiName: "kimi-k2:turbo",
-    displayName: "Kimi K2",
-    description: "Kimi 0905 update (fast)",
-    maxOutputTokens: 16_000,
-    contextWindow: 256_000,
-    temperature: 0,
-    dollarSigns: 2,
-    type: "cloud",
-  },
-];
+// export const TURBO_MODELS: LanguageModel[] = [
+//   {
+//     apiName: "glm-4.7:turbo",
+//     displayName: "GLM 4.7",
+//     description: "Strong coding model (very fast)",
+//     maxOutputTokens: 32_000,
+//     contextWindow: 131_000,
+//     temperature: 0.7,
+//     dollarSigns: 3,
+//     type: "cloud",
+//   },
+//   {
+//     apiName: "kimi-k2:turbo",
+//     displayName: "Kimi K2",
+//     description: "Kimi 0905 update (fast)",
+//     maxOutputTokens: 16_000,
+//     contextWindow: 256_000,
+//     temperature: 0,
+//     dollarSigns: 2,
+//     type: "cloud",
+//   },
+// ];
 
 export const FREE_OPENROUTER_MODEL_NAMES = MODEL_OPTIONS.openrouter
   .filter(
@@ -561,7 +561,7 @@ export const FREE_OPENROUTER_MODEL_NAMES = MODEL_OPTIONS.openrouter
 export const PROVIDER_TO_ENV_VAR: Record<string, string> = {
   openai: "OPENAI_API_KEY",
   anthropic: "ANTHROPIC_API_KEY",
-  google: "GEMINI_API_KEY",
+  google: "GOOGLE_GENERATIVE_AI_API_KEY",
   openrouter: "OPENROUTER_API_KEY",
   azure: "AZURE_API_KEY",
   xai: "XAI_API_KEY",

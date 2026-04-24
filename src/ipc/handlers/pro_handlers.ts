@@ -108,9 +108,9 @@ export function registerProHandlers() {
       const settings = readSettings();
       const apiKey = settings.providerSettings?.auto?.apiKey?.value;
 
-      if (!apiKey || !settings.enableDyadPro) {
+      if (!apiKey) {
         throw new Error(
-          "Dyad Pro is not enabled. Voice-to-text requires a Pro subscription.",
+          "Voice-to-text requires a Dyad Pro API key. Please add one in Settings.",
         );
       }
 

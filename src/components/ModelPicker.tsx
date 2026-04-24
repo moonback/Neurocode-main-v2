@@ -20,7 +20,7 @@ import { ipc, LocalModel } from "@/ipc/types";
 import { useLanguageModelProviders } from "@/hooks/useLanguageModelProviders";
 import { useSettings } from "@/hooks/useSettings";
 import { PriceBadge } from "@/components/PriceBadge";
-import { TURBO_MODELS } from "@/ipc/shared/language_model_constants";
+// import { TURBO_MODELS } from "@/ipc/shared/language_model_constants";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
@@ -113,22 +113,22 @@ export function ModelPicker() {
   const autoModels =
     !loading && modelsByProviders && modelsByProviders["auto"]
       ? modelsByProviders["auto"].filter((model) => {
-          if (
-            settings &&
-            !isDyadProEnabled(settings) &&
-            ["turbo", "value"].includes(model.apiName)
-          ) {
-            return false;
-          }
-          if (
-            settings &&
-            isDyadProEnabled(settings) &&
-            model.apiName === "free"
-          ) {
-            return false;
-          }
-          return true;
-        })
+        if (
+          settings &&
+          !isDyadProEnabled(settings) &&
+          ["turbo", "value"].includes(model.apiName)
+        ) {
+          return false;
+        }
+        if (
+          settings &&
+          isDyadProEnabled(settings) &&
+          model.apiName === "free"
+        ) {
+          return false;
+        }
+        return true;
+      })
       : [];
 
   // Determine availability of local models
@@ -146,17 +146,17 @@ export function ModelPicker() {
   const providerEntries =
     !loading && modelsByProviders
       ? Object.entries(modelsByProviders).filter(
-          ([providerId]) => providerId !== "auto",
-        )
+        ([providerId]) => providerId !== "auto",
+      )
       : [];
   const primaryProviders = providerEntries.filter(([providerId, models]) => {
     if (models.length === 0) return false;
     const provider = providers?.find((p) => p.id === providerId);
     return !(provider && provider.secondary);
   });
-  if (settings && isDyadProEnabled(settings)) {
-    primaryProviders.unshift(["auto", TURBO_MODELS]);
-  }
+  // if (settings && isDyadProEnabled(settings)) {
+  //   primaryProviders.unshift(["auto", TURBO_MODELS]);
+  // }
   const secondaryProviders = providerEntries.filter(([providerId, models]) => {
     if (models.length === 0) return false;
     const provider = providers?.find((p) => p.id === providerId);
@@ -248,7 +248,7 @@ export function ModelPicker() {
                       title={model.description}
                       className={
                         selectedModel.provider === "auto" &&
-                        selectedModel.name === model.apiName
+                          selectedModel.name === model.apiName
                           ? "bg-secondary"
                           : ""
                       }
@@ -339,7 +339,7 @@ export function ModelPicker() {
                           title={model.description}
                           className={
                             selectedModel.provider === providerId &&
-                            selectedModel.name === model.apiName
+                              selectedModel.name === model.apiName
                               ? "bg-secondary"
                               : ""
                           }
@@ -416,7 +416,7 @@ export function ModelPicker() {
                                 title={model.description}
                                 className={
                                   selectedModel.provider === providerId &&
-                                  selectedModel.name === model.apiName
+                                    selectedModel.name === model.apiName
                                     ? "bg-secondary"
                                     : ""
                                 }
@@ -527,7 +527,7 @@ export function ModelPicker() {
                           key={`ollama-${model.modelName}`}
                           className={
                             selectedModel.provider === "ollama" &&
-                            selectedModel.name === model.modelName
+                              selectedModel.name === model.modelName
                               ? "bg-secondary"
                               : ""
                           }
@@ -611,7 +611,7 @@ export function ModelPicker() {
                           key={`lmstudio-${model.modelName}`}
                           className={
                             selectedModel.provider === "lmstudio" &&
-                            selectedModel.name === model.modelName
+                              selectedModel.name === model.modelName
                               ? "bg-secondary"
                               : ""
                           }

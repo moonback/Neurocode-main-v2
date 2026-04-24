@@ -537,11 +537,8 @@ ${componentSnippet}
         .returning({ id: messages.id });
       const userMessageId = insertedUserMessage.id;
       const settings = readSettings();
-      // Only Dyad Pro requests have request ids.
-      if (settings.enableDyadPro) {
-        // Generate requestId early so it can be saved with the message
-        dyadRequestId = uuidv4();
-      }
+      // Always generate requestId so it can be saved with the message
+      dyadRequestId = uuidv4();
 
       // Add a placeholder assistant message immediately
       const [placeholderAssistantMessage] = await db

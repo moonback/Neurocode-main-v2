@@ -298,7 +298,7 @@ app.get("/api/language-model-catalog", (req, res) => {
       ],
       google: [
         {
-          apiName: "gemini-3.1-pro-preview",
+          apiName: "gemini-3-flash-preview",
           displayName: "Gemini 3.1 Pro (Preview)",
           description: "Remote catalog Google model",
         },
@@ -315,7 +315,7 @@ app.get("/api/language-model-catalog", (req, res) => {
         id: "dyad/theme-generator/google",
         resolvedModel: {
           providerId: "google",
-          apiName: "gemini-3.1-pro-preview",
+          apiName: "gemini-3-flash-preview",
         },
         displayName: "Google Remote",
         purpose: "theme-generation",
@@ -358,7 +358,7 @@ app.get("/api/language-model-catalog", (req, res) => {
         id: "dyad/auto/google",
         resolvedModel: {
           providerId: "google",
-          apiName: "gemini-3.1-pro-preview",
+          apiName: "gemini-3-flash-preview",
         },
         purpose: "auto-mode",
       },
@@ -655,9 +655,9 @@ app.post("/engine/v1/sandboxes/:sandboxId/files", async (req, res) => {
   sandbox.files = upload.replaceAll
     ? { ...upload.files }
     : {
-        ...sandbox.files,
-        ...upload.files,
-      };
+      ...sandbox.files,
+      ...upload.files,
+    };
 
   for (const deletedFile of upload.deletedFiles) {
     delete sandbox.files[deletedFile];

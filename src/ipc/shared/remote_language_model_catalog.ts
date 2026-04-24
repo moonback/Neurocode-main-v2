@@ -173,7 +173,7 @@ function buildFallbackCatalog(): BuiltinLanguageModelCatalog {
         id: "dyad/theme-generator/google",
         resolvedModel: {
           providerId: "google",
-          apiName: GEMINI_3_1_PRO_PREVIEW,
+          apiName: "gemini-3-flash-preview",
         },
         displayName: "Google",
         purpose: "theme-generation",
@@ -182,7 +182,7 @@ function buildFallbackCatalog(): BuiltinLanguageModelCatalog {
         id: "dyad/theme-generator/anthropic",
         resolvedModel: {
           providerId: "anthropic",
-          apiName: OPUS_4_6,
+          apiName: "claude-3-5-sonnet-20240620",
         },
         displayName: "Anthropic",
         purpose: "theme-generation",
@@ -191,7 +191,7 @@ function buildFallbackCatalog(): BuiltinLanguageModelCatalog {
         id: "dyad/theme-generator/openai",
         resolvedModel: {
           providerId: "openai",
-          apiName: GPT_5_2_MODEL_NAME,
+          apiName: "gpt-4o",
         },
         displayName: "OpenAI",
         purpose: "theme-generation",
@@ -200,7 +200,7 @@ function buildFallbackCatalog(): BuiltinLanguageModelCatalog {
         id: "dyad/auto/openai",
         resolvedModel: {
           providerId: "openai",
-          apiName: GPT_5_2_MODEL_NAME,
+          apiName: "gpt-4o",
         },
         displayName: "Auto OpenAI",
         purpose: "auto-mode",
@@ -209,7 +209,7 @@ function buildFallbackCatalog(): BuiltinLanguageModelCatalog {
         id: "dyad/auto/anthropic",
         resolvedModel: {
           providerId: "anthropic",
-          apiName: SONNET_4_6,
+          apiName: "claude-3-5-sonnet-20240620",
         },
         displayName: "Auto Anthropic",
         purpose: "auto-mode",
@@ -218,7 +218,7 @@ function buildFallbackCatalog(): BuiltinLanguageModelCatalog {
         id: "dyad/auto/google",
         resolvedModel: {
           providerId: "google",
-          apiName: GEMINI_3_FLASH,
+          apiName: "gemini-3-flash-preview",
         },
         displayName: "Auto Google",
         purpose: "auto-mode",
@@ -227,7 +227,7 @@ function buildFallbackCatalog(): BuiltinLanguageModelCatalog {
         id: "dyad/help-bot/default",
         resolvedModel: {
           providerId: "openai",
-          apiName: GPT_5_NANO,
+          apiName: "gpt-4o-mini",
         },
         displayName: "Help Bot",
         purpose: "help-bot",
@@ -310,53 +310,7 @@ function convertRemoteCatalog(
 }
 
 async function fetchRemoteCatalog(): Promise<BuiltinLanguageModelCatalog | null> {
-  const controller = new AbortController();
-  const catalogUrl = getRemoteLanguageModelCatalogUrl();
-  const timeoutId = setTimeout(
-    () => controller.abort(),
-    REMOTE_LANGUAGE_MODEL_CATALOG_TIMEOUT_MS,
-  );
-
-  try {
-    logger.info("Fetching remote language model catalog", {
-      catalogUrl,
-      timeoutMs: REMOTE_LANGUAGE_MODEL_CATALOG_TIMEOUT_MS,
-    });
-
-    const response = await fetch(catalogUrl, {
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      throw new DyadError(
-        `Failed to fetch language model catalog: ${response.status} ${response.statusText}`,
-        DyadErrorKind.External,
-      );
-    }
-
-    const rawCatalog = await response.json();
-    const remoteCatalog = LanguageModelCatalogResponseSchema.parse(rawCatalog);
-    const convertedCatalog = convertRemoteCatalog(remoteCatalog);
-
-    logger.info("Loaded remote language model catalog", {
-      catalogUrl,
-      version: convertedCatalog.version,
-      providerCount: convertedCatalog.providers.length,
-      aliasCount: convertedCatalog.aliases.length,
-      themeGenerationOptionCount:
-        convertedCatalog.themeGenerationOptions.length,
-    });
-
-    return convertedCatalog;
-  } catch (error) {
-    logger.warn("Failed to fetch remote language model catalog", {
-      catalogUrl,
-      error,
-    });
-    return null;
-  } finally {
-    clearTimeout(timeoutId);
-  }
+  return null;
 }
 
 function getFallbackCatalog(): BuiltinLanguageModelCatalog {
