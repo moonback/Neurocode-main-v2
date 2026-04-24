@@ -30,12 +30,12 @@ const Index = () => {
 
           {/* Typography */}
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-slate-900 mb-4">
-            L'IA crée votre application
+            Création de votre application
           </h1>
 
           <p className="text-base text-slate-500 leading-relaxed font-light mb-8 max-w-sm mx-auto">
             Veuillez patienter pendant que nous générons le code, l'architecture
-            et le design de votre projet.
+            et le design de votre application.
           </p>
 
           {/* Minimalist Progress Indicator */}
