@@ -22,7 +22,7 @@
   "selectingFolder": "Sélection du dossier...",
   "selectedFolder": "Dossier sélectionné :",
   "clearSelection": "Effacer la sélection",
-  "copyToNeuroCodeApps": "Copier dans le dossier NeuroCode-apps",
+  "copyToDyadApps": "Copier dans le dossier NeuroCode-apps",
   "appNameExists": "Une application avec ce nom existe déjà. Veuillez choisir un nom différent :",
   "appName": "Nom de l'application",
   "appNameOptional": "Nom de l'application (optionnel)",
