@@ -415,7 +415,7 @@ describe("cloud_sandbox_provider incremental sync", () => {
       appId: 1,
       changedPaths: ["first.ts"],
     });
-    await new Promise((resolve) => setTimeout(resolve, 350));
+    await new Promise((resolve) => setTimeout(resolve, 600));
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
@@ -425,7 +425,7 @@ describe("cloud_sandbox_provider incremental sync", () => {
     });
 
     resolveFirstUpload?.(makeUploadResponse());
-    await new Promise((resolve) => setTimeout(resolve, 350));
+    await new Promise((resolve) => setTimeout(resolve, 600));
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
 
@@ -460,7 +460,7 @@ describe("cloud_sandbox_provider incremental sync", () => {
       changedPaths: ["src.ts"],
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 350));
+    await new Promise((resolve) => setTimeout(resolve, 600));
 
     expect(syncUpdateListener).toHaveBeenCalledWith({
       appId: 1,
@@ -472,7 +472,7 @@ describe("cloud_sandbox_provider incremental sync", () => {
       changedPaths: ["src.ts"],
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 350));
+    await new Promise((resolve) => setTimeout(resolve, 600));
 
     expect(syncUpdateListener).toHaveBeenLastCalledWith({
       appId: 1,

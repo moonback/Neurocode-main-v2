@@ -2,34 +2,33 @@ import { useSettings } from "@/hooks/useSettings";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { showInfo } from "@/lib/toast";
 import { type SmartContextMode } from "@/lib/schemas";
-
-const STRATEGY_OPTIONS: Array<{
-  value: SmartContextMode;
-  label: string;
-  description: string;
-}> = [
-  {
-    value: "conservative",
-    label: "Conservative",
-    description:
-      "Contexte minimal : seul le fichier actif et les fichiers très pertinents (score ≥ 0,7) sont inclus. Utilise jusqu’à 25 % du budget de jetons.",
-  },
-  {
-    value: "balanced",
-    label: "Balanced",
-    description:
-      "Contexte modéré — inclut les fichiers avec un score ≥ 0,4. Utilise jusqu’à 50 % du budget de jetons.",
-  },
-  {
-    value: "deep",
-    label: "Deep",
-    description:
-      "Contexte maximal — inclut tous les fichiers pertinents (score > 0,1). Utilise jusqu’à 80 % du budget de jetons.",
-  },
-];
+import { useTranslation } from "react-i18next";
 
 export function SmartContextStrategySelector() {
+  const { t } = useTranslation("settings");
   const { settings, updateSettings } = useSettings();
+
+  const STRATEGY_OPTIONS: Array<{
+    value: SmartContextMode;
+    label: string;
+    description: string;
+  }> = [
+    {
+      value: "conservative",
+      label: t("smartContext.conservative.label"),
+      description: t("smartContext.conservative.description"),
+    },
+    {
+      value: "balanced",
+      label: t("smartContext.balanced.label"),
+      description: t("smartContext.balanced.description"),
+    },
+    {
+      value: "deep",
+      label: t("smartContext.deep.label"),
+      description: t("smartContext.deep.description"),
+    },
+  ];
 
   const currentStrategy = settings?.proSmartContextOption ?? "balanced";
 

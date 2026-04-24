@@ -86,7 +86,7 @@ Create a Git commit with a well-formatted message.
 
 ## Placement dans la réponse
 
-Le tag `<dyad-skill>` doit être placé **au début de la réponse** de l'IA, avant toute autre action ou explication :
+Le tag `<dyad-skill>` doit être placé **au début de la réponse** de l'IA, avant toute autre action, explication ou même tag `<think>` :
 
 ```xml
 <dyad-skill name="examples:code-review" description="Perform thorough code review">
@@ -95,6 +95,10 @@ Le tag `<dyad-skill>` doit être placé **au début de la réponse** de l'IA, av
 Perform a thorough code review focusing on correctness, security, and best practices.
 ...
 </dyad-skill>
+
+<think>
+[Processus de réflexion sur la revue de code]
+</think>
 
 Je vais maintenant effectuer une revue de code approfondie de votre fichier.
 

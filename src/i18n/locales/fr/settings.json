@@ -45,6 +45,20 @@
     "autoFixProblems": "Correction automatique des problèmes",
     "autoFixProblemsDescription": "Cela corrigera automatiquement les erreurs TypeScript."
   },
+  "smartContext": {
+    "conservative": {
+      "label": "Conservateur",
+      "description": "Contexte minimal — seul le fichier actif et les fichiers très pertinents (score ≥ 0,7) sont inclus. Utilise jusqu’à 25 % du budget de jetons."
+    },
+    "balanced": {
+      "label": "Équilibré",
+      "description": "Contexte modéré — inclut les fichiers avec un score ≥ 0,4. Utilise jusqu’à 50 % du budget de jetons."
+    },
+    "deep": {
+      "label": "Approfondi",
+      "description": "Contexte maximal — inclut tous les fichiers pertinents (score > 0,1). Utilise jusqu’à 80 % du budget de jetons."
+    }
+  },
   "ai": {
     "title": "Paramètres IA",
     "thinkingBudget": "Budget de réflexion",

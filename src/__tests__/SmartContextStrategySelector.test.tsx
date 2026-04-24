@@ -15,6 +15,28 @@ vi.mock("@/lib/toast", () => ({
   showInfo: vi.fn(),
 }));
 
+// Mock react-i18next
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      if (key === "smartContext.conservative.label") return "Conservative";
+      if (key === "smartContext.conservative.description")
+        return "Minimal context — only the active file and highly relevant files (score ≥ 0.7) are included. Uses up to 25% of token budget.";
+      if (key === "smartContext.balanced.label") return "Balanced";
+      if (key === "smartContext.balanced.description")
+        return "Moderate context — includes files with score ≥ 0.4. Uses up to 50% of token budget.";
+      if (key === "smartContext.deep.label") return "Deep";
+      if (key === "smartContext.deep.description")
+        return "Maximum context — includes all relevant files (score > 0.1). Uses up to 80% of token budget.";
+      return key;
+    },
+    i18n: {
+      changeLanguage: () => Promise.resolve(),
+      language: "en",
+    },
+  }),
+}));
+
 describe("SmartContextStrategySelector", () => {
   let queryClient: QueryClient;
   const mockUpdateSettings = vi.fn();

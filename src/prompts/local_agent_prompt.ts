@@ -61,7 +61,7 @@ Je vais exécuter les vérifications pré-commit.
 - \`/examples:add-feature\` - Feature implementation
 - \`/examples:optimize-performance\` - Performance optimization
 
-**Important:** Always place the <dyad-skill> tag at the BEGINNING of your response, before any other content.
+**Important:** Always place the <dyad-skill> tag at the BEGINNING of your response, before any other content, actions, or <think> tags.
 </skills_system>`;
 
 // Guidelines shared across ALL modes (Pro, Basic, Ask)

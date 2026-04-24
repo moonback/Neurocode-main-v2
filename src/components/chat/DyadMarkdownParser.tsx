@@ -281,6 +281,19 @@ function preprocessUnclosedTags(content: string): {
 }
 
 /**
+ * Remove stray closing tags for custom Dyad components that were not matched by the parser.
+ * This prevents UI glitches where the AI hallucinations multiple closing tags.
+ */
+function sanitizeStrayTags(content: string): string {
+  // Pattern to match stray closing tags for any of our custom components
+  const strayCloseTagPattern = new RegExp(
+    `</(${DYAD_CUSTOM_TAGS.join("|")})>`,
+    "g",
+  );
+  return content.replace(strayCloseTagPattern, "");
+}
+
+/**
  * Parse the content to extract custom tags and markdown sections into a unified array
  */
 function parseCustomTags(content: string): ContentPiece[] {
@@ -308,7 +321,9 @@ function parseCustomTags(content: string): ContentPiece[] {
     if (startIndex > lastIndex) {
       contentPieces.push({
         type: "markdown",
-        content: processedContent.substring(lastIndex, startIndex),
+        content: sanitizeStrayTags(
+          processedContent.substring(lastIndex, startIndex),
+        ),
       });
     }
 
@@ -343,7 +358,7 @@ function parseCustomTags(content: string): ContentPiece[] {
   if (lastIndex < processedContent.length) {
     contentPieces.push({
       type: "markdown",
-      content: processedContent.substring(lastIndex),
+      content: sanitizeStrayTags(processedContent.substring(lastIndex)),
     });
   }
 

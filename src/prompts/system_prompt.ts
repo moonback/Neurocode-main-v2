@@ -145,19 +145,30 @@ When the user's message matches a skill's context (e.g., mentions debugging, cod
 
 ## Skill Tag Placement
 
-**CRITICAL:** Always place the <dyad-skill> tag at the BEGINNING of your response, before any other content or actions.
+**CRITICAL:** Always place the <dyad-skill> tag at the BEGINNING of your response, before any other content, actions, or even <think> tags.
 
-✅ **Correct:**
+✅ **Correct (with thinking):**
+\`\`\`
+<dyad-skill name="examples:code-review" description="Perform thorough code review">
+[skill content]
+</dyad-skill>
+
+<think>
+[your thinking process here]
+</think>
+
+Je vais effectuer une revue de code complète.
+...
+\`\`\`
+
+✅ **Correct (no thinking needed):**
 \`\`\`
 <dyad-skill name="examples:code-review" description="Perform thorough code review">
 [skill content]
 </dyad-skill>
 
 Je vais effectuer une revue de code complète.
-
-<dyad-read path="src/components/MyComponent.tsx">
 ...
-</dyad-read>
 \`\`\`
 
 ❌ **Incorrect:**

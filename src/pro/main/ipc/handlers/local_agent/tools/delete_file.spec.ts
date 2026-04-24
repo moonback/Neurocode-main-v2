@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import fs from "node:fs";
+import path from "node:path";
 import { deleteFileTool } from "./delete_file";
 import type { AgentContext } from "./types";
 import { gitRemove } from "@/ipc/utils/git_utils";
@@ -106,7 +107,9 @@ describe("deleteFileTool", () => {
         mockContext,
       );
 
-      expect(fs.unlinkSync).toHaveBeenCalledWith("/test/app/src/file.ts");
+      expect(fs.unlinkSync).toHaveBeenCalledWith(
+        path.join("/test/app", "src/file.ts").replace(/\\/g, "/"),
+      );
       expect(fs.rmdirSync).not.toHaveBeenCalled();
       expect(gitRemove).toHaveBeenCalledWith({
         path: "/test/app",
@@ -126,9 +129,12 @@ describe("deleteFileTool", () => {
         mockContext,
       );
 
-      expect(fs.rmdirSync).toHaveBeenCalledWith("/test/app/src/dir", {
-        recursive: true,
-      });
+      expect(fs.rmdirSync).toHaveBeenCalledWith(
+        path.join("/test/app", "src/dir").replace(/\\/g, "/"),
+        {
+          recursive: true,
+        },
+      );
       expect(fs.unlinkSync).not.toHaveBeenCalled();
       expect(result).toBe("Successfully deleted src/dir");
     });
