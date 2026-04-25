@@ -1,5 +1,5 @@
 {
-  "name": "NeuroCode",
+  "name": "neurocode",
   "version": "0.44.0-beta.1",
   "description": "Free, local, open-source AI app builder",
   "keywords": [],
@@ -189,5 +189,5 @@
   "engines": {
     "node": ">=22"
   },
-  "productName": "dyad"
+  "productName": "NeuroCode"
 }

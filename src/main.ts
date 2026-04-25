@@ -87,12 +87,12 @@ if (fs.existsSync(gitDir)) {
 // https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#main-process-mainjs
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
-    app.setAsDefaultProtocolClient("dyad", process.execPath, [
+    app.setAsDefaultProtocolClient("neurocode", process.execPath, [
       path.resolve(process.argv[1]),
     ]);
   }
 } else {
-  app.setAsDefaultProtocolClient("dyad");
+  app.setAsDefaultProtocolClient("neurocode");
 }
 
 export async function onReady() {
@@ -217,7 +217,7 @@ export async function onReady() {
   startPerformanceMonitoring();
 
   // Handle dyad-media:// protocol requests to serve persistent media files.
-  protocol.handle("dyad-media", async (request) => {
+  protocol.handle("neurocode-media", async (request) => {
     const url = new URL(request.url);
     // Format: dyad-media://media/{app-path}/.dyad/media/{filename}
     //   Uses a fixed hostname to avoid URL hostname normalization (lowercasing).
@@ -550,7 +550,7 @@ const createApplicationMenu = () => {
 // Must be called before app.whenReady().
 protocol.registerSchemesAsPrivileged([
   {
-    scheme: "dyad-media",
+    scheme: "neurocode-media",
     privileges: {
       standard: true,
       secure: true,
@@ -609,10 +609,10 @@ async function handleDeepLinkReturn(url: string) {
     "hostname",
     parsed.hostname,
   );
-  if (parsed.protocol !== "dyad:") {
+  if (parsed.protocol !== "neurocode:") {
     dialog.showErrorBox(
       "Invalid Protocol",
-      `Expected dyad://, got ${parsed.protocol}. Full URL: ${url}`,
+      `Expected neurocode://, got ${parsed.protocol}. Full URL: ${url}`,
     );
     return;
   }

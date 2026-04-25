@@ -95,8 +95,8 @@ const config: ForgeConfig = {
       : undefined,
     protocols: [
       {
-        name: "Dyad",
-        schemes: ["dyad"],
+        name: "NeuroCode",
+        schemes: ["neurocode"],
       },
     ],
     icon: "./assets/icon/logo",
@@ -160,7 +160,7 @@ const config: ForgeConfig = {
     }),
     new MakerDeb({
       options: {
-        mimeType: ["x-scheme-handler/dyad"],
+        mimeType: ["x-scheme-handler/neurocode"],
         icon: "./assets/icon/logo.png",
       },
     }),

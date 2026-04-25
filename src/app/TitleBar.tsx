@@ -5,7 +5,7 @@ import { useRouter } from "@tanstack/react-router";
 import { useSettings } from "@/hooks/useSettings";
 import { Button } from "@/components/ui/button";
 // @ts-ignore
-import logo from "../../assets/logo.svg";
+import logo from "../../assets/logo.png";
 import { providerSettingsRoute } from "@/routes/settings/providers/$provider";
 import { cn } from "@/lib/utils";
 import { useDeepLink } from "@/contexts/DeepLinkContext";
@@ -93,9 +93,8 @@ export const TitleBar = () => {
                 data-testid="title-bar-app-name-button"
                 variant="outline"
                 size="sm"
-                className={`hidden @2xl:block no-app-region-drag text-xs max-w-38 truncate font-medium ${
-                  selectedApp ? "cursor-pointer" : ""
-                }`}
+                className={`hidden @2xl:block no-app-region-drag text-xs max-w-38 truncate font-medium ${selectedApp ? "cursor-pointer" : ""
+                  }`}
                 onClick={handleAppClick}
               />
             }
