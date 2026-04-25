@@ -33,31 +33,31 @@ const THEME_MODES: {
   description: string;
   icon: typeof ImageIcon;
 }[] = [
-  {
-    value: "plain",
-    label: "Plain",
-    description: "No style applied",
-    icon: Sparkles,
-  },
-  {
-    value: "3d-clay",
-    label: "3D / Clay",
-    description: "Soft, rounded clay aesthetic",
-    icon: Box,
-  },
-  {
-    value: "real-photography",
-    label: "Photography",
-    description: "Photorealistic DSLR quality",
-    icon: Camera,
-  },
-  {
-    value: "isometric-illustration",
-    label: "Isometric",
-    description: "Clean geometric illustrations",
-    icon: Layers,
-  },
-];
+    {
+      value: "plain",
+      label: "Plain",
+      description: "No style applied",
+      icon: Sparkles,
+    },
+    {
+      value: "3d-clay",
+      label: "3D / Clay",
+      description: "Soft, rounded clay aesthetic",
+      icon: Box,
+    },
+    {
+      value: "real-photography",
+      label: "Photography",
+      description: "Photorealistic DSLR quality",
+      icon: Camera,
+    },
+    {
+      value: "isometric-illustration",
+      label: "Isometric",
+      description: "Clean geometric illustrations",
+      icon: Layers,
+    },
+  ];
 
 export function ImageGeneratorDialog({
   open,
@@ -130,10 +130,10 @@ export function ImageGeneratorDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ImageIcon className="h-5 w-5" />
-            Generate Image
+            Générateur d'images
           </DialogTitle>
           <DialogDescription>
-            Describe the image you want to generate and choose a visual style.
+            Décrivez l'image que vous souhaitez générer et choisissez un style visuel.
           </DialogDescription>
         </DialogHeader>
 
@@ -147,7 +147,7 @@ export function ImageGeneratorDialog({
               <div className="flex flex-col items-center justify-center py-8 px-4 border-2 border-dashed border-muted-foreground/25 rounded-lg bg-muted/10">
                 <ImageIcon className="h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-semibold text-center mb-2">
-                  AI Image Generator
+                  Générateur d'images
                 </h3>
                 <p className="text-sm text-muted-foreground text-center max-w-md">
                   Configurez une clé OpenAI dans les paramètres pour utiliser la
@@ -162,7 +162,7 @@ export function ImageGeneratorDialog({
                 <Label htmlFor="image-prompt">Prompt</Label>
                 <Textarea
                   id="image-prompt"
-                  placeholder="Describe the image you want to create..."
+                  placeholder="Décrivez l'image que vous souhaitez générer..."
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   className="min-h-[100px] resize-none"
@@ -182,11 +182,10 @@ export function ImageGeneratorDialog({
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => setThemeMode(mode.value)}
-                        className={`flex items-center gap-3 rounded-lg border p-3 text-left transition-colors ${
-                          isSelected
+                        className={`flex items-center gap-3 rounded-lg border p-3 text-left transition-colors ${isSelected
                             ? "border-primary bg-primary/5"
                             : "border-border hover:border-primary/30 hover:bg-muted/50"
-                        }`}
+                          }`}
                       >
                         <Icon
                           className={`h-5 w-5 shrink-0 ${isSelected ? "text-primary" : "text-muted-foreground"}`}
@@ -209,7 +208,7 @@ export function ImageGeneratorDialog({
 
               {/* Target App Selector */}
               <div className="space-y-2">
-                <Label>Save to App</Label>
+                <Label>Enregistrer dans l'application</Label>
                 <AppSearchSelect
                   apps={apps}
                   selectedAppId={effectiveTargetAppId}
@@ -222,23 +221,23 @@ export function ImageGeneratorDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => handleOpenChange(false)}>
-            Cancel
+            Annuler
           </Button>
           <div className="flex items-center gap-2">
             {!prompt.trim() || effectiveTargetAppId === null ? (
               <p className="text-xs text-muted-foreground">
                 {!prompt.trim() && effectiveTargetAppId === null
-                  ? "Enter a prompt and select an app"
+                  ? "Entrez un prompt et sélectionnez une application"
                   : !prompt.trim()
-                    ? "Enter a prompt to generate"
-                    : "Select an app to save to"}
+                    ? "Entrez un prompt pour générer"
+                    : "Sélectionnez une application pour enregistrer"}
               </p>
             ) : null}
             <Button
               onClick={handleGenerate}
               disabled={!prompt.trim() || effectiveTargetAppId === null}
             >
-              Generate
+              Générer
             </Button>
           </div>
         </DialogFooter>

@@ -36,7 +36,7 @@ export default function MediaPage() {
             <ImageGenerationProgressButton />
             <Button onClick={() => setImageGeneratorOpen(true)}>
               <ImagePlus className="mr-2 h-4 w-4" />
-              Generate Image
+              Nouvelle image
             </Button>
           </div>
         </div>
@@ -44,7 +44,7 @@ export default function MediaPage() {
         <LibrarySearchBar
           value={searchQuery}
           onChange={setSearchQuery}
-          placeholder="Search images..."
+          placeholder="Rechercher des images..."
         />
 
         {isLoading ? (
@@ -54,8 +54,8 @@ export default function MediaPage() {
         ) : filteredMediaApps.length === 0 ? (
           <div className="text-muted-foreground text-center py-12">
             {searchQuery
-              ? "No results found."
-              : "No media files yet. Media files from your apps will appear here."}
+              ? "Aucun résultat trouvé."
+              : "Aucun fichier multimédia. Les fichiers multimédias de vos applications apparaîtront ici."}
           </div>
         ) : (
           <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
