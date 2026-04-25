@@ -60,6 +60,15 @@ export type OptimizePromptParamsDto = z.infer<
   typeof OptimizePromptParamsDtoSchema
 >;
 
+export const AISuggestionSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  prompt: z.string(),
+  category: z.enum(["feature", "fix", "optimize", "improve"]),
+});
+
+export type AISuggestion = z.infer<typeof AISuggestionSchema>;
+
 export const promptContracts = {
   list: defineContract({
     channel: "prompts:list",
@@ -89,6 +98,14 @@ export const promptContracts = {
     channel: "prompts:optimize",
     input: OptimizePromptParamsDtoSchema,
     output: z.string(),
+  }),
+
+  generateSuggestions: defineContract({
+    channel: "prompts:generate-suggestions",
+    input: z.object({
+      chatId: z.number(),
+    }),
+    output: z.array(AISuggestionSchema),
   }),
 } as const;
 

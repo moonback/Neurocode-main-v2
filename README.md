@@ -44,6 +44,7 @@ NeuroCode est une puissante application de bureau qui permet aux développeurs d
 - **Mode Ask :** Questions-réponses sur votre base de code
 - **Mode Plan :** Planification assistée par l'IA et décomposition des tâches avec collecte des besoins
 - **Mode Agent Local :** Agent autonome qui exécute des outils et prend des décisions
+- **Suggestions IA :** Propositions contextuelles intelligentes (fonctionnalités, corrections, optimisations) basées sur votre projet
 - **Optimisation de prompt :** Amélioration automatique des prompts pour de meilleurs résultats IA
 
 #### 💻 Édition de code et aperçu
@@ -164,10 +165,12 @@ Disponible via IPC :
 ### Fonctionnalités avancées
 
 - **Système de Skills :** Créez et gérez des instructions réutilisables pour étendre les capacités de NeuroCode
+- **Suggestions IA :** Génération dynamique de propositions d'évolution basées sur le contexte actuel du chat et du projet
 - **Optimisation de prompt :** Améliorez automatiquement vos prompts avec l'IA pour obtenir de meilleurs résultats
 - **Compactage du contexte :** Résumé automatique des longues conversations
 - **Revue de sécurité :** Analyse de sécurité du code par l'IA
 - **Correction automatique des problèmes :** Détection et résolution automatique des erreurs
+- **Barre de jetons (TokenBar) :** Visibilité en temps réel de la consommation de jetons (activée par défaut)
 - **Gestion des jetons :** Gestion intelligente du contexte pour les longs chats
 - **Recherche Web :** Recherche sur le web pour des informations à jour
 - **Budget de réflexion :** Support des modèles de raisonnement (o1/o3)
@@ -304,6 +307,17 @@ Cliquez sur l'icône ✨ (sparkles) à côté du champ de saisie pour optimiser 
 Avant : "ajoute un formulaire"
 Après : "Crée un formulaire de contact React avec les champs suivants : nom (texte requis), email (validation email requise), message (textarea requis). Ajoute la validation côté client avec des messages d'erreur clairs et un bouton de soumission désactivé jusqu'à ce que tous les champs soient valides."
 ```
+
+### Suggestions IA
+
+NeuroCode analyse en permanence votre projet pour vous proposer des actions pertinentes. Juste au-dessus du champ de saisie, vous trouverez des suggestions classées par catégories :
+
+- **Fonctionnalités :** Idées de nouvelles fonctions à ajouter.
+- **Corrections :** Améliorations de la robustesse ou correction de bugs.
+- **Optimisations :** Amélioration du code ou des performances.
+- **Améliorations :** UX, design et accessibilité.
+
+Ces suggestions sont générées dynamiquement par l'IA en fonction de votre historique de discussion et sont mises en cache pour une performance optimale.
 
 ---
 

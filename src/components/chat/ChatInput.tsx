@@ -108,6 +108,7 @@ import { SkillMatcherSuggestion } from "@/components/skills/SkillMatcherSuggesti
 import { matchedSkillsAtom, dismissedSkillsAtom } from "@/atoms/chatAtoms";
 import type { MatchedSkill } from "@/skills/types";
 import { PromptOptimizerButton } from "./PromptOptimizerButton";
+import { AISuggestionsStrip } from "./AISuggestionsStrip";
 
 const showTokenBarAtom = atom(true);
 
@@ -847,6 +848,12 @@ export function ChatInput({ chatId }: { chatId?: number }) {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
+          {/* AI Suggestions Strip - suggestions de fonctionnalités, corrections et optimisations */}
+          <AISuggestionsStrip
+            onSelectSuggestion={setInputValue}
+            isStreaming={isStreaming}
+          />
+
           {/* Show active questionnaire if exists */}
           <QuestionnaireInput />
 

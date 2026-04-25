@@ -1,6 +1,6 @@
 import log from "electron-log";
 import { db } from "@/db";
-import { prompts } from "@/db/schema";
+import { prompts, messages } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { createTypedHandler } from "./base";
 import { promptContracts } from "../types/prompts";
@@ -125,6 +125,83 @@ Return ONLY the optimized prompt without any explanations or meta-commentary.`;
       _logger.error("Error optimizing prompt:", error);
       throw new DyadError(
         `Failed to optimize prompt: ${(error as Error).message}`,
+        DyadErrorKind.External,
+      );
+    }
+  });
+  createTypedHandler(promptContracts.generateSuggestions, async (_, params) => {
+    const { chatId } = params;
+    if (!chatId) {
+      throw new DyadError("Chat ID is required", DyadErrorKind.External);
+    }
+
+    const settings = await readSettings();
+    if (!settings) {
+      throw new DyadError("Settings not found", DyadErrorKind.NotFound);
+    }
+
+    try {
+      // Fetch chat messages for context
+      const chatMessages = db
+        .select()
+        .from(messages)
+        .where(eq(messages.chatId, chatId))
+        .orderBy(messages.id)
+        .all();
+
+      const lastMessagesContext = chatMessages
+        .slice(-10)
+        .map((m) => `${m.role}: ${m.content}`)
+        .join("\n\n");
+
+      const { modelClient } = await getModelClient(
+        settings.selectedModel,
+        settings,
+      );
+
+      const systemPrompt = `Tu es un expert en développement logiciel et en analyse de produits.
+Ta tâche est de générer des suggestions pertinentes pour améliorer le projet actuel de l'utilisateur en te basant sur l'historique du chat.
+
+Génère 4 suggestions uniques, une pour chaque catégorie suivante :
+1. "feature" : Une nouvelle fonctionnalité utile.
+2. "fix" : Une correction de bug potentiel ou une amélioration de la robustesse.
+3. "optimize" : Une optimisation de performance ou de structure de code.
+4. "improve" : Une amélioration de l'UX, du design ou de l'accessibilité.
+
+Chaque suggestion doit être concrète et directement liée à ce que l'utilisateur construit.
+
+RETOURNE UNIQUEMENT UN TABLEAU JSON au format suivant (sans texte avant ou après) :
+[
+  {
+    "id": "identifiant-unique",
+    "label": "Titre court de la suggestion",
+    "prompt": "Le prompt détaillé à envoyer à l'IA pour implémenter cette suggestion",
+    "category": "feature | fix | optimize | improve"
+  }
+]
+
+Assure-toi que les prompts sont en français et très instructifs.`;
+
+      const result = await generateText({
+        model: modelClient.model,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `Voici l'historique récent du projet :\n\n${lastMessagesContext}\n\nGénère des suggestions pertinentes pour ce projet.` },
+        ],
+        temperature: 0.8,
+      });
+
+      const cleanedText = result.text.trim().replace(/^```json/, "").replace(/```$/, "");
+      try {
+        return JSON.parse(cleanedText);
+      } catch {
+        _logger.error("Error parsing AI suggestions JSON:", cleanedText);
+        throw new Error("Failed to parse AI suggestions");
+      }
+    } catch (error) {
+      _logger.error("Error generating suggestions:", error);
+      throw new DyadError(
+        `Failed to generate suggestions: ${(error as Error).message}`,
         DyadErrorKind.External,
       );
     }
