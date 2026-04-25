@@ -109,10 +109,9 @@ export function CustomThemeDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create Custom Theme</DialogTitle>
+          <DialogTitle>Créer un thème personnalisé</DialogTitle>
           <DialogDescription>
-            Create a custom theme using manual configuration or AI-powered
-            generation.
+            Créez un thème personnalisé en utilisant la configuration manuelle ou la génération assistée par l'IA.
           </DialogDescription>
         </DialogHeader>
 
@@ -124,11 +123,11 @@ export function CustomThemeDialog({
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="ai" className="flex items-center gap-2">
               <Sparkles className="h-4 w-4" />
-              AI-Powered Generator
+              Générateur IA
             </TabsTrigger>
             <TabsTrigger value="manual" className="flex items-center gap-2">
               <PenLine className="h-4 w-4" />
-              Manual Configuration
+              Configuration manuelle
             </TabsTrigger>
           </TabsList>
 
@@ -150,30 +149,30 @@ export function CustomThemeDialog({
           {/* Manual Configuration Tab */}
           <TabsContent value="manual" className="space-y-4 mt-4">
             <div className="space-y-2">
-              <Label htmlFor="manual-name">Theme Name</Label>
+              <Label htmlFor="manual-name">Nom du thème</Label>
               <Input
                 id="manual-name"
-                placeholder="My Custom Theme"
+                placeholder="Mon thème personnalisé"
                 value={manualName}
                 onChange={(e) => setManualName(e.target.value)}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="manual-description">Description (optional)</Label>
+              <Label htmlFor="manual-description">Description (optionnel)</Label>
               <Input
                 id="manual-description"
-                placeholder="A brief description of your theme"
+                placeholder="Une courte description de votre thème"
                 value={manualDescription}
                 onChange={(e) => setManualDescription(e.target.value)}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="manual-prompt">Theme Prompt</Label>
+              <Label htmlFor="manual-prompt">Prompt du thème</Label>
               <Textarea
                 id="manual-prompt"
-                placeholder="Enter your theme system prompt..."
+                placeholder="Entrez le prompt système de votre thème..."
                 className="min-h-[200px] font-mono text-sm"
                 value={manualPrompt}
                 onChange={(e) => setManualPrompt(e.target.value)}
@@ -188,10 +187,10 @@ export function CustomThemeDialog({
               {isSaving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  Enregistrer...
                 </>
               ) : (
-                "Save Theme"
+                "Enregistrer le thème"
               )}
             </Button>
           </TabsContent>

@@ -157,7 +157,7 @@ export function AIGeneratorTab({
 
       if (skippedCount > 0) {
         showError(
-          `Only ${availableSlots} image${availableSlots === 1 ? "" : "s"} can be added. ${skippedCount} file${skippedCount === 1 ? " was" : "s were"} skipped.`,
+          `Seules ${availableSlots} image${availableSlots === 1 ? "" : "s"} peuvent être ajoutées. ${skippedCount} fichier${skippedCount === 1 ? " a été" : " ont été"} ignoré(s).`,
         );
       }
 
@@ -170,7 +170,7 @@ export function AIGeneratorTab({
           // Validate file type
           if (!file.type.startsWith("image/")) {
             showError(
-              `Please upload only image files. "${file.name}" is not a valid image.`,
+              `Veuillez télécharger uniquement des images. "${file.name}" n'est pas une image valide.`,
             );
             continue;
           }
@@ -260,7 +260,7 @@ export function AIGeneratorTab({
     if (inputSource === "images") {
       // Image-based generation
       if (aiImages.length === 0) {
-        showError("Please upload at least one image");
+        showError("Veuillez importer au moins une image");
         return;
       }
 
@@ -272,16 +272,16 @@ export function AIGeneratorTab({
           model: aiSelectedModel,
         });
         setAiGeneratedPrompt(result.prompt);
-        toast.success("Theme prompt generated successfully");
+        toast.success("Prompt généré avec succès");
       } catch (error) {
         showError(
-          `Failed to generate theme: ${error instanceof Error ? error.message : "Unknown error"}`,
+          `Échec de la génération du prompt : ${error instanceof Error ? error.message : "Erreur inconnue"}`,
         );
       }
     } else {
       // URL-based generation
       if (!websiteUrl.trim()) {
-        showError("Please enter a website URL");
+        showError("Veuillez entrer l'URL d'un site web");
         return;
       }
 
@@ -294,10 +294,10 @@ export function AIGeneratorTab({
         });
 
         setAiGeneratedPrompt(result.prompt);
-        toast.success("Theme prompt generated from website");
+        toast.success("Prompt généré avec succès");
       } catch (error) {
         showError(
-          `Failed to generate theme: ${error instanceof Error ? error.message : "Unknown error"}`,
+          `Échec de la génération du prompt : ${error instanceof Error ? error.message : "Erreur inconnue"}`,
         );
       }
     }
@@ -318,20 +318,20 @@ export function AIGeneratorTab({
   return (
     <div className="space-y-4 mt-4">
       <div className="space-y-2">
-        <Label htmlFor="ai-name">Theme Name</Label>
+        <Label htmlFor="ai-name">Nom du thème</Label>
         <Input
           id="ai-name"
-          placeholder="My AI-Generated Theme"
+          placeholder="Nom du thème généré par l'IA"
           value={aiName}
           onChange={(e) => setAiName(e.target.value)}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="ai-description">Description (optional)</Label>
+        <Label htmlFor="ai-description">Description (optionnel)</Label>
         <Input
           id="ai-description"
-          placeholder="A brief description of your theme"
+          placeholder="Description brève du thème"
           value={aiDescription}
           onChange={(e) => setAiDescription(e.target.value)}
         />
@@ -339,36 +339,34 @@ export function AIGeneratorTab({
 
       {/* Input Source Toggle */}
       <div className="space-y-3">
-        <Label>Reference Source</Label>
+        <Label>Source de référence</Label>
         <div className="grid grid-cols-2 gap-4">
           <button
             type="button"
             onClick={() => setInputSource("images")}
-            className={`flex flex-col items-center rounded-lg border p-3 text-center transition-colors ${
-              inputSource === "images"
-                ? "border-primary bg-primary/5"
-                : "hover:bg-muted/50"
-            }`}
+            className={`flex flex-col items-center rounded-lg border p-3 text-center transition-colors ${inputSource === "images"
+              ? "border-primary bg-primary/5"
+              : "hover:bg-muted/50"
+              }`}
           >
             <Upload className="h-5 w-5 mb-1" />
-            <span className="font-medium text-sm">Upload Images</span>
+            <span className="font-medium text-sm">Importer des images</span>
             <span className="text-xs text-muted-foreground mt-1">
-              Use screenshots from your device
+              Utiliser des captures d'écran de votre appareil
             </span>
           </button>
           <button
             type="button"
             onClick={() => setInputSource("url")}
-            className={`flex flex-col items-center rounded-lg border p-3 text-center transition-colors ${
-              inputSource === "url"
-                ? "border-primary bg-primary/5"
-                : "hover:bg-muted/50"
-            }`}
+            className={`flex flex-col items-center rounded-lg border p-3 text-center transition-colors ${inputSource === "url"
+              ? "border-primary bg-primary/5"
+              : "hover:bg-muted/50"
+              }`}
           >
             <Link className="h-5 w-5 mb-1" />
-            <span className="font-medium text-sm">Website URL</span>
+            <span className="font-medium text-sm">URL de site web</span>
             <span className="text-xs text-muted-foreground mt-1">
-              Extract design from a live website
+              Extraire le design d'un site web en direct
             </span>
           </button>
         </div>
@@ -377,7 +375,7 @@ export function AIGeneratorTab({
       {/* Image Upload Section - only shown when inputSource is "images" */}
       {inputSource === "images" && (
         <div className="space-y-2">
-          <Label>Reference Images</Label>
+          <Label>Images de référence</Label>
           <div
             className={`border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center cursor-pointer hover:border-muted-foreground/50 transition-colors ${isUploading ? "opacity-50 pointer-events-none" : ""}`}
             onClick={() => fileInputRef.current?.click()}
@@ -397,10 +395,10 @@ export function AIGeneratorTab({
               <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
             )}
             <p className="text-sm text-muted-foreground">
-              {isUploading ? "Uploading..." : "Click to upload images"}
+              {isUploading ? "En cours..." : "Cliquez pour importer des images"}
             </p>
             <p className="text-xs text-muted-foreground/70 mt-1">
-              Upload UI screenshots to inspire your theme
+              Importez des captures d'écran pour inspirer votre thème
             </p>
           </div>
 
@@ -408,7 +406,7 @@ export function AIGeneratorTab({
           <p className="text-xs text-muted-foreground mt-2 text-center">
             {aiImages.length} / {MAX_IMAGES} images
             {aiImages.length >= MAX_IMAGES && (
-              <span className="text-destructive ml-2">• Maximum reached</span>
+              <span className="text-destructive ml-2">• Maximum atteint</span>
             )}
           </p>
 
@@ -438,7 +436,7 @@ export function AIGeneratorTab({
       {/* URL Input Section - only shown when inputSource is "url" */}
       {inputSource === "url" && (
         <div className="space-y-2">
-          <Label htmlFor="website-url">Website URL</Label>
+          <Label htmlFor="website-url">URL du site web</Label>
           <Input
             id="website-url"
             type="url"
@@ -448,14 +446,14 @@ export function AIGeneratorTab({
             disabled={isGenerating}
           />
           <p className="text-xs text-muted-foreground">
-            Enter a website URL to extract its design system
+            Entrez l'URL d'un site web pour extraire son système de design
           </p>
         </div>
       )}
 
       {/* Keywords Input */}
       <div className="space-y-2">
-        <Label htmlFor="ai-keywords">Keywords (optional)</Label>
+        <Label htmlFor="ai-keywords">Mots-clés (optionnel)</Label>
         <Input
           id="ai-keywords"
           placeholder="modern, minimal, dark mode, glassmorphism..."
@@ -463,41 +461,40 @@ export function AIGeneratorTab({
           onChange={(e) => setAiKeywords(e.target.value)}
         />
         <p className="text-xs text-muted-foreground">
-          Add keywords or reference designs to guide the generation
+          Ajoutez des mots-clés ou des designs de référence pour guider la
+          génération
         </p>
       </div>
 
       {/* Generation Mode Selection */}
       <div className="space-y-3">
-        <Label>Generation Mode</Label>
+        <Label>Mode de génération</Label>
         <div className="grid grid-cols-2 gap-4">
           <button
             type="button"
             onClick={() => setAiGenerationMode("inspired")}
-            className={`flex flex-col items-start rounded-lg border p-3 text-left transition-colors ${
-              aiGenerationMode === "inspired"
-                ? "border-primary bg-primary/5"
-                : "hover:bg-muted/50"
-            }`}
+            className={`flex flex-col items-start rounded-lg border p-3 text-left transition-colors ${aiGenerationMode === "inspired"
+              ? "border-primary bg-primary/5"
+              : "hover:bg-muted/50"
+              }`}
           >
-            <span className="font-medium">Inspired</span>
+            <span className="font-medium">Inspiré</span>
             <span className="text-xs text-muted-foreground mt-1">
-              Extracts an abstract, reusable design system. Does not replicate
-              the original UI.
+              Extrait un système de design abstrait et réutilisable. Ne
+              reproduit pas l'interface d'origine.
             </span>
           </button>
           <button
             type="button"
             onClick={() => setAiGenerationMode("high-fidelity")}
-            className={`flex flex-col items-start rounded-lg border p-3 text-left transition-colors ${
-              aiGenerationMode === "high-fidelity"
-                ? "border-primary bg-primary/5"
-                : "hover:bg-muted/50"
-            }`}
+            className={`flex flex-col items-start rounded-lg border p-3 text-left transition-colors ${aiGenerationMode === "high-fidelity"
+              ? "border-primary bg-primary/5"
+              : "hover:bg-muted/50"
+              }`}
           >
-            <span className="font-medium">High Fidelity</span>
+            <span className="font-medium">Fidélité élevée</span>
             <span className="text-xs text-muted-foreground mt-1">
-              Recreates the visual system from the image as closely as possible.
+              Recreate le système visuel de l'image le plus fidèlement possible.
             </span>
           </button>
         </div>
@@ -505,20 +502,20 @@ export function AIGeneratorTab({
 
       {/* Model Selection */}
       <div className="space-y-3">
-        <Label>Model Selection</Label>
+        <Label>Sélection du modèle</Label>
         <div
           className="grid grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] gap-3"
           role="radiogroup"
-          aria-label="Model Selection"
+          aria-label="Sélection du modèle"
         >
           {isLoadingThemeGenerationModelOptions ? (
             <div className="col-span-full flex items-center justify-center py-3 text-sm text-muted-foreground">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Loading models...
+              Chargement des modèles...
             </div>
           ) : themeGenerationModelOptions.length === 0 ? (
             <div className="col-span-full text-center py-3 text-sm text-muted-foreground">
-              No models available
+              Aucun modèle disponible
             </div>
           ) : (
             themeGenerationModelOptions.map((modelOption) => (
@@ -528,11 +525,10 @@ export function AIGeneratorTab({
                 role="radio"
                 aria-checked={aiSelectedModel === modelOption.id}
                 onClick={() => setAiSelectedModel(modelOption.id)}
-                className={`flex flex-col items-center rounded-lg border p-3 text-center transition-colors ${
-                  aiSelectedModel === modelOption.id
-                    ? "border-primary bg-primary/5"
-                    : "hover:bg-muted/50"
-                }`}
+                className={`flex flex-col items-center rounded-lg border p-3 text-center transition-colors ${aiSelectedModel === modelOption.id
+                  ? "border-primary bg-primary/5"
+                  : "hover:bg-muted/50"
+                  }`}
               >
                 <span className="font-medium text-sm">{modelOption.label}</span>
               </button>
@@ -558,34 +554,34 @@ export function AIGeneratorTab({
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             {inputSource === "url"
-              ? "Generating from website..."
-              : "Generating prompt..."}
+              ? "Génération du prompt à partir du site web..."
+              : "Génération du prompt..."}
           </>
         ) : (
           <>
             <Sparkles className="mr-2 h-4 w-4" />
-            Generate Theme Prompt
+            Générer le Prompt du Thème
           </>
         )}
       </Button>
 
       {/* Generated Prompt Display */}
       <div className="space-y-2">
-        <Label htmlFor="ai-prompt">Generated Prompt</Label>
+        <Label htmlFor="ai-prompt">Prompt du thème généré</Label>
         {aiGeneratedPrompt ? (
           <Textarea
             id="ai-prompt"
             className="min-h-[200px] font-mono text-sm"
             value={aiGeneratedPrompt}
             onChange={(e) => setAiGeneratedPrompt(e.target.value)}
-            placeholder="Generated prompt will appear here..."
+            placeholder="Le prompt du thème généré apparaîtra ici..."
           />
         ) : (
           <div className="min-h-[100px] border rounded-md p-4 flex items-center justify-center text-muted-foreground text-sm text-center">
-            No prompt generated yet.{" "}
+            Aucun prompt généré pour le moment.{" "}
             {inputSource === "images"
-              ? 'Upload images and click "Generate" to create a theme prompt.'
-              : 'Enter a website URL and click "Generate" to extract a theme.'}
+              ? 'Téléchargez des images et cliquez sur "Générer" pour créer un prompt de thème.'
+              : 'Entrez l\'URL d\'un site web et cliquez sur "Générer" pour extraire un thème.'}
           </div>
         )}
       </div>
@@ -600,10 +596,10 @@ export function AIGeneratorTab({
           {isSaving ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
+              Enregistrement...
             </>
           ) : (
-            "Save Theme"
+            "Enregistrer le Thème"
           )}
         </Button>
       )}

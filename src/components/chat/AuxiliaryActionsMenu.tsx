@@ -175,7 +175,7 @@ export function AuxiliaryActionsMenu({
               >
                 <div className="flex items-center w-full">
                   <Ban size={16} className="mr-2 text-muted-foreground" />
-                  <span className="flex-1">No Theme</span>
+                  <span className="flex-1">Aucun thème</span>
                   {currentThemeId === null && (
                     <Check size={16} className="text-primary ml-2" />
                   )}
@@ -222,7 +222,7 @@ export function AuxiliaryActionsMenu({
                         onClick={() => handleThemeSelect(themeId)}
                         className={`py-2 px-3 ${isSelected ? "bg-primary/10" : ""}`}
                         data-testid={`theme-option-${themeId}`}
-                        title={theme.description || "Custom theme"}
+                        title={theme.description || "Thème personnalisé"}
                       >
                         <div className="flex items-center w-full">
                           <Brush
@@ -255,7 +255,7 @@ export function AuxiliaryActionsMenu({
                       size={16}
                       className="mr-2 text-muted-foreground"
                     />
-                    <span className="flex-1">More themes</span>
+                    <span className="flex-1">Plus de thèmes</span>
                   </div>
                 </DropdownMenuItem>
               )}
@@ -273,7 +273,7 @@ export function AuxiliaryActionsMenu({
                       size={16}
                       className="mr-2 text-muted-foreground"
                     />
-                    <span className="flex-1">New Theme</span>
+                    <span className="flex-1">Nouveau thème</span>
                   </div>
                 </DropdownMenuItem>
               </>
@@ -291,7 +291,7 @@ export function AuxiliaryActionsMenu({
               data-testid="generate-image-menu-item"
             >
               <ImageIcon size={16} className="mr-2" />
-              Generate Image
+              Générer une image
             </DropdownMenuItem>
           )}
 
@@ -312,7 +312,7 @@ export function AuxiliaryActionsMenu({
                   }
                 />
                 <span className="flex-1">
-                  {showTokenBar ? "Hide" : "Show"} token usage
+                  {showTokenBar ? "Masquer" : "Afficher"} l'utilisation des tokens
                 </span>
               </DropdownMenuItem>
             </>
@@ -334,7 +334,7 @@ export function AuxiliaryActionsMenu({
       <Dialog open={allThemesDialogOpen} onOpenChange={setAllThemesDialogOpen}>
         <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col">
           <DialogHeader>
-            <DialogTitle>All Custom Themes</DialogTitle>
+            <DialogTitle>Tous les thèmes personnalisés</DialogTitle>
           </DialogHeader>
           <div className="overflow-y-auto flex-1 -mx-6 px-6">
             {/* All custom themes list */}
@@ -348,9 +348,8 @@ export function AuxiliaryActionsMenu({
                     handleThemeSelect(themeId);
                     setAllThemesDialogOpen(false);
                   }}
-                  className={`flex items-center p-3 rounded-lg cursor-pointer hover:bg-muted transition-colors ${
-                    isSelected ? "bg-primary/10" : ""
-                  }`}
+                  className={`flex items-center p-3 rounded-lg cursor-pointer hover:bg-muted transition-colors ${isSelected ? "bg-primary/10" : ""
+                    }`}
                 >
                   <Brush size={18} className="mr-3 text-muted-foreground" />
                   <div className="flex-1">
