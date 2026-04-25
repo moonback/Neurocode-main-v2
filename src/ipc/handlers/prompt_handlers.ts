@@ -143,7 +143,10 @@ Return ONLY the optimized prompt without any explanations or meta-commentary.`;
     try {
       // Fetch chat messages for context
       const chatMessages = db
-        .select()
+        .select({
+          role: messages.role,
+          content: messages.content,
+        })
         .from(messages)
         .where(eq(messages.chatId, chatId))
         .orderBy(messages.id)
