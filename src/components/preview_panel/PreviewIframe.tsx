@@ -82,11 +82,11 @@ import { resolvePreviewBrowserUrl } from "./previewBrowserUrl";
 
 interface ErrorBannerProps {
   error:
-    | {
-        message: string;
-        source: "preview-app" | "dyad-app" | "dyad-sync";
-      }
-    | undefined;
+  | {
+    message: string;
+    source: "preview-app" | "dyad-app" | "dyad-sync";
+  }
+  | undefined;
   onDismiss: () => void;
   onAIFix: () => void;
 }
@@ -336,9 +336,9 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
         current && current.source !== "dyad-sync"
           ? current
           : {
-              message: localSyncErrorMessage,
-              source: "dyad-sync",
-            },
+            message: localSyncErrorMessage,
+            source: "dyad-sync",
+          },
       );
       return;
     }
@@ -742,12 +742,12 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
 
       const { type, payload } = event.data as {
         type:
-          | "window-error"
-          | "unhandled-rejection"
-          | "iframe-sourcemapped-error"
-          | "build-error-report"
-          | "pushState"
-          | "replaceState";
+        | "window-error"
+        | "unhandled-rejection"
+        | "iframe-sourcemapped-error"
+        | "build-error-report"
+        | "pushState"
+        | "replaceState";
         payload?: {
           message?: string;
           stack?: string;
@@ -1269,11 +1269,10 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
                 render={
                   <button
                     onClick={handleActivateComponentSelector}
-                    className={`p-1 rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
-                      isPicking
+                    className={`p-1 rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${isPicking
                         ? "bg-purple-500 text-white hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700"
                         : " text-purple-700 hover:bg-purple-200  dark:text-purple-300 dark:hover:bg-purple-900"
-                    }`}
+                      }`}
                     disabled={
                       loading ||
                       !selectedAppId ||
@@ -1296,11 +1295,10 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
                 render={
                   <button
                     onClick={handleAnnotatorClick}
-                    className={`p-1 rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
-                      annotatorMode
+                    className={`p-1 rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${annotatorMode
                         ? "bg-purple-500 text-white hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700"
                         : " text-purple-700 hover:bg-purple-200  dark:text-purple-300 dark:hover:bg-purple-900"
-                    }`}
+                      }`}
                     disabled={
                       loading ||
                       !selectedAppId ||
@@ -1460,7 +1458,7 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
                       className={cn(
                         "p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 dark:text-gray-300",
                         deviceMode !== "desktop" &&
-                          "bg-gray-200 dark:bg-gray-700",
+                        "bg-gray-200 dark:bg-gray-700",
                       )}
                     />
                   }
@@ -1548,7 +1546,7 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
           <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4 bg-gray-50 dark:bg-gray-950">
             <Loader2 className="w-8 h-8 animate-spin text-gray-400 dark:text-gray-500" />
             <p className="text-gray-600 dark:text-gray-300">
-              Starting your app server...
+              Demarrage du serveur d'application...
             </p>
           </div>
         ) : (

@@ -109,7 +109,7 @@ import { matchedSkillsAtom, dismissedSkillsAtom } from "@/atoms/chatAtoms";
 import type { MatchedSkill } from "@/skills/types";
 import { PromptOptimizerButton } from "./PromptOptimizerButton";
 
-const showTokenBarAtom = atom(false);
+const showTokenBarAtom = atom(true);
 
 export function ChatInput({ chatId }: { chatId?: number }) {
   const { t } = useTranslation("chat");

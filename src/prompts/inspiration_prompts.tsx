@@ -1,85 +1,85 @@
 import {
-  ListTodo,
-  Layout,
-  UserPlus,
-  Heart,
-  Gamepad2,
-  ChefHat,
   LineChart,
-  MapPin,
+  ShieldCheck,
+  Columns,
+  Moon,
+  Briefcase,
+  PenTool,
+  Wallet,
+  Share2,
+  Calendar,
+  Utensils,
+  Monitor,
+  Activity,
   Bot,
-  Target,
-  Mail,
-  Music,
-  Box,
-  Image as ImageIcon,
-  Timer,
-  UserCircle
+  Globe,
+  Database,
+  Lock
 } from "lucide-react";
 
 export const INSPIRATION_PROMPTS = [
   {
-    icon: <ListTodo className="w-5 h-5" />,
-    label: "Application de To-Do List",
-  },
-  {
-    icon: <Layout className="w-5 h-5" />,
-    label: "Landing Page Moderne",
-  },
-  {
-    icon: <UserPlus className="w-5 h-5" />,
-    label: "Formulaire d'Inscription",
-  },
-  {
-    icon: <Heart className="w-5 h-5" />,
-    label: "Journal d'Humeur & Suivi",
-  },
-  {
-    icon: <Gamepad2 className="w-5 h-5" />,
-    label: "Jeu d'Histoire Interactif",
-  },
-  {
-    icon: <ChefHat className="w-5 h-5" />,
-    label: "Générateur de Recettes",
-  },
-  {
     icon: <LineChart className="w-5 h-5" />,
-    label: "Tableau de Bord Financier",
+    label: "Dashboard SaaS Analytics",
   },
   {
-    icon: <MapPin className="w-5 h-5" />,
-    label: "Carte de Voyage Interactive",
+    icon: <ShieldCheck className="w-5 h-5" />,
+    label: "Auditeur de Sécurité IA",
+  },
+  {
+    icon: <Columns className="w-5 h-5" />,
+    label: "Gestionnaire de Projet Agile",
+  },
+  {
+    icon: <Moon className="w-5 h-5" />,
+    label: "App de Méditation & Sommeil",
+  },
+  {
+    icon: <Briefcase className="w-5 h-5" />,
+    label: "Portail Client Freelance",
+  },
+  {
+    icon: <PenTool className="w-5 h-5" />,
+    label: "Blog Moderne & CMS",
+  },
+  {
+    icon: <Wallet className="w-5 h-5" />,
+    label: "Tracker de Portfolio Crypto",
+  },
+  {
+    icon: <Share2 className="w-5 h-5" />,
+    label: "Planificateur Social Media IA",
+  },
+  {
+    icon: <Calendar className="w-5 h-5" />,
+    label: "Système de Réservation",
+  },
+  {
+    icon: <Utensils className="w-5 h-5" />,
+    label: "Coach Nutritionnel IA",
+  },
+  {
+    icon: <Monitor className="w-5 h-5" />,
+    label: "Portfolio Design Premium",
+  },
+  {
+    icon: <Activity className="w-5 h-5" />,
+    label: "Tracker de Santé & Sport",
+  },
+  {
+    icon: <Globe className="w-5 h-5" />,
+    label: "Plateforme de Booking Voyage",
+  },
+  {
+    icon: <Database className="w-5 h-5" />,
+    label: "Gestionnaire de Stock ERP",
+  },
+  {
+    icon: <Lock className="w-5 h-5" />,
+    label: "Gestionnaire de Mots de Passe",
   },
   {
     icon: <Bot className="w-5 h-5" />,
-    label: "Assistant de Rédaction IA",
-  },
-  {
-    icon: <Target className="w-5 h-5" />,
-    label: "Suivi des Habitudes",
-  },
-  {
-    icon: <Mail className="w-5 h-5" />,
-    label: "Créateur de Newsletter",
-  },
-  {
-    icon: <Music className="w-5 h-5" />,
-    label: "App de Découverte Musicale",
-  },
-  {
-    icon: <Box className="w-5 h-5" />,
-    label: "Portfolio Créatif",
-  },
-  {
-    icon: <ImageIcon className="w-5 h-5" />,
-    label: "Générateur d'Images IA",
-  },
-  {
-    icon: <Timer className="w-5 h-5" />,
-    label: "Minuteur Pomodoro",
-  },
-  {
-    icon: <UserCircle className="w-5 h-5" />,
-    label: "Créateur d'Avatar Virtuel",
+    label: "Assistant Clientèle IA",
   },
 ];

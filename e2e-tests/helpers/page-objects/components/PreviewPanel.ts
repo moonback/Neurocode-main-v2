@@ -7,7 +7,7 @@ import { Page, expect } from "@playwright/test";
 import { Timeout } from "../../constants";
 
 export class PreviewPanel {
-  constructor(public page: Page) {}
+  constructor(public page: Page) { }
 
   getPlanContent() {
     return this.page.getByTestId("plan-content");
@@ -166,11 +166,11 @@ export class PreviewPanel {
   }
 
   locateLoadingAppPreview() {
-    return this.page.getByText("Preparing app preview...");
+    return this.page.getByText("Préparation de l'aperçu de l'application...");
   }
 
   locateStartingAppPreview() {
-    return this.page.getByText("Starting your app server...");
+    return this.page.getByText("Demarrage du serveur d'application...");
   }
 
   getPreviewIframeElement() {
