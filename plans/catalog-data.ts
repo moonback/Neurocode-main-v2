@@ -247,6 +247,15 @@ const modelsByProvider = {
       contextWindow: 200_000,
     },
     {
+      apiName: "deepseek/deepseek-v4-flash",
+      displayName: "DeepSeek V4 Flash",
+      description: "DeepSeek's capable model for coding workflows via OpenRouter",
+      dollarSigns: 1,
+      temperature: 0,
+      maxOutputTokens: 131_072,
+      contextWindow: 1_048_576,
+    },
+    {
       apiName: "moonshotai/kimi-k2.5",
       displayName: "Kimi K2.5",
       description: "Moonshot AI's capable model via OpenRouter",

@@ -264,6 +264,16 @@ export const MODEL_OPTIONS: Record<string, ModelOption[]> = {
       temperature: 1.0,
       dollarSigns: 2,
     },
+    // https://openrouter.ai/deepseek/deepseek-v4-flash
+    {
+      name: "deepseek/deepseek-v4-flash",
+      displayName: "DeepSeek V4 Flash",
+      description: "DeepSeek's capable model for coding workflows via OpenRouter",
+      dollarSigns: 1,
+      temperature: 0,
+      maxOutputTokens: 131_072,
+      contextWindow: 1_048_576,
+    },
     // https://openrouter.ai/minimax/minimax-m2.7
     {
       name: "minimax/minimax-m2.7",
