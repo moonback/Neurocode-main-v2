@@ -1,0 +1,24 @@
+
+/**
+ * {{name | pascalCase}} table definition
+ */
+export const {{name | camelCase}} = sqliteTable("{{name | snake_case}}", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  
+  // TODO: Add your columns here
+  // name: text("name").notNull(),
+  // description: text("description"),
+  
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+/**
+ * Types for {{name | pascalCase}}
+ */
+export type {{name | pascalCase}} = typeof {{name | camelCase}}.$inferSelect;
+export type New{{name | pascalCase}} = typeof {{name | camelCase}}.$inferInsert;

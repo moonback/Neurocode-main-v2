@@ -1,0 +1,12 @@
+import { test } from "./helpers/test_helper";
+import { expect } from "@playwright/test";
+
+test("{{domain}}:{{name | kebab-case}} endpoint works", async ({ po }) => {
+  await po.setUp();
+  
+  // TODO: Implement test logic for {{name}}
+  // Example:
+  // await po.sendPrompt("Call {{name}}");
+  // const result = await po.page.evaluate(() => window.ipc.{{domain}}.{{name}}({}));
+  // expect(result).toBeDefined();
+});

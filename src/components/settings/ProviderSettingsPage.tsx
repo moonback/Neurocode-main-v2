@@ -310,8 +310,6 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
           />
         )}
 
-
-
         {/* Conditionally render CustomModelsSection */}
         {supportsCustomModels && providerData && (
           <ModelsSection providerId={providerData.id} />

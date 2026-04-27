@@ -79,7 +79,7 @@ export function AISuggestionsStrip({
   const chatId = useAtomValue(selectedChatIdAtom);
   const messagesById = useAtomValue(chatMessagesByIdAtom);
 
-  const dynamicSuggestions = chatId ? cache[chatId] ?? [] : [];
+  const dynamicSuggestions = chatId ? (cache[chatId] ?? []) : [];
   const messages = chatId ? (messagesById.get(chatId) ?? []) : [];
   const hasMessages = messages.length > 0;
 
@@ -112,7 +112,11 @@ export function AISuggestionsStrip({
     return dynamicSuggestions;
   }, [dynamicSuggestions, activeCategory]);
 
-  if (!appId || !hasMessages || (dynamicSuggestions.length === 0 && !isLoading)) {
+  if (
+    !appId ||
+    !hasMessages ||
+    (dynamicSuggestions.length === 0 && !isLoading)
+  ) {
     return null;
   }
 
@@ -128,13 +132,12 @@ export function AISuggestionsStrip({
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
         >
-          <Lightbulb size={13} className={cn("text-amber-500", isLoading && "animate-pulse")} />
+          <Lightbulb
+            size={13}
+            className={cn("text-amber-500", isLoading && "animate-pulse")}
+          />
           <span>Suggestions</span>
-          {isCollapsed ? (
-            <ChevronDown size={12} />
-          ) : (
-            <ChevronUp size={12} />
-          )}
+          {isCollapsed ? <ChevronDown size={12} /> : <ChevronUp size={12} />}
         </button>
 
         {!isCollapsed && (
@@ -154,9 +157,7 @@ export function AISuggestionsStrip({
                 }
                 className={cn(
                   "text-[10px] px-2 py-0.5 rounded-full border transition-all cursor-pointer",
-                  activeCategory === key
-                    ? config.activeColor
-                    : config.bgColor,
+                  activeCategory === key ? config.activeColor : config.bgColor,
                   config.color,
                 )}
               >
@@ -217,11 +218,13 @@ export function AISuggestionsStrip({
             })
           )}
 
-          {!isLoading && displayedSuggestions.length === 0 && activeCategory && (
-            <div className="text-[10px] text-muted-foreground pl-1">
-              Aucune suggestion dans cette catégorie.
-            </div>
-          )}
+          {!isLoading &&
+            displayedSuggestions.length === 0 &&
+            activeCategory && (
+              <div className="text-[10px] text-muted-foreground pl-1">
+                Aucune suggestion dans cette catégorie.
+              </div>
+            )}
         </div>
       )}
     </div>

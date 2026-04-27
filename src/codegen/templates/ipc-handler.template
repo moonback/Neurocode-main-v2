@@ -1,0 +1,25 @@
+import { createTypedHandler } from "./base";
+import { {{domain | camelCase}}Contracts } from "../types/{{domain}}";
+import { createLoggedHandler } from "./safe_handle";
+import log from "electron-log";
+import { DyadError, DyadErrorKind } from "@/errors/dyad_error";
+
+const logger = log.scope("{{domain}}_handlers");
+const handle = createLoggedHandler(logger);
+
+/**
+ * Handler for {{domain}}:{{name | kebab-case}}
+ */
+export const register{{name | pascalCase}}Handler = () => {
+  createTypedHandler({{domain | camelCase}}Contracts.{{name | camelCase}}, async (params) => {
+    return handle(async () => {
+      // TODO: Implement {{name}} logic
+      logger.info("Executing {{name}}", { params });
+      
+      // Example error handling:
+      // throw new DyadError("Not implemented", DyadErrorKind.NotImplemented);
+      
+      return undefined;
+    });
+  });
+};

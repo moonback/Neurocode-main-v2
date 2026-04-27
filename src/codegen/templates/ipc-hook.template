@@ -1,0 +1,41 @@
+import { {{#if mutation}}useMutation{{/if}}{{#if !mutation}}useQuery{{/if}}, useQueryClient } from "@tanstack/react-query";
+import { ipc } from "@/ipc/types";
+import type { {{name | pascalCase}}Params, {{name | pascalCase}}Result } from "@/ipc/types";
+import { queryKeys } from "@/lib/queryKeys";
+{{#if mutation}}import { showError } from "@/lib/toast";{{/if}}
+
+export function use{{name | pascalCase}}() {
+  const queryClient = useQueryClient();
+
+  {{#if mutation}}
+  const mutation = useMutation<{{name | pascalCase}}Result, Error, {{name | pascalCase}}Params>({
+    mutationFn: (params: {{name | pascalCase}}Params) => ipc.{{domain | camelCase}}.{{name | camelCase}}(params),
+    onSuccess: () => {
+      // TODO: Invalidate relevant queries
+      // queryClient.invalidateQueries({ queryKey: queryKeys.{{domain | camelCase}}.all });
+    },
+    onError: (error) => {
+      showError(error);
+    },
+  });
+
+  return {
+    {{name | camelCase}}: (params: {{name | pascalCase}}Params) => mutation.mutateAsync(params),
+    isPending: mutation.isPending,
+    error: mutation.error,
+  };
+  {{/if}}
+  {{#if !mutation}}
+  const { data, isLoading, error } = useQuery({
+    queryKey: queryKeys.{{domain | camelCase}}.{{name | camelCase}}(), // TODO: Update query keys factory
+    queryFn: () => ipc.{{domain | camelCase}}.{{name | camelCase}}(),
+  });
+
+  return {
+    data,
+    isLoading,
+    error,
+    refresh: () => queryClient.invalidateQueries({ queryKey: queryKeys.{{domain | camelCase}}.{{name | camelCase}}() }),
+  };
+  {{/if}}
+}

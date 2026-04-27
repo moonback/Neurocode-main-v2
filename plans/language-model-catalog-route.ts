@@ -262,7 +262,8 @@ function buildCatalogResponse(now = new Date()) {
         {
           apiName: "deepseek/deepseek-v4-flash",
           displayName: "DeepSeek V4 Flash",
-          description: "DeepSeek's capable model for coding workflows via OpenRouter",
+          description:
+            "DeepSeek's capable model for coding workflows via OpenRouter",
           dollarSigns: 1,
           temperature: 0,
           maxOutputTokens: 131_072,
