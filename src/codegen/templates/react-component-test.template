@@ -1,0 +1,16 @@
+import { render, screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
+import { {{name | pascalCase}} } from "./{{name | pascalCase}}";
+
+describe("{{name | pascalCase}}", () => {
+  it("should render successfully", () => {
+    render(<{{name | pascalCase}} title="Test Title">Content</{{name | pascalCase}}>);
+    expect(screen.getByText("Test Title")).toBeInTheDocument();
+    expect(screen.getByText("Content")).toBeInTheDocument();
+  });
+
+  it("should apply custom className", () => {
+    const { container } = render(<{{name | pascalCase}} className="custom-class" />);
+    expect(container.firstChild).toHaveClass("custom-class");
+  });
+});

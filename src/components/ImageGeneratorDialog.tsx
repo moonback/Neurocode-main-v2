@@ -33,31 +33,31 @@ const THEME_MODES: {
   description: string;
   icon: typeof ImageIcon;
 }[] = [
-    {
-      value: "plain",
-      label: "Plain",
-      description: "No style applied",
-      icon: Sparkles,
-    },
-    {
-      value: "3d-clay",
-      label: "3D / Clay",
-      description: "Soft, rounded clay aesthetic",
-      icon: Box,
-    },
-    {
-      value: "real-photography",
-      label: "Photography",
-      description: "Photorealistic DSLR quality",
-      icon: Camera,
-    },
-    {
-      value: "isometric-illustration",
-      label: "Isometric",
-      description: "Clean geometric illustrations",
-      icon: Layers,
-    },
-  ];
+  {
+    value: "plain",
+    label: "Plain",
+    description: "No style applied",
+    icon: Sparkles,
+  },
+  {
+    value: "3d-clay",
+    label: "3D / Clay",
+    description: "Soft, rounded clay aesthetic",
+    icon: Box,
+  },
+  {
+    value: "real-photography",
+    label: "Photography",
+    description: "Photorealistic DSLR quality",
+    icon: Camera,
+  },
+  {
+    value: "isometric-illustration",
+    label: "Isometric",
+    description: "Clean geometric illustrations",
+    icon: Layers,
+  },
+];
 
 export function ImageGeneratorDialog({
   open,
@@ -133,7 +133,8 @@ export function ImageGeneratorDialog({
             Générateur d'images
           </DialogTitle>
           <DialogDescription>
-            Décrivez l'image que vous souhaitez générer et choisissez un style visuel.
+            Décrivez l'image que vous souhaitez générer et choisissez un style
+            visuel.
           </DialogDescription>
         </DialogHeader>
 
@@ -182,10 +183,11 @@ export function ImageGeneratorDialog({
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => setThemeMode(mode.value)}
-                        className={`flex items-center gap-3 rounded-lg border p-3 text-left transition-colors ${isSelected
+                        className={`flex items-center gap-3 rounded-lg border p-3 text-left transition-colors ${
+                          isSelected
                             ? "border-primary bg-primary/5"
                             : "border-border hover:border-primary/30 hover:bg-muted/50"
-                          }`}
+                        }`}
                       >
                         <Icon
                           className={`h-5 w-5 shrink-0 ${isSelected ? "text-primary" : "text-muted-foreground"}`}

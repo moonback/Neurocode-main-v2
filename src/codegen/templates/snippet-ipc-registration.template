@@ -1,0 +1,4 @@
+ipcMain.handle("{{name | camelCase}}", async (event, payload) => {
+  const validatedPayload = {{name | pascalCase}}Contract.input.parse(payload);
+  return await handle{{name | pascalCase}}(validatedPayload);
+});

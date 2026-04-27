@@ -111,7 +111,8 @@ export function CustomThemeDialog({
         <DialogHeader>
           <DialogTitle>Créer un thème personnalisé</DialogTitle>
           <DialogDescription>
-            Créez un thème personnalisé en utilisant la configuration manuelle ou la génération assistée par l'IA.
+            Créez un thème personnalisé en utilisant la configuration manuelle
+            ou la génération assistée par l'IA.
           </DialogDescription>
         </DialogHeader>
 
@@ -159,7 +160,9 @@ export function CustomThemeDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="manual-description">Description (optionnel)</Label>
+              <Label htmlFor="manual-description">
+                Description (optionnel)
+              </Label>
               <Input
                 id="manual-description"
                 placeholder="Une courte description de votre thème"

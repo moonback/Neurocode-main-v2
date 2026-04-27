@@ -144,10 +144,14 @@ export function ContextFilesPicker() {
                   <TooltipContent className="max-w-[300px]">
                     {isSmartContextEnabled ? (
                       <p>
-                        Avec le contexte intelligent, Neurocode utilise les fichiers les plus pertinents comme contexte.
+                        Avec le contexte intelligent, Neurocode utilise les
+                        fichiers les plus pertinents comme contexte.
                       </p>
                     ) : (
-                      <p>Par défaut, Neurocode utilise l'ensemble de votre codebase.</p>
+                      <p>
+                        Par défaut, Neurocode utilise l'ensemble de votre
+                        codebase.
+                      </p>
                     )}
                   </TooltipContent>
                 </Tooltip>
@@ -236,8 +240,9 @@ export function ContextFilesPicker() {
                       </TooltipTrigger>
                       <TooltipContent className="max-w-[300px]">
                         <p>
-                          Les chemins exclus ont priorité - les fichiers qui correspondent à la fois aux
-                          modèles d'inclusion et d'exclusion seront exclus.
+                          Les chemins exclus ont priorité - les fichiers qui
+                          correspondent à la fois aux modèles d'inclusion et
+                          d'exclusion seront exclus.
                         </p>
                       </TooltipContent>
                     </Tooltip>
@@ -320,8 +325,8 @@ export function ContextFilesPicker() {
                         </TooltipTrigger>
                         <TooltipContent className="max-w-[300px]">
                           <p>
-                            Les fichiers Auto-include sont toujours inclus dans le
-                            contexte en plus des fichiers sélectionnés comme
+                            Les fichiers Auto-include sont toujours inclus dans
+                            le contexte en plus des fichiers sélectionnés comme
                             pertinents par Smart Context.
                           </p>
                         </TooltipContent>

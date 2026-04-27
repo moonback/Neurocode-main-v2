@@ -1,0 +1,10 @@
+import { test } from "./helpers/test_helper";
+
+test("{{name}}", async ({ po }) => {
+  await po.setUp();
+  
+  // TODO: Implement your test steps here
+  // Example:
+  // await po.sendPrompt("Hello world");
+  // await po.snapshotMessages();
+});

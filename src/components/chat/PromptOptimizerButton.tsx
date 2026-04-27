@@ -71,8 +71,8 @@ export function PromptOptimizerButton({
         {isOptimizing
           ? t("optimizingPrompt", { defaultValue: "Optimisation du prompt..." })
           : t("optimizePromptTooltip", {
-            defaultValue: "Améliorer le prompt pour de meilleurs résultats",
-          })}
+              defaultValue: "Améliorer le prompt pour de meilleurs résultats",
+            })}
       </TooltipContent>
     </Tooltip>
   );

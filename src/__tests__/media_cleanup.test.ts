@@ -230,7 +230,10 @@ describe("cleanupOldMediaFiles", () => {
 
     expect(fsMocks.unlink).toHaveBeenCalledTimes(1);
     expect(fsMocks.unlink).toHaveBeenCalledWith(
-      path.join("/external/projects/my-imported-app/.dyad/media", "old-image.png"),
+      path.join(
+        "/external/projects/my-imported-app/.dyad/media",
+        "old-image.png",
+      ),
     );
   });
 });

@@ -94,7 +94,9 @@ export function TokenBar({ chatId }: TokenBarProps) {
           </TooltipTrigger>
           <TooltipContent side="top" className="w-64 p-2">
             <div className="space-y-1">
-              <div className="font-medium">Détail de l'utilisation des tokens</div>
+              <div className="font-medium">
+                Détail de l'utilisation des tokens
+              </div>
               <div className="grid grid-cols-[20px_1fr_auto] gap-x-2 items-center">
                 <MessageSquare size={12} className="text-blue-500" />
                 <span>Historique des messages</span>
@@ -127,9 +129,10 @@ export function TokenBar({ chatId }: TokenBarProps) {
         </Tooltip>
       </TooltipProvider>
       {error && (
-        <div className="text-red-500 text-xs mt-1">Échec du comptage des tokens</div>
+        <div className="text-red-500 text-xs mt-1">
+          Échec du comptage des tokens
+        </div>
       )}
-
     </div>
   );
 }

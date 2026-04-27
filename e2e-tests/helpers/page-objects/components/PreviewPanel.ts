@@ -7,7 +7,7 @@ import { Page, expect } from "@playwright/test";
 import { Timeout } from "../../constants";
 
 export class PreviewPanel {
-  constructor(public page: Page) { }
+  constructor(public page: Page) {}
 
   getPlanContent() {
     return this.page.getByTestId("plan-content");
