@@ -458,7 +458,7 @@ export function migrateStoredSettings(
   };
 }
 
-export function isDyadProEnabled(settings: UserSettings): boolean {
+export function isDyadProEnabled(_settings: UserSettings): boolean {
   // Retirement: All users now have access to Pro features.
   return true;
 }

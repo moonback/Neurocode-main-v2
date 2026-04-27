@@ -53,7 +53,14 @@ describe("SmartContextStrategySelector", () => {
 
     // Default mock implementation
     vi.mocked(useSettings).mockReturnValue({
-      settings: { proSmartContextOption: "balanced" },
+      settings: {
+        proSmartContextOption: "balanced",
+        selectedModel: { name: "gpt-4o", provider: "openai" },
+        providerSettings: {},
+        selectedTemplateId: "default",
+        enableAutoUpdate: true,
+        releaseChannel: "stable",
+      },
       envVars: {},
       loading: false,
       error: null,
@@ -107,7 +114,14 @@ describe("SmartContextStrategySelector", () => {
   describe("Pre-selection", () => {
     it("should pre-select the current strategy from settings (balanced)", () => {
       vi.mocked(useSettings).mockReturnValue({
-        settings: { proSmartContextOption: "balanced" },
+        settings: {
+          proSmartContextOption: "balanced",
+          selectedModel: { name: "gpt-4o", provider: "openai" },
+          providerSettings: {},
+          selectedTemplateId: "default",
+          enableAutoUpdate: true,
+          releaseChannel: "stable",
+        },
         envVars: {},
         loading: false,
         error: null,
@@ -125,7 +139,14 @@ describe("SmartContextStrategySelector", () => {
 
     it("should pre-select the current strategy from settings (conservative)", () => {
       vi.mocked(useSettings).mockReturnValue({
-        settings: { proSmartContextOption: "conservative" },
+        settings: {
+          proSmartContextOption: "conservative",
+          selectedModel: { name: "gpt-4o", provider: "openai" },
+          providerSettings: {},
+          selectedTemplateId: "default",
+          enableAutoUpdate: true,
+          releaseChannel: "stable",
+        },
         envVars: {},
         loading: false,
         error: null,
@@ -143,7 +164,14 @@ describe("SmartContextStrategySelector", () => {
 
     it("should pre-select the current strategy from settings (deep)", () => {
       vi.mocked(useSettings).mockReturnValue({
-        settings: { proSmartContextOption: "deep" },
+        settings: {
+          proSmartContextOption: "deep",
+          selectedModel: { name: "gpt-4o", provider: "openai" },
+          providerSettings: {},
+          selectedTemplateId: "default",
+          enableAutoUpdate: true,
+          releaseChannel: "stable",
+        },
         envVars: {},
         loading: false,
         error: null,
@@ -159,7 +187,13 @@ describe("SmartContextStrategySelector", () => {
 
     it("should default to balanced when no strategy is set in settings", () => {
       vi.mocked(useSettings).mockReturnValue({
-        settings: {},
+        settings: {
+          selectedModel: { name: "gpt-4o", provider: "openai" },
+          providerSettings: {},
+          selectedTemplateId: "default",
+          enableAutoUpdate: true,
+          releaseChannel: "stable",
+        } as any,
         envVars: {},
         loading: false,
         error: null,
@@ -275,7 +309,14 @@ describe("SmartContextStrategySelector", () => {
     it("should not trigger mutation when clicking the already selected strategy", async () => {
       const user = userEvent.setup();
       vi.mocked(useSettings).mockReturnValue({
-        settings: { proSmartContextOption: "balanced" },
+        settings: {
+          proSmartContextOption: "balanced",
+          selectedModel: { name: "gpt-4o", provider: "openai" },
+          providerSettings: {},
+          selectedTemplateId: "default",
+          enableAutoUpdate: true,
+          releaseChannel: "stable",
+        },
         envVars: {},
         loading: false,
         error: null,

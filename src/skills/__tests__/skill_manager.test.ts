@@ -347,7 +347,7 @@ describe("SkillManager", () => {
 
     it("returns a path ending in .tar.gz", async () => {
       vi.spyOn(fs, "readdirSync").mockReturnValue([
-        { name: "SKILL.md", isDirectory: () => false } as fs.Dirent,
+        { name: "SKILL.md", isDirectory: () => false } as any,
       ]);
       vi.spyOn(fs, "readFileSync").mockReturnValue(
         Buffer.from(makeSkillContent("lint", "Run pre-commit checks")),
@@ -361,7 +361,7 @@ describe("SkillManager", () => {
 
     it("places the archive in the system temp directory", async () => {
       vi.spyOn(fs, "readdirSync").mockReturnValue([
-        { name: "SKILL.md", isDirectory: () => false } as fs.Dirent,
+        { name: "SKILL.md", isDirectory: () => false } as any,
       ]);
       vi.spyOn(fs, "readFileSync").mockReturnValue(
         Buffer.from(makeSkillContent("lint", "Run pre-commit checks")),
@@ -375,7 +375,7 @@ describe("SkillManager", () => {
 
     it("includes the skill name in the archive filename", async () => {
       vi.spyOn(fs, "readdirSync").mockReturnValue([
-        { name: "SKILL.md", isDirectory: () => false } as fs.Dirent,
+        { name: "SKILL.md", isDirectory: () => false } as any,
       ]);
       vi.spyOn(fs, "readFileSync").mockReturnValue(
         Buffer.from(makeSkillContent("lint", "Run pre-commit checks")),
@@ -406,7 +406,7 @@ describe("SkillManager", () => {
       vi.restoreAllMocks();
 
       vi.spyOn(fs, "readdirSync").mockReturnValue([
-        { name: "SKILL.md", isDirectory: () => false } as fs.Dirent,
+        { name: "SKILL.md", isDirectory: () => false } as any,
       ]);
       vi.spyOn(fs, "readFileSync").mockReturnValue(
         Buffer.from(makeSkillContent("dyad:lint", "Dyad lint")),

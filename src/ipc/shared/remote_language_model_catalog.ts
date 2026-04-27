@@ -18,26 +18,11 @@ import {
   OPUS_4_6,
   PROVIDER_TO_ENV_VAR,
   SONNET_4_6,
-  GEMINI_3_FLASH,
 } from "./language_model_constants";
 
 const logger = log.scope("remote_language_model_catalog");
 
-const REMOTE_LANGUAGE_MODEL_CATALOG_TIMEOUT_MS = 5_000;
-const DEFAULT_CACHE_TTL_MS = 60 * 60 * 1000;
 const FALLBACK_CACHE_TTL_MS = 30 * 1000;
-
-function getRemoteLanguageModelCatalogUrl() {
-  if (process.env.DYAD_LANGUAGE_MODEL_CATALOG_URL) {
-    return process.env.DYAD_LANGUAGE_MODEL_CATALOG_URL;
-  }
-
-  if (process.env.E2E_TEST_BUILD === "true" && process.env.FAKE_LLM_PORT) {
-    return `http://localhost:${process.env.FAKE_LLM_PORT}/api/language-model-catalog`;
-  }
-
-  return "https://api.dyad.sh/v1/language-model-catalog";
-}
 
 export type { ThemeGenerationModelOption };
 
@@ -239,75 +224,6 @@ function buildFallbackCatalog(): BuiltinLanguageModelCatalog {
   };
 }
 
-function convertRemoteCatalog(
-  remoteCatalog: LanguageModelCatalogResponse,
-): BuiltinLanguageModelCatalog {
-  const providers: LanguageModelProvider[] = remoteCatalog.providers.map(
-    (provider) => ({
-      id: provider.id,
-      name: provider.displayName,
-      hasFreeTier: provider.hasFreeTier,
-      websiteUrl: provider.websiteUrl,
-      gatewayPrefix:
-        provider.gatewayPrefix ??
-        CLOUD_PROVIDERS[provider.id as keyof typeof CLOUD_PROVIDERS]
-          ?.gatewayPrefix,
-      secondary: provider.secondary,
-      envVarName:
-        PROVIDER_TO_ENV_VAR[provider.id as keyof typeof PROVIDER_TO_ENV_VAR] ??
-        undefined,
-      type: "cloud",
-    }),
-  );
-
-  const modelsByProvider = Object.fromEntries(
-    Object.entries(remoteCatalog.modelsByProvider).map(
-      ([providerId, models]) => [
-        providerId,
-        models.map((model) => ({
-          apiName: model.apiName,
-          displayName: model.displayName,
-          description: model.description,
-          tag: model.tag,
-          tagColor: model.tagColor,
-          maxOutputTokens: model.maxOutputTokens,
-          contextWindow: model.contextWindow,
-          temperature: model.temperature,
-          dollarSigns: model.dollarSigns,
-          type: "cloud" as const,
-        })),
-      ],
-    ),
-  );
-
-  const parsedExpiresAt = remoteCatalog.expiresAt
-    ? new Date(remoteCatalog.expiresAt).getTime()
-    : NaN;
-
-  // Merge required builtin aliases that may be missing from the remote catalog.
-  const fallback = buildFallbackCatalog();
-  const remoteAliasIds = new Set(remoteCatalog.aliases.map((a) => a.id));
-  const mergedAliases = [
-    ...remoteCatalog.aliases,
-    ...fallback.aliases.filter((a) => !remoteAliasIds.has(a.id)),
-  ];
-
-  return {
-    providers,
-    modelsByProvider,
-    aliases: mergedAliases,
-    themeGenerationOptions: remoteCatalog.curatedSelections
-      ?.themeGenerationOptions?.length
-      ? remoteCatalog.curatedSelections.themeGenerationOptions
-      : DEFAULT_THEME_GENERATION_OPTIONS,
-    expiresAt:
-      Number.isFinite(parsedExpiresAt) && parsedExpiresAt > Date.now()
-        ? parsedExpiresAt
-        : Date.now() + DEFAULT_CACHE_TTL_MS,
-    source: "remote",
-    version: remoteCatalog.version,
-  };
-}
 
 async function fetchRemoteCatalog(): Promise<BuiltinLanguageModelCatalog | null> {
   return null;

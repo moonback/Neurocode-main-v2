@@ -214,9 +214,6 @@ function getDyadEngineApiKey() {
   const settings = readSettings();
   const apiKey = settings.providerSettings?.auto?.apiKey?.value;
 
-  if (!apiKey && !IS_TEST_BUILD) {
-    throw new Error("Dyad Pro API key is required for cloud sandboxes.");
-  }
 
   return apiKey;
 }

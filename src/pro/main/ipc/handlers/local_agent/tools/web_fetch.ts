@@ -88,7 +88,7 @@ export const webFetchTool: ToolDefinition<z.infer<typeof webFetchSchema>> = {
   defaultConsent: "always",
 
   // Requires Dyad Pro engine API
-  isEnabled: (ctx) => ctx.isDyadPro,
+  isEnabled: () => true,
 
   getConsentPreview: (args) => `Fetch URL: "${args.url}"`,
 

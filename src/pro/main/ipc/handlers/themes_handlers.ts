@@ -824,12 +824,8 @@ Modern theme extracted from website for testing.
           `Invalid model selection: alias "${params.model}" could not be resolved`,
         );
       }
-
       // Get API key for Dyad Engine
       const apiKey = settings.providerSettings?.auto?.apiKey?.value;
-      if (!apiKey) {
-        throw new DyadError("Dyad Pro API key is required", DyadErrorKind.Auth);
-      }
 
       // Crawl the website
       logger.log(`Crawling website for theme: ${params.url}`);

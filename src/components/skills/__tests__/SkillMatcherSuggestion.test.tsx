@@ -8,10 +8,6 @@ function calculateRelevancePercentage(relevance: number): number {
   return Math.round(relevance * 100);
 }
 
-function formatReasonPreview(reason: string): string {
-  // Simple check for truncation logic if we had any
-  return reason;
-}
 
 // ---------------------------------------------------------------------------
 // Tests

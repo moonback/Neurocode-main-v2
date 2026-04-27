@@ -33,9 +33,6 @@ export async function engineFetch(
   const settings = readSettings();
   const apiKey = settings.providerSettings?.auto?.apiKey?.value;
 
-  if (!apiKey) {
-    throw new DyadError("Dyad Pro API key is required", DyadErrorKind.Auth);
-  }
 
   const { headers: extraHeaders, ...restOptions } = options;
 
