@@ -35,13 +35,17 @@ import {
 } from "../src/codegen/output-formatter";
 import { TemplateLoader } from "../src/codegen/template-loader";
 import { TemplateEngine } from "../src/codegen/template-engine";
-import { FileSystemManager } from "../src/codegen/file-system";
+import {
+  FileSystemManager,
+  type FileOperationResult,
+} from "../src/codegen/file-system";
 import { createIpcGenerator } from "../src/codegen/generators/ipc-generator";
 import { createComponentGenerator } from "../src/codegen/generators/component-generator";
 import { createDbGenerator } from "../src/codegen/generators/db-generator";
 import { createTestGenerator } from "../src/codegen/generators/test-generator";
 import { createSnippetGenerator } from "../src/codegen/generators/snippet-generator";
 import { createRenameGenerator } from "../src/codegen/generators/rename-generator";
+import { DocumentationGenerator } from "../src/codegen/docs-generator";
 import { Orchestrator } from "../src/codegen/orchestrator";
 import { ConfigLoader } from "../src/codegen/config-loader";
 import { PostProcessor } from "../src/codegen/post-processor";
@@ -169,8 +173,8 @@ program
 
       try {
         const results = await generator.generate({
-          name: result.parameters.name,
-          domain: result.parameters.domain,
+          name: result.parameters.name as string,
+          domain: result.parameters.domain as string,
           inputSchema: options.inputSchema as string,
           outputSchema: options.outputSchema as string,
           mutation: options.mutation as boolean,
@@ -293,7 +297,7 @@ program
 
       try {
         const results = await generator.generate({
-          name: result.parameters.name,
+          name: result.parameters.name as string,
           directory: options.dir as string,
           skipTest: options.noTest as boolean,
           skipStory: options.noStory as boolean,
@@ -407,7 +411,7 @@ program
 
       try {
         const results = await generator.generate({
-          name: result.parameters.name,
+          name: result.parameters.name as string,
           append: options.append !== false,
         });
 
@@ -515,7 +519,7 @@ program
 
       try {
         const results = await generator.generate({
-          name: result.parameters.name,
+          name: result.parameters.name as string,
           feature: options.feature as string,
         });
 
@@ -801,6 +805,75 @@ program
     } catch (error) {
       printWarning(
         `Workflow failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      process.exit(1);
+    }
+  });
+
+/**
+ * Documentation Generation Command
+ *
+ * Generates documentation from code (JSDoc comments, API references)
+ */
+program
+  .command("docs")
+  .description("Generate documentation from code")
+  .option(
+    "-t, --type <type>",
+    "Type of documentation to generate (ipc, component, all)",
+    "all",
+  )
+  .option(
+    "-o, --output <path>",
+    "Output directory for generated documentation",
+    "docs/generated",
+  )
+  .option(
+    "--dry-run",
+    "Show what would be generated without creating files",
+    false,
+  )
+  .action(async (options: Record<string, unknown>) => {
+    const projectRoot = join(__dirname, "..");
+    const fsManager = new FileSystemManager(
+      projectRoot,
+      options.dryRun as boolean,
+    );
+    const generator = new DocumentationGenerator(projectRoot, fsManager);
+
+    try {
+      const type = options.type as string;
+      const results: FileOperationResult[] = [];
+
+      if (type === "ipc" || type === "all") {
+        results.push(
+          ...(await generator.generateIPCDocumentation("src/ipc/types", {
+            outputDir: options.output as string,
+          })),
+        );
+      }
+
+      if (type === "component" || type === "all") {
+        results.push(
+          ...(await generator.generateComponentDocumentation("src/components", {
+            outputDir: options.output as string,
+          })),
+        );
+      }
+
+      const files: GeneratedFileInfo[] = results.map((r) => ({
+        path: r.path,
+        action: r.action as any,
+        size: r.size,
+      }));
+
+      printGenerationSummary(files, {
+        dryRun: options.dryRun as boolean,
+        verbose: true,
+      });
+    } catch (error) {
+      printWarning(
+        `Documentation generation failed: ${error instanceof Error ? error.message : String(error)}`,
       );
       process.exit(1);
     }

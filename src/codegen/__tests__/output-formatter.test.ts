@@ -20,8 +20,8 @@ import {
 } from "../output-formatter";
 
 describe("output-formatter", () => {
-  let consoleLogSpy: ReturnType<typeof vi.spyOn>;
-  let stdoutWriteSpy: ReturnType<typeof vi.spyOn>;
+  let consoleLogSpy: any;
+  let stdoutWriteSpy: any;
 
   beforeEach(() => {
     consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});

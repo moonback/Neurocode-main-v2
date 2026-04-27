@@ -29,7 +29,7 @@ export type ConflictStrategy =
  */
 export interface FileOperationResult {
   path: string;
-  action: "create" | "update" | "skip" | "rename" | "backup";
+  action: "create" | "update" | "skip" | "rename" | "backup" | "delete";
   success: boolean;
   size?: number;
   error?: string;
@@ -40,7 +40,7 @@ export interface FileOperationResult {
  * File system manager for safe code generation
  */
 export class FileSystemManager {
-  private projectRoot: string;
+  public readonly projectRoot: string;
   private dryRun: boolean;
 
   constructor(projectRoot: string, dryRun: boolean = false) {
@@ -80,7 +80,7 @@ export class FileSystemManager {
         case "abort":
           throw new DyadError(
             `File already exists: ${targetPath}`,
-            DyadErrorKind.ValidationFailed,
+            DyadErrorKind.Validation,
           );
         case "rename":
           // Not implemented for now, but could append .1, .2, etc.
@@ -124,21 +124,6 @@ export class FileSystemManager {
   }
 
   /**
-   * Deletes a file safely
-   */
-  async deleteFile(targetPath: string): Promise<boolean> {
-    const absolutePath = this.resolveAndValidatePath(targetPath);
-    if (this.dryRun) return true;
-
-    try {
-      await fs.unlink(absolutePath);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  /**
    * Resolves a path relative to the project root and validates it.
    * Prevents path traversal outside the project root.
    */
@@ -150,7 +135,7 @@ export class FileSystemManager {
     if (!absolutePath.startsWith(this.projectRoot)) {
       throw new DyadError(
         `Security Error: Attempted to write outside project root: ${targetPath}`,
-        DyadErrorKind.Forbidden,
+        DyadErrorKind.Auth,
       );
     }
 
@@ -203,6 +188,18 @@ export class FileSystemManager {
     const backupPath = `${absolutePath}.bak`;
     if (await this.exists(backupPath)) {
       await fs.rename(backupPath, absolutePath);
+    }
+  }
+
+  /**
+   * Deletes a file safely.
+   */
+  async deleteFile(targetPath: string): Promise<void> {
+    const absolutePath = this.resolveAndValidatePath(targetPath);
+    if (this.dryRun) return;
+
+    if (await this.exists(absolutePath)) {
+      await fs.unlink(absolutePath);
     }
   }
 }
