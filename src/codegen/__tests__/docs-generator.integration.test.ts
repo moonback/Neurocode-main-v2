@@ -124,7 +124,9 @@ export const userContracts = {
 
       // Verify return documentation
       expect(docsContent).toContain("**Returns:**");
-      expect(docsContent).toContain("User object containing profile information");
+      expect(docsContent).toContain(
+        "User object containing profile information",
+      );
 
       // Verify examples
       expect(docsContent).toContain("### Examples");
@@ -234,10 +236,12 @@ interface UserProfileProps {
       await fs.writeFile(componentFile, content);
 
       // Generate documentation
-      const results =
-        await docsGen.generateComponentDocumentation("src/components", {
+      const results = await docsGen.generateComponentDocumentation(
+        "src/components",
+        {
           outputDir: "docs/components",
-        });
+        },
+      );
 
       // Verify file was created
       expect(results).toHaveLength(1);
@@ -724,10 +728,12 @@ interface ButtonProps {
       await fs.writeFile(componentFile, initialContent);
 
       // Step 2: Generate documentation
-      const results =
-        await docsGen.generateComponentDocumentation("src/components", {
+      const results = await docsGen.generateComponentDocumentation(
+        "src/components",
+        {
           outputDir: "docs/components",
-        });
+        },
+      );
 
       expect(results).toHaveLength(1);
 

@@ -251,10 +251,10 @@ export class DocumentationGenerator {
     // First, find the export statement and extract JSDoc before it
     // Match both "Contracts" (plural) and "Contract" (singular)
     const exportMatch = content.match(
-      /\/\*\*([\s\S]*?)\*\/\s*export\s+const\s+\w+Contracts?\s*=\s*\{/
+      /\/\*\*([\s\S]*?)\*\/\s*export\s+const\s+\w+Contracts?\s*=\s*\{/,
     );
     let exportJSDoc: JSDocComment | undefined;
-    
+
     if (exportMatch) {
       const commentText = exportMatch[1];
       exportJSDoc = this.parseJSDocComment(commentText);
@@ -267,7 +267,7 @@ export class DocumentationGenerator {
 
     let match: RegExpExecArray | null;
     let contractIndex = 0;
-    
+
     while ((match = contractRegex.exec(content)) !== null) {
       const [, name, channel, inputSchema, outputSchema] = match;
       const contractStartIndex = match.index;
@@ -275,25 +275,25 @@ export class DocumentationGenerator {
       // Find JSDoc comment immediately before this contract definition
       // Look backwards from the contract start position
       const beforeContract = content.substring(0, contractStartIndex);
-      
+
       // Find the last JSDoc comment before this contract
       const jsdocRegex = /\/\*\*([\s\S]*?)\*\//g;
       let lastJsdocMatch: RegExpExecArray | null = null;
       let jsdocMatch: RegExpExecArray | null;
-      
+
       while ((jsdocMatch = jsdocRegex.exec(beforeContract)) !== null) {
         lastJsdocMatch = jsdocMatch;
       }
 
       let jsdoc: JSDocComment | undefined;
-      
+
       if (lastJsdocMatch) {
         // Check if there's only whitespace between the JSDoc and the contract
         const betweenJsdocAndContract = content.substring(
           lastJsdocMatch.index + lastJsdocMatch[0].length,
-          contractStartIndex
+          contractStartIndex,
         );
-        
+
         // If there's only whitespace (including newlines), this JSDoc belongs to this contract
         if (/^\s*$/.test(betweenJsdocAndContract)) {
           const commentText = lastJsdocMatch[1];
@@ -301,7 +301,7 @@ export class DocumentationGenerator {
           jsdoc.name = name;
         }
       }
-      
+
       // If no JSDoc found for this specific contract and this is the first contract,
       // use the export JSDoc
       if (!jsdoc && contractIndex === 0 && exportJSDoc) {
@@ -316,7 +316,7 @@ export class DocumentationGenerator {
         filePath: filePath.replace(/\\/g, "/"), // Normalize path separators
         jsdoc,
       });
-      
+
       contractIndex++;
     }
 
