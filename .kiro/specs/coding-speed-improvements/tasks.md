@@ -41,7 +41,7 @@ The implementation follows this sequence:
     - Test dry-run mode behavior
     - _Requirements: 6.1, 6.2, 6.7_
 
-- [~] 2. Build template engine with variable substitution
+- [ ] 2. Build template engine with variable substitution
   - [x] 2.1 Create template loader and cache system
     - Implement template file loader from configurable directory
     - Add template caching to avoid repeated file reads
@@ -185,122 +185,122 @@ The implementation follows this sequence:
   - [x] 14.5 Implement snippet insertion with placeholder navigation
   - [x] 14.6 Write unit tests for snippet system
 
-- [~] 15. Build documentation generator
-  - [~] 15.1 Implement JSDoc extraction for IPC endpoints
+- [x] 15. Build documentation generator
+  - [x] 15.1 Implement JSDoc extraction for IPC endpoints
     - Extract JSDoc comments from IPC contracts
     - Parse parameter descriptions and return types
     - Extract usage examples from JSDoc
     - _Requirements: 10.1, 10.3_
 
-  - [~] 15.2 Implement JSDoc extraction for React components
+  - [x] 15.2 Implement JSDoc extraction for React components
     - Extract JSDoc comments from component files
     - Parse prop descriptions and types
     - Extract usage examples from JSDoc
     - _Requirements: 10.2, 10.3_
 
-  - [~] 15.3 Generate markdown documentation from JSDoc
+  - [x] 15.3 Generate markdown documentation from JSDoc
     - Create markdown files for IPC endpoint documentation
     - Create markdown files for component documentation
     - Include code examples and usage patterns
     - _Requirements: 10.3, 10.4_
 
-  - [~] 15.4 Implement documentation auto-update on code changes
+  - [x] 15.4 Implement documentation auto-update on code changes
     - Detect when code files with JSDoc change
     - Regenerate documentation automatically
     - Preserve manual documentation additions
     - _Requirements: 10.5_
 
-  - [~] 15.5 Add documentation validation
+  - [x] 15.5 Add documentation validation
     - Validate all public APIs have JSDoc comments
     - Check for missing parameter descriptions
     - Warn about outdated documentation
     - _Requirements: 10.6_
 
-  - [~] 15.6 Write property test for documentation synchronization
+  - [x] 15.6 Write property test for documentation synchronization
     - **Property 10: Documentation Synchronization**
     - **Validates: Requirements 10.5**
     - Update code JSDoc, regenerate docs, verify docs reflect changes
 
-  - [~] 15.7 Write integration test for documentation generation
+  - [x] 15.7 Write integration test for documentation generation
     - Generate IPC endpoint with JSDoc, verify markdown created
     - Generate component with JSDoc, verify markdown created
     - Update JSDoc, verify documentation updates
     - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6_
 
-- [~] 16. Checkpoint - Advanced features complete
+- [ ] 16. Checkpoint - Advanced features complete
   - Ensure all tests pass, ask the user if questions arise.
 
 ### Phase 5: Configuration & Polish (Week 8)
 
-- [~] 17. Implement configuration system
-  - [~] 17.1 Create configuration schema and types
+- [ ] 17. Implement configuration system
+  - [ ] 17.1 Create configuration schema and types
     - Define TypeScript types for Configuration object
     - Include template paths, naming conventions, and formatting options
     - Support configuration inheritance and defaults
     - _Requirements: 11.1_
 
-  - [~] 17.2 Implement configuration parser
+  - [ ] 17.2 Implement configuration parser
     - Parse configuration files (JSON or TypeScript)
     - Validate configuration against schema
     - Provide descriptive errors for invalid configuration
     - _Requirements: 11.1, 11.2_
 
-  - [~] 17.3 Implement configuration pretty printer
+  - [ ] 17.3 Implement configuration pretty printer
     - Format Configuration objects back to files
     - Preserve comments in configuration files
     - Use consistent formatting and indentation
     - _Requirements: 11.3, 11.5_
 
-  - [~] 17.4 Add configuration validation
+  - [ ] 17.4 Add configuration validation
     - Validate configuration files against schema before parsing
     - Check for required fields and valid values
     - Provide helpful error messages for validation failures
     - _Requirements: 11.6_
 
-  - [~] 17.5 Create default configuration files
+  - [ ] 17.5 Create default configuration files
     - Create default configuration for the project
     - Include sensible defaults for all options
     - Document all configuration options
     - _Requirements: 11.1_
 
-  - [~] 17.6 Write property test for configuration round-trip preservation
+  - [ ] 17.6 Write property test for configuration round-trip preservation
     - **Property 1: Configuration Round-Trip Preservation**
     - **Validates: Requirements 11.4**
     - Generate random configs, print, parse, verify equivalence
 
-  - [~] 17.7 Write unit tests for configuration system
+  - [ ] 17.7 Write unit tests for configuration system
     - Test parsing valid and invalid configurations
     - Test pretty printing with various configurations
     - Test round-trip preservation
     - Test configuration validation
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5, 11.6_
 
-- [~] 18. Add comprehensive testing and documentation
-  - [~] 18.1 Write remaining unit tests for core modules
+- [ ] 18. Add comprehensive testing and documentation
+  - [ ] 18.1 Write remaining unit tests for core modules
     - Test orchestrator workflow coordination
     - Test error handling across all modules
     - Test edge cases and boundary conditions
     - Aim for 80%+ code coverage on core logic
 
-  - [~] 18.2 Create E2E test for complete workflow
+  - [ ] 18.2 Create E2E test for complete workflow
     - Test generating IPC endpoint from CLI
     - Test generating React component with test and story
     - Test generating database schema and migration
     - Test refactoring operations end-to-end
 
-  - [~] 18.3 Write user documentation
+  - [ ] 18.3 Write user documentation
     - Create README with installation and usage instructions
     - Document all CLI commands with examples
     - Create troubleshooting guide for common issues
     - Document template customization process
 
-  - [~] 18.4 Create developer documentation
+  - [ ] 18.4 Create developer documentation
     - Document architecture and design decisions
     - Create contribution guide for adding new generators
     - Document testing strategy and requirements
     - Create API reference for core modules
 
-  - [~] 18.5 Run all property tests with 100 iterations
+  - [ ] 18.5 Run all property tests with 100 iterations
     - Verify all property tests pass with 100 iterations
     - Check for any flaky tests or edge cases
     - Document any known limitations or edge cases
@@ -311,13 +311,13 @@ The implementation follows this sequence:
   - [x] 19.3 Optimize performance
   - [x] 19.4 Create example templates
 
-  - [~] 19.5 Run full test suite and verify all checks pass
+  - [ ] 19.5 Run full test suite and verify all checks pass
     - Run `npm run fmt` and verify formatting
     - Run `npm run lint` and verify no lint errors
     - Run `npm run ts` and verify type checking passes
     - Run all unit, property, integration, and E2E tests
 
-- [~] 20. Final checkpoint - Feature complete
+- [ ] 20. Final checkpoint - Feature complete
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

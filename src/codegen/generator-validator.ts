@@ -15,25 +15,29 @@ export class GeneratorValidator {
   /**
    * Validates TypeScript syntax of a string
    */
-  static validateTypeScript(content: string, fileName: string): ValidationResult {
+  static validateTypeScript(
+    content: string,
+    fileName: string,
+  ): ValidationResult {
     try {
       const sourceFile = ts.createSourceFile(
         fileName,
         content,
         ts.ScriptTarget.Latest,
-        true
+        true,
       );
 
       // parseDiagnostics is an internal property but very useful
       const diagnostics = (sourceFile as any).parseDiagnostics;
-      
+
       if (diagnostics && diagnostics.length > 0) {
         return {
           isValid: false,
           errors: diagnostics.map((d: any) => {
-            const message = typeof d.messageText === "string" 
-              ? d.messageText 
-              : d.messageText.messageText;
+            const message =
+              typeof d.messageText === "string"
+                ? d.messageText
+                : d.messageText.messageText;
             return `Syntax Error in ${fileName}: ${message}`;
           }),
         };
@@ -43,7 +47,9 @@ export class GeneratorValidator {
     } catch (error) {
       return {
         isValid: false,
-        errors: [`Validation failed for ${fileName}: ${error instanceof Error ? error.message : String(error)}`],
+        errors: [
+          `Validation failed for ${fileName}: ${error instanceof Error ? error.message : String(error)}`,
+        ],
       };
     }
   }

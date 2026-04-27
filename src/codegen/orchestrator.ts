@@ -23,38 +23,46 @@ export class Orchestrator {
     private ipcGen: IpcGenerator,
     private componentGen: ComponentGenerator,
     private dbGen: DbGenerator,
-    private testGen: TestGenerator
+    private testGen: TestGenerator,
   ) {}
 
   /**
    * Executes a complex workflow
    */
-  async executeWorkflow(options: WorkflowOptions): Promise<FileOperationResult[]> {
+  async executeWorkflow(
+    options: WorkflowOptions,
+  ): Promise<FileOperationResult[]> {
     const results: FileOperationResult[] = [];
 
     // 1. Database Table
     if (options.withDb) {
-      results.push(...await this.dbGen.generate({
-        name: options.name,
-        append: true
-      }));
+      results.push(
+        ...(await this.dbGen.generate({
+          name: options.name,
+          append: true,
+        })),
+      );
     }
 
     // 2. IPC Endpoint
     if (options.withIpc) {
-      results.push(...await this.ipcGen.generate({
-        name: options.name,
-        domain: options.domain || "app",
-        mutation: true
-      }));
+      results.push(
+        ...(await this.ipcGen.generate({
+          name: options.name,
+          domain: options.domain || "app",
+          mutation: true,
+        })),
+      );
     }
 
     // 3. UI Component
     if (options.withComponent) {
-      results.push(...await this.componentGen.generate({
-        name: options.name,
-        directory: `src/components/${options.domain || "features"}`
-      }));
+      results.push(
+        ...(await this.componentGen.generate({
+          name: options.name,
+          directory: `src/components/${options.domain || "features"}`,
+        })),
+      );
     }
 
     return results;

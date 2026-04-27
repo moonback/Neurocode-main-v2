@@ -59,11 +59,11 @@ export class ConfigLoader {
       ...user,
       outputDirectories: {
         ...base.outputDirectories,
-        ...(user.outputDirectories || {}),
+        ...user.outputDirectories,
       },
       formatting: {
         ...base.formatting,
-        ...(user.formatting || {}),
+        ...user.formatting,
       },
     };
   }

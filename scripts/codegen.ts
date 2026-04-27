@@ -155,13 +155,16 @@ program
       // Initialize generator components
       const templatesDir = join(__dirname, "../src/codegen/templates");
       const projectRoot = join(__dirname, "..");
-      
+
       const loader = new TemplateLoader({
         templatesDirectory: templatesDir,
         cacheEnabled: false, // Disable cache for CLI
       });
       const engine = new TemplateEngine();
-      const fsManager = new FileSystemManager(projectRoot, options.dryRun as boolean);
+      const fsManager = new FileSystemManager(
+        projectRoot,
+        options.dryRun as boolean,
+      );
       const generator = createIpcGenerator(loader, engine, fsManager);
 
       try {
@@ -193,12 +196,17 @@ program
             projectRoot,
           });
           const generatedPaths = results
-            .filter((r) => r.success && (r.action === "create" || r.action === "update"))
+            .filter(
+              (r) =>
+                r.success && (r.action === "create" || r.action === "update"),
+            )
             .map((r) => r.path);
           await postProcessor.processFiles(generatedPaths);
         }
       } catch (error) {
-        printWarning(`Generation failed: ${error instanceof Error ? error.message : String(error)}`);
+        printWarning(
+          `Generation failed: ${error instanceof Error ? error.message : String(error)}`,
+        );
         process.exit(1);
       }
     },
@@ -311,7 +319,10 @@ program
             projectRoot,
           });
           const generatedPaths = results
-            .filter((r) => r.success && (r.action === "create" || r.action === "update"))
+            .filter(
+              (r) =>
+                r.success && (r.action === "create" || r.action === "update"),
+            )
             .map((r) => r.path);
           await postProcessor.processFiles(generatedPaths);
         }
@@ -333,7 +344,10 @@ program
   .command("db")
   .description("Generate a Drizzle database schema")
   .argument("[name]", 'Name of the table (e.g., "users", "posts")')
-  .option("--no-append", "Create a new schema file instead of appending to schema.ts")
+  .option(
+    "--no-append",
+    "Create a new schema file instead of appending to schema.ts",
+  )
   .option(
     "--dry-run",
     "Show what would be generated without creating files",
@@ -416,7 +430,10 @@ program
             projectRoot,
           });
           const generatedPaths = results
-            .filter((r) => r.success && (r.action === "create" || r.action === "update"))
+            .filter(
+              (r) =>
+                r.success && (r.action === "create" || r.action === "update"),
+            )
             .map((r) => r.path);
           await postProcessor.processFiles(generatedPaths);
         }
@@ -437,10 +454,7 @@ program
 program
   .command("test")
   .description("Generate E2E test file with Playwright setup")
-  .argument(
-    "[name]",
-    'Name of the test (e.g., "loginFlow", "chatInteraction")',
-  )
+  .argument("[name]", 'Name of the test (e.g., "loginFlow", "chatInteraction")')
   .option(
     "-f, --feature <feature>",
     'Feature name for the filename (e.g., "user-auth")',
@@ -524,7 +538,10 @@ program
             projectRoot,
           });
           const generatedPaths = results
-            .filter((r) => r.success && (r.action === "create" || r.action === "update"))
+            .filter(
+              (r) =>
+                r.success && (r.action === "create" || r.action === "update"),
+            )
             .map((r) => r.path);
           await postProcessor.processFiles(generatedPaths);
         }
@@ -556,58 +573,64 @@ program
     "Show what would be generated without creating files",
     false,
   )
-  .action(async (type: string, name: string | undefined, options: Record<string, unknown>) => {
-    const projectRoot = join(__dirname, "..");
-    const configLoader = new ConfigLoader(projectRoot);
-    const config = await configLoader.loadConfig();
+  .action(
+    async (
+      type: string,
+      name: string | undefined,
+      options: Record<string, unknown>,
+    ) => {
+      const projectRoot = join(__dirname, "..");
+      const configLoader = new ConfigLoader(projectRoot);
+      const config = await configLoader.loadConfig();
 
-    const templatesDir = config.templatesDirectory 
-      ? join(projectRoot, config.templatesDirectory)
-      : join(__dirname, "../src/codegen/templates");
+      const templatesDir = config.templatesDirectory
+        ? join(projectRoot, config.templatesDirectory)
+        : join(__dirname, "../src/codegen/templates");
 
-    const loader = new TemplateLoader({
-      templatesDirectory: templatesDir,
-      cacheEnabled: false,
-    });
-    const engine = new TemplateEngine();
-    const fsManager = new FileSystemManager(
-      projectRoot,
-      options.dryRun as boolean,
-    );
-    const generator = createSnippetGenerator(loader, engine, fsManager);
-
-    try {
-      const results = await generator.generate({
-        type,
-        file: options.file as string,
-        params: { name },
+      const loader = new TemplateLoader({
+        templatesDirectory: templatesDir,
+        cacheEnabled: false,
       });
-
-      if (options.file) {
-        const files: GeneratedFileInfo[] = results.map((r) => ({
-          path: r.path,
-          action: r.action as any,
-          size: r.size,
-        }));
-
-        printGenerationSummary(files, {
-          dryRun: options.dryRun as boolean,
-          verbose: true,
-        });
-      } else {
-        // Just print the snippet
-        const result = results[0] as any;
-        console.log("\n--- Snippet Result ---");
-        console.log(result.content);
-        console.log("----------------------\n");
-      }
-    } catch (error) {
-      printWarning(
-        `Snippet generation failed: ${error instanceof Error ? error.message : String(error)}`,
+      const engine = new TemplateEngine();
+      const fsManager = new FileSystemManager(
+        projectRoot,
+        options.dryRun as boolean,
       );
-      process.exit(1);
-    }
-  });
+      const generator = createSnippetGenerator(loader, engine, fsManager);
+
+      try {
+        const results = await generator.generate({
+          type,
+          file: options.file as string,
+          params: { name },
+        });
+
+        if (options.file) {
+          const files: GeneratedFileInfo[] = results.map((r) => ({
+            path: r.path,
+            action: r.action as any,
+            size: r.size,
+          }));
+
+          printGenerationSummary(files, {
+            dryRun: options.dryRun as boolean,
+            verbose: true,
+          });
+        } else {
+          // Just print the snippet
+          const result = results[0] as any;
+          console.log("\n--- Snippet Result ---");
+          console.log(result.content);
+          console.log("----------------------\n");
+        }
+      } catch (error) {
+        printWarning(
+          `Snippet generation failed: ${error instanceof Error ? error.message : String(error)}`,
+        );
+        process.exit(1);
+      }
+    },
+  );
 
 /**
  * Rename Entities Command
@@ -676,7 +699,10 @@ program
             projectRoot,
           });
           const generatedPaths = results
-            .filter((r) => r.success && (r.action === "create" || r.action === "update"))
+            .filter(
+              (r) =>
+                r.success && (r.action === "create" || r.action === "update"),
+            )
             .map((r) => r.path);
           await postProcessor.processFiles(generatedPaths);
         }
@@ -716,7 +742,7 @@ program
     const configLoader = new ConfigLoader(projectRoot);
     const config = await configLoader.loadConfig();
 
-    const templatesDir = config.templatesDirectory 
+    const templatesDir = config.templatesDirectory
       ? join(projectRoot, config.templatesDirectory)
       : join(__dirname, "../src/codegen/templates");
 
@@ -765,7 +791,10 @@ program
           projectRoot,
         });
         const generatedPaths = results
-          .filter((r) => r.success && (r.action === "create" || r.action === "update"))
+          .filter(
+            (r) =>
+              r.success && (r.action === "create" || r.action === "update"),
+          )
           .map((r) => r.path);
         await postProcessor.processFiles(generatedPaths);
       }

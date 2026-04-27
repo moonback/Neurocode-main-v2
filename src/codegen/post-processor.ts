@@ -25,8 +25,8 @@ export class PostProcessor {
   async processFiles(filePaths: string[]): Promise<void> {
     if (filePaths.length === 0) return;
 
-    const absolutePaths = filePaths.map(p => 
-      path.isAbsolute(p) ? p : path.resolve(this.options.projectRoot, p)
+    const absolutePaths = filePaths.map((p) =>
+      path.isAbsolute(p) ? p : path.resolve(this.options.projectRoot, p),
     );
 
     if (this.options.format) {
@@ -47,7 +47,10 @@ export class PostProcessor {
       const command = `npx oxfmt ${paths.join(" ")}`;
       await execAsync(command, { cwd: this.options.projectRoot });
     } catch (error) {
-      console.warn("Formatting failed:", error instanceof Error ? error.message : String(error));
+      console.warn(
+        "Formatting failed:",
+        error instanceof Error ? error.message : String(error),
+      );
     }
   }
 
@@ -61,7 +64,10 @@ export class PostProcessor {
       await execAsync(command, { cwd: this.options.projectRoot });
     } catch (error) {
       // Linting errors are expected if code is not yet valid
-      console.warn("Linting/Fixing failed:", error instanceof Error ? error.message : String(error));
+      console.warn(
+        "Linting/Fixing failed:",
+        error instanceof Error ? error.message : String(error),
+      );
     }
   }
 }

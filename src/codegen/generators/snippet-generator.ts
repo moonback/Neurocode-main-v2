@@ -20,13 +20,15 @@ export class SnippetGenerator {
   constructor(
     private loader: TemplateLoader,
     private engine: TemplateEngine,
-    private fsManager: FileSystemManager
+    private fsManager: FileSystemManager,
   ) {}
 
   /**
    * Generates or inserts a snippet
    */
-  async generate(options: SnippetGeneratorOptions): Promise<FileOperationResult[]> {
+  async generate(
+    options: SnippetGeneratorOptions,
+  ): Promise<FileOperationResult[]> {
     const context = {
       ...options.params,
       type: options.type,
@@ -40,7 +42,9 @@ export class SnippetGenerator {
     if (options.file) {
       // TODO: Implement insertion at specific line
       // For now, we'll just append to the file
-      results.push(await this.fsManager.writeFile(options.file, snippetContent, "append"));
+      results.push(
+        await this.fsManager.writeFile(options.file, snippetContent, "append"),
+      );
     } else {
       // Just return the snippet to be printed by the CLI
       // We'll use a virtual path to represent the snippet output
@@ -49,7 +53,7 @@ export class SnippetGenerator {
         action: "create",
         success: true,
         size: Buffer.byteLength(snippetContent),
-        content: snippetContent // We add content here so CLI can print it
+        content: snippetContent, // We add content here so CLI can print it
       } as any);
     }
 
@@ -63,7 +67,7 @@ export class SnippetGenerator {
 export function createSnippetGenerator(
   loader: TemplateLoader,
   engine: TemplateEngine,
-  fsManager: FileSystemManager
+  fsManager: FileSystemManager,
 ): SnippetGenerator {
   return new SnippetGenerator(loader, engine, fsManager);
 }

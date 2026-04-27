@@ -22,7 +22,7 @@ export class IpcGenerator {
   constructor(
     private loader: TemplateLoader,
     private engine: TemplateEngine,
-    private fsManager: FileSystemManager
+    private fsManager: FileSystemManager,
   ) {}
 
   /**
@@ -41,7 +41,10 @@ export class IpcGenerator {
     // 1. Contract
     // Note: The task says src/ipc/types/{domain}/{name}Contract.ts
     const contractTemplate = await this.loader.loadTemplate("ipc-contract");
-    const contractContent = this.engine.render(contractTemplate.content, context);
+    const contractContent = this.engine.render(
+      contractTemplate.content,
+      context,
+    );
     const contractPath = `src/ipc/types/${options.domain}/${this.pascalCase(options.name)}Contract.ts`;
     await this.validateAndWrite(contractPath, contractContent, results);
 
@@ -75,11 +78,13 @@ export class IpcGenerator {
   private async validateAndWrite(
     path: string,
     content: string,
-    results: FileOperationResult[]
+    results: FileOperationResult[],
   ): Promise<void> {
     const validation = GeneratorValidator.validateTypeScript(content, path);
     if (!validation.isValid) {
-      throw new Error(`Generated code for ${path} is invalid:\n${validation.errors.join("\n")}`);
+      throw new Error(
+        `Generated code for ${path} is invalid:\n${validation.errors.join("\n")}`,
+      );
     }
     results.push(await this.fsManager.writeFile(path, content, "overwrite"));
   }
@@ -108,7 +113,7 @@ export class IpcGenerator {
 export function createIpcGenerator(
   loader: TemplateLoader,
   engine: TemplateEngine,
-  fsManager: FileSystemManager
+  fsManager: FileSystemManager,
 ): IpcGenerator {
   return new IpcGenerator(loader, engine, fsManager);
 }

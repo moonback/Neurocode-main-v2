@@ -18,13 +18,15 @@ export class TestGenerator {
   constructor(
     private loader: TemplateLoader,
     private engine: TemplateEngine,
-    private fsManager: FileSystemManager
+    private fsManager: FileSystemManager,
   ) {}
 
   /**
    * Generates E2E test file
    */
-  async generate(options: TestGeneratorOptions): Promise<FileOperationResult[]> {
+  async generate(
+    options: TestGeneratorOptions,
+  ): Promise<FileOperationResult[]> {
     const context = {
       ...options,
       name: options.name,
@@ -33,10 +35,10 @@ export class TestGenerator {
     const results: FileOperationResult[] = [];
     const testTemplate = await this.loader.loadTemplate("e2e-test");
     const testContent = this.engine.render(testTemplate.content, context);
-    
+
     const fileName = this.snakeCase(options.feature || options.name);
     const testPath = `e2e-tests/${fileName}.spec.ts`;
-    
+
     await this.validateAndWrite(testPath, testContent, results);
 
     return results;
@@ -48,11 +50,13 @@ export class TestGenerator {
   private async validateAndWrite(
     path: string,
     content: string,
-    results: FileOperationResult[]
+    results: FileOperationResult[],
   ): Promise<void> {
     const validation = GeneratorValidator.validateTypeScript(content, path);
     if (!validation.isValid) {
-      throw new Error(`Generated code for ${path} is invalid:\n${validation.errors.join("\n")}`);
+      throw new Error(
+        `Generated code for ${path} is invalid:\n${validation.errors.join("\n")}`,
+      );
     }
     results.push(await this.fsManager.writeFile(path, content, "overwrite"));
   }
@@ -71,7 +75,7 @@ export class TestGenerator {
 export function createTestGenerator(
   loader: TemplateLoader,
   engine: TemplateEngine,
-  fsManager: FileSystemManager
+  fsManager: FileSystemManager,
 ): TestGenerator {
   return new TestGenerator(loader, engine, fsManager);
 }

@@ -21,7 +21,9 @@ export class RenameGenerator {
   /**
    * Performs the rename operation
    */
-  async generate(options: RenameGeneratorOptions): Promise<FileOperationResult[]> {
+  async generate(
+    options: RenameGeneratorOptions,
+  ): Promise<FileOperationResult[]> {
     if (options.type === "ipc") {
       return this.renameIpc(options);
     } else {
@@ -32,7 +34,9 @@ export class RenameGenerator {
   /**
    * Renames IPC endpoint files and contents
    */
-  private async renameIpc(options: RenameGeneratorOptions): Promise<FileOperationResult[]> {
+  private async renameIpc(
+    options: RenameGeneratorOptions,
+  ): Promise<FileOperationResult[]> {
     const results: FileOperationResult[] = [];
     const domain = options.domain || "app";
     const oldPascal = this.pascalCase(options.oldName);
@@ -63,15 +67,20 @@ export class RenameGenerator {
       const absoluteOld = path.resolve(this.fsManager.projectRoot, mapping.old);
       try {
         await fs.access(absoluteOld);
-        
+
         // Read and update content
         let content = await fs.readFile(absoluteOld, "utf-8");
         content = content.replace(new RegExp(oldPascal, "g"), newPascal);
-        content = content.replace(new RegExp(this.camelCase(options.oldName), "g"), this.camelCase(options.newName));
-        
+        content = content.replace(
+          new RegExp(this.camelCase(options.oldName), "g"),
+          this.camelCase(options.newName),
+        );
+
         // Rename file
-        results.push(await this.fsManager.writeFile(mapping.new, content, "overwrite"));
-        
+        results.push(
+          await this.fsManager.writeFile(mapping.new, content, "overwrite"),
+        );
+
         // Delete the old file
         await this.fsManager.deleteFile(mapping.old);
         results.push({
@@ -91,11 +100,13 @@ export class RenameGenerator {
   /**
    * Renames Component directory and files
    */
-  private async renameComponent(options: RenameGeneratorOptions): Promise<FileOperationResult[]> {
+  private async renameComponent(
+    options: RenameGeneratorOptions,
+  ): Promise<FileOperationResult[]> {
     const results: FileOperationResult[] = [];
     const oldPascal = this.pascalCase(options.oldName);
     const newPascal = this.pascalCase(options.newName);
-    
+
     const oldDir = `src/components/${oldPascal}`;
     const newDir = `src/components/${newPascal}`;
 
@@ -113,12 +124,14 @@ export class RenameGenerator {
       const absoluteOld = path.resolve(this.fsManager.projectRoot, oldPath);
       try {
         await fs.access(absoluteOld);
-        
+
         let content = await fs.readFile(absoluteOld, "utf-8");
         content = content.replace(new RegExp(oldPascal, "g"), newPascal);
-        
-        results.push(await this.fsManager.writeFile(newPath, content, "overwrite"));
-        
+
+        results.push(
+          await this.fsManager.writeFile(newPath, content, "overwrite"),
+        );
+
         await this.fsManager.deleteFile(oldPath);
         results.push({
           path: oldPath,
@@ -156,6 +169,8 @@ export class RenameGenerator {
 /**
  * Creates a rename generator instance
  */
-export function createRenameGenerator(fsManager: FileSystemManager): RenameGenerator {
+export function createRenameGenerator(
+  fsManager: FileSystemManager,
+): RenameGenerator {
   return new RenameGenerator(fsManager);
 }

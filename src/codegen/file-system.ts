@@ -17,7 +17,12 @@ import { DyadError, DyadErrorKind } from "../errors/dyad_error";
 /**
  * Strategy for handling existing file conflicts
  */
-export type ConflictStrategy = "overwrite" | "skip" | "rename" | "abort" | "append";
+export type ConflictStrategy =
+  | "overwrite"
+  | "skip"
+  | "rename"
+  | "abort"
+  | "append";
 
 /**
  * Result of a file operation
@@ -54,7 +59,7 @@ export class FileSystemManager {
   async writeFile(
     targetPath: string,
     content: string,
-    strategy: ConflictStrategy = "abort"
+    strategy: ConflictStrategy = "abort",
   ): Promise<FileOperationResult> {
     const absolutePath = this.resolveAndValidatePath(targetPath);
     const exists = await this.exists(absolutePath);
@@ -75,7 +80,7 @@ export class FileSystemManager {
         case "abort":
           throw new DyadError(
             `File already exists: ${targetPath}`,
-            DyadErrorKind.ValidationFailed
+            DyadErrorKind.ValidationFailed,
           );
         case "rename":
           // Not implemented for now, but could append .1, .2, etc.
@@ -145,7 +150,7 @@ export class FileSystemManager {
     if (!absolutePath.startsWith(this.projectRoot)) {
       throw new DyadError(
         `Security Error: Attempted to write outside project root: ${targetPath}`,
-        DyadErrorKind.Forbidden
+        DyadErrorKind.Forbidden,
       );
     }
 
@@ -207,7 +212,7 @@ export class FileSystemManager {
  */
 export function createFileSystemManager(
   projectRoot: string,
-  dryRun: boolean = false
+  dryRun: boolean = false,
 ): FileSystemManager {
   return new FileSystemManager(projectRoot, dryRun);
 }
