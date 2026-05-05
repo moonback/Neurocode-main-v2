@@ -225,10 +225,7 @@ describe("GeneratorValidator", () => {
         export function broken(
       `;
 
-      const result = GeneratorValidator.validateTypeScript(
-        code,
-        "my-file.ts",
-      );
+      const result = GeneratorValidator.validateTypeScript(code, "my-file.ts");
 
       expect(result.isValid).toBe(false);
       expect(result.errors.some((e) => e.includes("my-file.ts"))).toBe(true);

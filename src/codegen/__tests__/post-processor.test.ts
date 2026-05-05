@@ -94,7 +94,9 @@ describe("PostProcessor", () => {
     });
 
     it("should handle formatting errors gracefully", async () => {
-      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const consoleWarnSpy = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
 
       execMock.mockImplementation((cmd: string, opts: any, callback: any) => {
         callback(new Error("Formatting failed"), null);
@@ -120,7 +122,9 @@ describe("PostProcessor", () => {
     });
 
     it("should handle linting errors gracefully", async () => {
-      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const consoleWarnSpy = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
 
       execMock.mockImplementation((cmd: string, opts: any, callback: any) => {
         callback(new Error("Linting failed"), null);
@@ -240,7 +244,9 @@ describe("PostProcessor", () => {
     });
 
     it("should handle non-Error objects in catch blocks", async () => {
-      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const consoleWarnSpy = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
 
       execMock.mockImplementation((cmd: string, opts: any, callback: any) => {
         callback("string error", null);

@@ -113,16 +113,16 @@ export function ModelPicker() {
   const autoModels =
     !loading && modelsByProviders && modelsByProviders["auto"]
       ? modelsByProviders["auto"].filter((model) => {
-        if (
-          settings &&
-          !isDyadProEnabled(settings) &&
-          ["turbo", "value"].includes(model.apiName)
-        ) {
-          return false;
-        }
-        // Afficher tous les modèles, y compris gratuits, si Dyad Pro est activé
-        return true;
-      })
+          if (
+            settings &&
+            !isDyadProEnabled(settings) &&
+            ["turbo", "value"].includes(model.apiName)
+          ) {
+            return false;
+          }
+          // Afficher tous les modèles, y compris gratuits, si Dyad Pro est activé
+          return true;
+        })
       : [];
 
   // Determine availability of local models
@@ -140,8 +140,8 @@ export function ModelPicker() {
   const providerEntries =
     !loading && modelsByProviders
       ? Object.entries(modelsByProviders).filter(
-        ([providerId]) => providerId !== "auto",
-      )
+          ([providerId]) => providerId !== "auto",
+        )
       : [];
   const primaryProviders = providerEntries.filter(([providerId, models]) => {
     if (models.length === 0) return false;
@@ -202,7 +202,7 @@ export function ModelPicker() {
                       title={model.description}
                       className={
                         selectedModel.provider === "auto" &&
-                          selectedModel.name === model.apiName
+                        selectedModel.name === model.apiName
                           ? "bg-secondary"
                           : ""
                       }
@@ -282,7 +282,7 @@ export function ModelPicker() {
                           title={model.description}
                           className={
                             selectedModel.provider === providerId &&
-                              selectedModel.name === model.apiName
+                            selectedModel.name === model.apiName
                               ? "bg-secondary"
                               : ""
                           }
@@ -359,7 +359,7 @@ export function ModelPicker() {
                                 title={model.description}
                                 className={
                                   selectedModel.provider === providerId &&
-                                    selectedModel.name === model.apiName
+                                  selectedModel.name === model.apiName
                                     ? "bg-secondary"
                                     : ""
                                 }
@@ -470,7 +470,7 @@ export function ModelPicker() {
                           key={`ollama-${model.modelName}`}
                           className={
                             selectedModel.provider === "ollama" &&
-                              selectedModel.name === model.modelName
+                            selectedModel.name === model.modelName
                               ? "bg-secondary"
                               : ""
                           }
@@ -554,7 +554,7 @@ export function ModelPicker() {
                           key={`lmstudio-${model.modelName}`}
                           className={
                             selectedModel.provider === "lmstudio" &&
-                              selectedModel.name === model.modelName
+                            selectedModel.name === model.modelName
                               ? "bg-secondary"
                               : ""
                           }
