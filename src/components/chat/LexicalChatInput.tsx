@@ -522,24 +522,8 @@ export function LexicalChatInput({
           }
         }
 
-        // Transform /skill-name mentions from the registry to /skill:skill-name
-        // so the stream handler can identify and expand them correctly.
-        if (textContent.includes("/") && (skills || []).length > 0) {
-          for (const skill of skills || []) {
-            const escapedName = skill.name.replace(
-              /[.*+?^${}()|[\]\\]/g,
-              "\\$&",
-            );
-            const skillRegex = new RegExp(
-              `(^|\\s)\\/(${escapedName})(?=\\s|$)`,
-              "g",
-            );
-            textContent = textContent.replace(
-              skillRegex,
-              `$1/skill:${skill.name}`,
-            );
-          }
-        }
+        // Note: Skills are handled directly by ChatInput.tsx via parseCommand()
+        // No transformation needed here - keep the format as /skill-name
 
         onChange(textContent);
       });
