@@ -126,7 +126,7 @@ describe("Skills Integration Tests", () => {
       vi.spyOn(fs, "existsSync").mockReturnValue(true);
       vi.spyOn(fs, "readdirSync").mockReturnValue([
         { name: "lint", isDirectory: () => true },
-      ] as unknown as fs.Dirent[]);
+      ] as any);
 
       await registry.discoverAndRegister();
 
@@ -206,7 +206,7 @@ describe("Skills Integration Tests", () => {
       vi.spyOn(fs, "readdirSync").mockImplementation(() => {
         return [
           { name: "lint", isDirectory: () => true },
-        ] as unknown as fs.Dirent[];
+        ] as any;
       });
 
       vi.spyOn(fs, "readFileSync").mockImplementation((p) => {
@@ -360,7 +360,7 @@ describe("Skills Integration Tests", () => {
       vi.spyOn(fs, "readdirSync").mockReturnValue([
         { name: "skill1", isDirectory: () => true },
         { name: "skill2", isDirectory: () => true },
-      ] as unknown as fs.Dirent[]);
+      ] as any);
 
       vi.spyOn(fs, "readFileSync").mockImplementation((p) => {
         const pathStr = p.toString();
@@ -522,7 +522,7 @@ describe("Skills Integration Tests", () => {
         { name: "lint", isDirectory: () => true },
         { name: "test", isDirectory: () => true },
         { name: "README.md", isDirectory: () => false }, // Should be skipped
-      ] as unknown as fs.Dirent[]);
+      ] as any);
 
       vi.spyOn(fs, "readFileSync").mockImplementation((p) => {
         const pathStr = p.toString();
@@ -603,7 +603,7 @@ describe("Skills Integration Tests", () => {
       vi.spyOn(fs, "readdirSync").mockReturnValue([
         { name: "valid", isDirectory: () => true },
         { name: "invalid", isDirectory: () => true },
-      ] as unknown as fs.Dirent[]);
+      ] as any);
 
       vi.spyOn(fs, "readFileSync").mockImplementation((p) => {
         const pathStr = p.toString();

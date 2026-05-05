@@ -237,7 +237,8 @@ describe("ValidationResult display helpers", () => {
 
 describe("editor mode", () => {
   it("create mode: skill prop is undefined", () => {
-    const isEditMode = !!undefined;
+    const skill = undefined;
+    const isEditMode = !!skill;
     expect(isEditMode).toBe(false);
   });
 
@@ -254,10 +255,11 @@ describe("editor mode", () => {
   });
 
   it("initial draft name is empty string in create mode", () => {
+    const skill: any = {};
     const draft: Draft = {
-      name: undefined ?? "",
-      description: undefined ?? "",
-      content: undefined ?? "",
+      name: skill.name ?? "",
+      description: skill.description ?? "",
+      content: skill.content ?? "",
     };
     expect(draft.name).toBe("");
     expect(draft.description).toBe("");

@@ -1,6 +1,6 @@
 import { ipc } from "@/ipc/types";
 import { useFreeAgentQuota } from "@/hooks/useFreeAgentQuota";
-import { AI_STREAMING_ERROR_MESSAGE_PREFIX } from "@/shared/texts";
+
 import {
   X,
   ExternalLink as ExternalLinkIcon,
@@ -26,21 +26,12 @@ export function ChatErrorBox({
   isDyadProEnabled: boolean;
   onStartNewChat?: () => void;
 }) {
-  const { messagesLimit } = useFreeAgentQuota();
+  useFreeAgentQuota();
 
   if (error.includes("doesn't have a free quota tier")) {
     return (
       <ChatErrorContainer onDismiss={onDismiss}>
-        {error}
-        <span className="ml-1">
-          <ExternalLink
-            href="https://neurocode.ai/pro?utm_source=dyad-app&utm_medium=app&utm_campaign=free-quota-error"
-            variant="primary"
-          >
-            Accéder avec Neurocode Pro
-          </ExternalLink>
-        </span>{" "}
-        ou basculez vers un autre modèle.
+        {error} ou basculez vers un autre modèle.
       </ChatErrorContainer>
     );
   }
@@ -52,22 +43,14 @@ export function ChatErrorBox({
   // show the upgrade to Dyad Pro link in that case because they are
   // already on the Dyad Pro plan.
   if (
-    !isDyadProEnabled &&
-    (error.includes("Resource has been exhausted") ||
-      error.includes("https://ai.google.dev/gemini-api/docs/rate-limits") ||
-      error.includes("Provider returned error"))
+    error.includes("Resource has been exhausted") ||
+    error.includes("https://ai.google.dev/gemini-api/docs/rate-limits") ||
+    error.includes("Provider returned error")
   ) {
     return (
       <ChatErrorContainer onDismiss={onDismiss}>
         {error}
         <div className="mt-2 space-y-2 space-x-2">
-          <ExternalLink
-            href="https://neurocode.ai/pro?utm_source=dyad-app&utm_medium=app&utm_campaign=rate-limit-error"
-            variant="primary"
-          >
-            Accéder avec Neurocode Pro
-          </ExternalLink>
-
           <ExternalLink href="https://neurocode.ai/docs/help/ai-rate-limit">
             Guide de dépannage
           </ExternalLink>
@@ -80,14 +63,7 @@ export function ChatErrorBox({
     return (
       <ChatInfoContainer onDismiss={onDismiss}>
         <span>
-          Vous n'avez pas de clé Neurocode Pro valide.{" "}
-          <ExternalLink
-            href="https://neurocode.ai/pro?utm_source=dyad-app&utm_medium=app&utm_campaign=invalid-pro-key-error"
-            variant="primary"
-          >
-            Accéder avec Neurocode Pro
-          </ExternalLink>{" "}
-          aujourd'hui.
+          Votre clé Neurocode est invalide ou a expiré. Veuillez vérifier vos paramètres.
         </span>
       </ChatInfoContainer>
     );
@@ -115,10 +91,8 @@ export function ChatErrorBox({
   if (error.includes("FREE_AGENT_QUOTA_EXCEEDED")) {
     return (
       <ChatErrorContainer onDismiss={onDismiss}>
-        Vous avez atteint la limite de messages gratuits pour aujourd'hui.
-        Veuillez passer à Neurocode Pro pour un accès illimité ou basculer en
-        mode Création.
-        <div className="mt-2 space-y-2 space-x-2"></div>
+        Vous avez atteint votre limite de messages pour aujourd'hui.
+        Veuillez réessayer plus tard ou basculer en mode Création.
       </ChatErrorContainer>
     );
   }

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Loader2, Upload, X, Sparkles, Lock, Link } from "lucide-react";
+import { Loader2, Upload, X, Sparkles, Link } from "lucide-react";
 import {
   useGenerateThemePrompt,
   useGenerateThemeFromUrl,
@@ -72,7 +72,7 @@ export function AIGeneratorTab({
   const generateFromUrlMutation = useGenerateThemeFromUrl();
   const isGenerating =
     generatePromptMutation.isPending || generateFromUrlMutation.isPending;
-  const { userBudget } = useUserBudgetInfo();
+  useUserBudgetInfo();
   const { themeGenerationModelOptions, isLoadingThemeGenerationModelOptions } =
     useThemeGenerationModelOptions();
 

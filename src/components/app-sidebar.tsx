@@ -8,7 +8,6 @@ import { dropdownOpenAtom } from "@/atoms/uiAtoms";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,

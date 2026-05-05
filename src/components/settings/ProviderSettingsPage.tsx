@@ -11,8 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {} from "@/components/ui/accordion";
 
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { showError } from "@/lib/toast";
+
 import {
   UserSettings,
   AzureProviderSetting,
@@ -187,19 +186,6 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
     }
   };
 
-  // --- Toggle Dyad Pro Handler ---
-  const handleToggleDyadPro = async (enabled: boolean) => {
-    setIsSaving(true);
-    try {
-      await updateSettings({
-        enableDyadPro: enabled,
-      });
-    } catch (error: any) {
-      showError(`Error toggling Dyad Pro: ${error}`);
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   // Effect to clear input error when input changes
   useEffect(() => {
