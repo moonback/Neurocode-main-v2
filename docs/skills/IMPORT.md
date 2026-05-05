@@ -22,15 +22,19 @@ La fonctionnalité d'importation permet aux utilisateurs d'importer des fichiers
 ### Types de skills supportés
 
 #### Skills simples
+
 Un seul fichier `.md` avec le frontmatter et le contenu.
 
 #### Skills complexes
+
 Un fichier ZIP contenant :
+
 - Un fichier `SKILL.md` principal (obligatoire)
 - Des fichiers et dossiers additionnels (optionnel)
 - Toute la structure de dossiers est préservée
 
 **Exemple de skill complexe :**
+
 ```
 code-security.zip
 └── code-security/
@@ -121,6 +125,7 @@ Exécute les commandes de linting sur le projet :
 ### Exemple de skill complexe (ZIP)
 
 Structure du ZIP :
+
 ```
 code-security.zip
 └── code-security/
@@ -133,6 +138,7 @@ code-security.zip
 ```
 
 Le fichier `SKILL.md` peut référencer les autres fichiers :
+
 ```markdown
 ---
 name: code-security
@@ -192,6 +198,7 @@ Vous pouvez importer plusieurs skills en une seule fois :
 2. **Fichier ZIP avec plusieurs skills** : Créez un ZIP contenant plusieurs dossiers de skills
 
 Exemple de ZIP avec plusieurs skills :
+
 ```
 mes-skills.zip
 ├── skill1/

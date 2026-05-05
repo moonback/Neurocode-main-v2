@@ -529,10 +529,23 @@ export function ChatInput({ chatId }: { chatId?: number }) {
         } catch {
           // Skill not found – fetch available skills and show a helpful error
           let availableSkillsMsg = "";
+          let suggestionMsg = "";
           try {
             const skills = await ipc.skills.list(undefined);
             if (skills.length > 0) {
               availableSkillsMsg = ` Available skills: ${skills.map((s) => `/${s.name}`).join(", ")}`;
+
+              // Try to find a similar skill name (fuzzy match)
+              const searchName = parsed.skillName.toLowerCase();
+              const similar = skills.find(
+                (s) =>
+                  s.name.toLowerCase().includes(searchName) ||
+                  searchName.includes(s.name.toLowerCase()),
+              );
+
+              if (similar) {
+                suggestionMsg = ` Did you mean /${similar.name}?`;
+              }
             } else {
               availableSkillsMsg = " No skills are currently registered.";
             }
@@ -540,7 +553,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
             // ignore secondary error
           }
           showErrorToast(
-            `Skill "/${parsed.skillName}" not found.${availableSkillsMsg}`,
+            `Skill "/${parsed.skillName}" not found.${suggestionMsg}${availableSkillsMsg}`,
           );
           return;
         }

@@ -66,6 +66,7 @@ Compress-Archive -Path "code-security" -DestinationPath "code-security.zip"
 ```
 
 Cela créera un fichier `code-security.zip` contenant :
+
 - Le fichier SKILL.md principal
 - Tous les fichiers du dossier `rules/`
 - Les fichiers README.md, metadata.json, etc.
@@ -97,6 +98,7 @@ Pour partager un skill complexe avec d'autres :
 3. L'autre utilisateur peut l'importer directement
 
 Pour les équipes :
+
 - Créez un dépôt Git de skills
 - Stockez les ZIPs ou les dossiers sources
 - Les membres de l'équipe peuvent cloner et importer
