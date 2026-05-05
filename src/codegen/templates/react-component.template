@@ -1,0 +1,34 @@
+import React from "react";
+import { cn } from "@/lib/utils";
+
+/**
+ * Props for {{name | pascalCase}}
+ */
+export interface {{name | pascalCase}}Props extends React.HTMLAttributes<HTMLDivElement> {
+  // TODO: Add custom props here
+  title?: string;
+}
+
+/**
+ * {{name | pascalCase}} component
+ * 
+ * TODO: Description of what this component does
+ */
+export function {{name | pascalCase}}({ 
+  className, 
+  title,
+  children,
+  ...props 
+}: {{name | pascalCase}}Props) {
+  return (
+    <div 
+      className={cn("{{name | kebab-case}}", className)} 
+      {...props}
+    >
+      {{#if title}}
+      <h3 className="text-lg font-semibold mb-2">{{title}}</h3>
+      {{/if}}
+      {children}
+    </div>
+  );
+}

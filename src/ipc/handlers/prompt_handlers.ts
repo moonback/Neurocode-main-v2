@@ -189,12 +189,18 @@ Assure-toi que les prompts sont en français et très instructifs.`;
         model: modelClient.model,
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Voici l'historique récent du projet :\n\n${lastMessagesContext}\n\nGénère des suggestions pertinentes pour ce projet.` },
+          {
+            role: "user",
+            content: `Voici l'historique récent du projet :\n\n${lastMessagesContext}\n\nGénère des suggestions pertinentes pour ce projet.`,
+          },
         ],
         temperature: 0.8,
       });
 
-      const cleanedText = result.text.trim().replace(/^```json/, "").replace(/```$/, "");
+      const cleanedText = result.text
+        .trim()
+        .replace(/^```json/, "")
+        .replace(/```$/, "");
       try {
         return JSON.parse(cleanedText);
       } catch {

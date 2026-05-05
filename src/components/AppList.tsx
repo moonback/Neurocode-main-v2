@@ -107,7 +107,8 @@ export function AppList({ show }: { show?: boolean }) {
                 <SidebarGroupLabel>Applications favorites</SidebarGroupLabel>
                 {favoriteApps.length === 0 ? (
                   <div className="px-4 text-xs text-gray-500 italic">
-                    Ajoutez une application aux favoris à partir de sa page de détails pour l'épingler ici
+                    Ajoutez une application aux favoris à partir de sa page de
+                    détails pour l'épingler ici
                   </div>
                 ) : (
                   favoriteApps.map((app) => (

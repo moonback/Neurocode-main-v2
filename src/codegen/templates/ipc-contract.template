@@ -1,0 +1,44 @@
+import { z } from "zod";
+import { defineContract, createClient } from "../contracts/core";
+
+// =============================================================================
+// {{domain | capitalize}} Schemas
+// =============================================================================
+
+/**
+ * Schema for {{name}} parameters.
+ */
+export const {{name | pascalCase}}ParamsSchema = {{#if inputSchema}}{{inputSchema}}{{/if}}{{#if !inputSchema}}z.void(){{/if}};
+
+/**
+ * Schema for {{name}} result.
+ */
+export const {{name | pascalCase}}ResultSchema = {{#if outputSchema}}{{outputSchema}}{{/if}}{{#if !outputSchema}}z.void(){{/if}};
+
+// =============================================================================
+// {{domain | capitalize}} Contracts
+// =============================================================================
+
+export const {{domain | camelCase}}Contracts = {
+  {{name | camelCase}}: defineContract({
+    channel: "{{domain}}:{{name | kebab-case}}",
+    input: {{name | pascalCase}}ParamsSchema,
+    output: {{name | pascalCase}}ResultSchema,
+  }),
+} as const;
+
+// =============================================================================
+// {{domain | capitalize}} Client
+// =============================================================================
+
+/**
+ * Type-safe client for {{domain}} IPC operations.
+ */
+export const {{domain | camelCase}}Client = createClient({{domain | camelCase}}Contracts);
+
+// =============================================================================
+// Type Exports
+// =============================================================================
+
+export type {{name | pascalCase}}Params = z.infer<typeof {{name | pascalCase}}ParamsSchema>;
+export type {{name | pascalCase}}Result = z.infer<typeof {{name | pascalCase}}ResultSchema>;

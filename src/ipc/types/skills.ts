@@ -32,6 +32,24 @@ export const CreateSkillParamsSchema = z.object({
 });
 export type CreateSkillParams = z.infer<typeof CreateSkillParamsSchema>;
 
+export const ImportSkillWithFilesParamsSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  content: z.string(),
+  scope: SkillScopeSchema,
+  additionalFiles: z
+    .array(
+      z.object({
+        relativePath: z.string(),
+        content: z.string(),
+      }),
+    )
+    .optional(),
+});
+export type ImportSkillWithFilesParams = z.infer<
+  typeof ImportSkillWithFilesParamsSchema
+>;
+
 export const UpdateSkillParamsSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
@@ -102,6 +120,13 @@ export const skillContracts = {
   create: defineContract({
     channel: "skills:create",
     input: CreateSkillParamsSchema,
+    output: SkillSchema,
+  }),
+
+  /** Import a skill with additional files (for complex skills with subdirectories) */
+  importWithFiles: defineContract({
+    channel: "skills:importWithFiles",
+    input: ImportSkillWithFilesParamsSchema,
     output: SkillSchema,
   }),
 

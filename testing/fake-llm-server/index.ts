@@ -655,9 +655,9 @@ app.post("/engine/v1/sandboxes/:sandboxId/files", async (req, res) => {
   sandbox.files = upload.replaceAll
     ? { ...upload.files }
     : {
-      ...sandbox.files,
-      ...upload.files,
-    };
+        ...sandbox.files,
+        ...upload.files,
+      };
 
   for (const deletedFile of upload.deletedFiles) {
     delete sandbox.files[deletedFile];

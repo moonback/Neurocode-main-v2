@@ -313,8 +313,6 @@ export function AIGeneratorTab({
     setAiGeneratedPrompt,
   ]);
 
-
-
   return (
     <div className="space-y-4 mt-4">
       <div className="space-y-2">
@@ -344,10 +342,11 @@ export function AIGeneratorTab({
           <button
             type="button"
             onClick={() => setInputSource("images")}
-            className={`flex flex-col items-center rounded-lg border p-3 text-center transition-colors ${inputSource === "images"
-              ? "border-primary bg-primary/5"
-              : "hover:bg-muted/50"
-              }`}
+            className={`flex flex-col items-center rounded-lg border p-3 text-center transition-colors ${
+              inputSource === "images"
+                ? "border-primary bg-primary/5"
+                : "hover:bg-muted/50"
+            }`}
           >
             <Upload className="h-5 w-5 mb-1" />
             <span className="font-medium text-sm">Importer des images</span>
@@ -358,10 +357,11 @@ export function AIGeneratorTab({
           <button
             type="button"
             onClick={() => setInputSource("url")}
-            className={`flex flex-col items-center rounded-lg border p-3 text-center transition-colors ${inputSource === "url"
-              ? "border-primary bg-primary/5"
-              : "hover:bg-muted/50"
-              }`}
+            className={`flex flex-col items-center rounded-lg border p-3 text-center transition-colors ${
+              inputSource === "url"
+                ? "border-primary bg-primary/5"
+                : "hover:bg-muted/50"
+            }`}
           >
             <Link className="h-5 w-5 mb-1" />
             <span className="font-medium text-sm">URL de site web</span>
@@ -473,10 +473,11 @@ export function AIGeneratorTab({
           <button
             type="button"
             onClick={() => setAiGenerationMode("inspired")}
-            className={`flex flex-col items-start rounded-lg border p-3 text-left transition-colors ${aiGenerationMode === "inspired"
-              ? "border-primary bg-primary/5"
-              : "hover:bg-muted/50"
-              }`}
+            className={`flex flex-col items-start rounded-lg border p-3 text-left transition-colors ${
+              aiGenerationMode === "inspired"
+                ? "border-primary bg-primary/5"
+                : "hover:bg-muted/50"
+            }`}
           >
             <span className="font-medium">Inspiré</span>
             <span className="text-xs text-muted-foreground mt-1">
@@ -487,10 +488,11 @@ export function AIGeneratorTab({
           <button
             type="button"
             onClick={() => setAiGenerationMode("high-fidelity")}
-            className={`flex flex-col items-start rounded-lg border p-3 text-left transition-colors ${aiGenerationMode === "high-fidelity"
-              ? "border-primary bg-primary/5"
-              : "hover:bg-muted/50"
-              }`}
+            className={`flex flex-col items-start rounded-lg border p-3 text-left transition-colors ${
+              aiGenerationMode === "high-fidelity"
+                ? "border-primary bg-primary/5"
+                : "hover:bg-muted/50"
+            }`}
           >
             <span className="font-medium">Fidélité élevée</span>
             <span className="text-xs text-muted-foreground mt-1">
@@ -525,10 +527,11 @@ export function AIGeneratorTab({
                 role="radio"
                 aria-checked={aiSelectedModel === modelOption.id}
                 onClick={() => setAiSelectedModel(modelOption.id)}
-                className={`flex flex-col items-center rounded-lg border p-3 text-center transition-colors ${aiSelectedModel === modelOption.id
-                  ? "border-primary bg-primary/5"
-                  : "hover:bg-muted/50"
-                  }`}
+                className={`flex flex-col items-center rounded-lg border p-3 text-center transition-colors ${
+                  aiSelectedModel === modelOption.id
+                    ? "border-primary bg-primary/5"
+                    : "hover:bg-muted/50"
+                }`}
               >
                 <span className="font-medium text-sm">{modelOption.label}</span>
               </button>
@@ -581,7 +584,7 @@ export function AIGeneratorTab({
             Aucun prompt généré pour le moment.{" "}
             {inputSource === "images"
               ? 'Téléchargez des images et cliquez sur "Générer" pour créer un prompt de thème.'
-              : 'Entrez l\'URL d\'un site web et cliquez sur "Générer" pour extraire un thème.'}
+              : "Entrez l'URL d'un site web et cliquez sur \"Générer\" pour extraire un thème."}
           </div>
         )}
       </div>

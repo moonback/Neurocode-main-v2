@@ -612,8 +612,6 @@ Modern dark theme with purple accents for testing.
         };
       }
 
-
-
       // Validate inputs - image paths are required
       if (params.imagePaths.length === 0) {
         throw new DyadError(
@@ -726,7 +724,9 @@ images: ${imagesPart}`;
         });
 
         if (!text) {
-          throw new Error("The AI model returned an empty response. Please try again with different keywords or images.");
+          throw new Error(
+            "The AI model returned an empty response. Please try again with different keywords or images.",
+          );
         }
 
         return { prompt: text };
@@ -761,8 +761,6 @@ Modern theme extracted from website for testing.
 </theme>`,
         };
       }
-
-
 
       // Validate URL format and protocol
       let parsedUrl: URL;

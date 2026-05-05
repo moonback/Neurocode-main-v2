@@ -1,0 +1,15 @@
+import { useState, useEffect } from "react";
+
+/**
+ * use{{name | pascalCase}} hook
+ */
+export function use{{name | pascalCase}}() {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // TODO: Implement hook logic
+  }, []);
+
+  return { data, loading };
+}

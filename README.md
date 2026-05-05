@@ -175,6 +175,257 @@ Disponible via IPC :
 - **Recherche Web :** Recherche sur le web pour des informations à jour
 - **Budget de réflexion :** Support des modèles de raisonnement (o1/o3)
 - **Contexte intelligent :** Sélection intelligente de fichiers pour le contexte
+- **Génération de code (Codegen) :** Système de scaffolding et génération automatique de code pour accélérer le développement
+
+---
+
+## Génération de Code (Codegen)
+
+NeuroCode intègre un système puissant de génération de code qui automatise la création de boilerplate et accélère le développement.
+
+### 🚀 Fonctionnalités Codegen
+
+#### Génération automatique
+
+- **Endpoints IPC :** Génération complète (contrat, handler, hook React Query, test E2E)
+- **Composants React :** Composant + test + story Storybook
+- **Schémas de base de données :** Schémas Drizzle ORM avec migrations
+- **Tests E2E :** Tests Playwright avec fixtures et patterns Base UI
+- **Snippets :** Bibliothèque de snippets réutilisables
+
+#### Système de templates
+
+- **Templates personnalisables :** Modifiez les templates selon vos besoins
+- **Substitution de variables :** Syntaxe `{{variableName}}` avec filtres (camelCase, PascalCase, kebab-case)
+- **Logique conditionnelle :** `{{#if condition}}...{{/if}}` et boucles `{{#each items}}...{{/each}}`
+- **Héritage de templates :** Templates parent-child avec override de blocs
+- **Cache intelligent :** Rechargement automatique lors de modifications
+
+#### Validation et formatage
+
+- **Validation TypeScript :** Vérification des types sur le code généré
+- **Formatage automatique :** Intégration oxfmt et oxlint avec auto-fix
+- **Validation des imports :** Vérification de la résolution des imports
+- **Conventions de nommage :** Validation des conventions du projet
+
+#### Refactoring sécurisé
+
+- **Renommage IPC :** Mise à jour automatique de toutes les références (handler, contrat, hook, tests)
+- **Renommage de composants :** Mise à jour des imports et références
+- **Préservation Git :** Utilisation de `git mv` pour conserver l'historique
+
+### 📋 Commandes Codegen
+
+#### Générer un endpoint IPC
+
+```bash
+npm run codegen -- ipc <nom> --domain <domaine> [options]
+```
+
+**Options :**
+
+- `--dry-run` - Aperçu sans créer de fichiers
+- `--non-interactive` - Mode non-interactif
+- `--no-test` - Ignorer la génération du test E2E
+- `-m, --mutation` - Marquer comme endpoint de mutation
+- `--no-format` - Ignorer le formatage automatique
+- `--lint` - Exécuter le linter avec auto-fix
+
+**Exemple :**
+
+```bash
+npm run codegen -- ipc getUser --domain user
+```
+
+Génère :
+
+- `src/ipc/types/user/getUser.ts` - Contrat IPC
+- `src/ipc/handlers/user/getUser.ts` - Handler
+- `src/hooks/use-getUser.ts` - Hook React Query
+- `e2e-tests/user-getUser.spec.ts` - Test E2E
+
+#### Générer un composant React
+
+```bash
+npm run codegen -- component <nom> [options]
+```
+
+**Options :**
+
+- `--dry-run` - Aperçu sans créer de fichiers
+- `--no-test` - Ignorer le fichier de test
+- `--no-story` - Ignorer la story Storybook
+- `--base-ui` - Inclure les patterns Base UI
+- `--no-format` - Ignorer le formatage automatique
+
+**Exemple :**
+
+```bash
+npm run codegen -- component UserProfile --base-ui
+```
+
+Génère :
+
+- `src/components/UserProfile.tsx` - Composant
+- `src/components/UserProfile.test.tsx` - Tests
+- `src/components/UserProfile.stories.tsx` - Story Storybook
+
+#### Générer un schéma de base de données
+
+```bash
+npm run codegen -- db <nom> [options]
+```
+
+**Options :**
+
+- `--dry-run` - Aperçu sans créer de fichiers
+- `--no-append` - Créer un nouveau fichier au lieu d'ajouter à `schema.ts`
+- `--no-format` - Ignorer le formatage automatique
+
+**Exemple :**
+
+```bash
+npm run codegen -- db users
+```
+
+Génère un schéma Drizzle ORM et exécute `drizzle-kit generate` pour créer les migrations.
+
+#### Générer un test E2E
+
+```bash
+npm run codegen -- test <nom> [options]
+```
+
+**Options :**
+
+- `--dry-run` - Aperçu sans créer de fichiers
+- `-f, --feature <feature>` - Nom de la fonctionnalité pour le fichier
+- `--no-format` - Ignorer le formatage automatique
+
+**Exemple :**
+
+```bash
+npm run codegen -- test authentication --feature login
+```
+
+#### Insérer un snippet
+
+```bash
+npm run codegen -- snippet <type> [nom] [options]
+```
+
+**Types disponibles :** `ipc-registration`, `react-hook`
+
+**Options :**
+
+- `-f, --file <fichier>` - Fichier cible pour l'insertion
+- `--dry-run` - Aperçu sans modifications
+
+#### Refactoring (Renommage)
+
+```bash
+npm run codegen -- rename <type> <ancienNom> <nouveauNom> [options]
+```
+
+**Types :** `ipc`, `component`
+
+**Options :**
+
+- `-d, --domain <domaine>` - Domaine pour l'endpoint IPC
+- `--dry-run` - Aperçu sans modifications
+
+**Exemple :**
+
+```bash
+npm run codegen -- rename ipc getUser fetchUser --domain user
+```
+
+Met à jour automatiquement toutes les références dans le projet.
+
+#### Workflow complexe
+
+```bash
+npm run codegen -- workflow <nom> [options]
+```
+
+Génère un ensemble complet (IPC + Composant + DB) pour une fonctionnalité.
+
+**Options :**
+
+- `-d, --domain <domaine>` - Nom du domaine/module
+- `--no-ipc` - Ignorer la génération IPC
+- `--no-component` - Ignorer la génération de composant
+- `--no-db` - Ignorer la génération de base de données
+- `--dry-run` - Aperçu sans modifications
+
+### ⚙️ Configuration Codegen
+
+Le système de génération de code est configurable via `codegen.config.json` :
+
+```json
+{
+  "templates": {
+    "directory": "src/codegen/templates",
+    "ipc": {
+      "contract": "ipc-contract.template",
+      "handler": "ipc-handler.template",
+      "hook": "ipc-hook.template",
+      "test": "ipc-test.template"
+    },
+    "component": {
+      "component": "react-component.template",
+      "test": "react-component-test.template",
+      "story": "react-component-story.template"
+    }
+  },
+  "naming": {
+    "ipc": {
+      "contractSuffix": "Contract",
+      "handlerSuffix": "Handler",
+      "hookPrefix": "use"
+    },
+    "component": {
+      "suffix": "",
+      "testSuffix": ".test",
+      "storySuffix": ".stories"
+    }
+  },
+  "paths": {
+    "ipc": {
+      "contracts": "src/ipc/types",
+      "handlers": "src/ipc/handlers",
+      "hooks": "src/hooks"
+    },
+    "components": "src/components",
+    "schemas": "src/db",
+    "tests": {
+      "e2e": "e2e-tests",
+      "unit": "src/__tests__"
+    }
+  },
+  "formatting": {
+    "enabled": true,
+    "lint": true,
+    "autoFix": true,
+    "typeCheck": true
+  }
+}
+```
+
+### 🎯 Avantages
+
+- **Gain de temps :** Réduction de 80% du temps de création de boilerplate
+- **Cohérence :** Code généré suivant toujours les conventions du projet
+- **Qualité :** Formatage et validation automatiques
+- **Sécurité :** Validation des chemins et échappement des caractères spéciaux
+- **Flexibilité :** Templates personnalisables selon vos besoins
+
+### 📚 Documentation complète
+
+Pour plus de détails sur le système de génération de code, consultez :
+
+- `src/codegen/README.md` - Documentation technique complète
+- `src/codegen/CONFIG.md` - Options de configuration détaillées
 
 ---
 
@@ -367,6 +618,9 @@ npm run fmt
 # Exécuter les tests
 npm test
 npm run e2e
+
+# Génération de code
+npm run codegen -- <commande> [options]
 
 # Opérations sur la base de données
 npm run db:generate    # Générer les migrations

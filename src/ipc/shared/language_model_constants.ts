@@ -1,7 +1,6 @@
 
 export const PROVIDERS_THAT_SUPPORT_THINKING: (keyof typeof MODEL_OPTIONS)[] = [
   "google",
-  "vertex",
 ];
 
 export interface ModelOption {
@@ -222,26 +221,7 @@ export const MODEL_OPTIONS: Record<string, ModelOption[]> = {
       dollarSigns: 2,
     },
   ],
-  vertex: [
-    // Vertex Gemini 2.5 Pro
-    {
-      name: "gemini-2.5-pro",
-      displayName: "Gemini 2.5 Pro",
-      description: "Vertex Gemini 2.5 Pro",
-      maxOutputTokens: 65_536 - 1,
-      contextWindow: 1_048_576,
-      temperature: 0,
-    },
-    // Vertex Gemini 2.5 Flash
-    {
-      name: "gemini-flash-latest",
-      displayName: "Gemini 2.5 Flash",
-      description: "Vertex Gemini 2.5 Flash",
-      maxOutputTokens: 65_536 - 1,
-      contextWindow: 1_048_576,
-      temperature: 0,
-    },
-  ],
+
   openrouter: [
     {
       name: "openrouter/free",
@@ -253,6 +233,7 @@ export const MODEL_OPTIONS: Record<string, ModelOption[]> = {
       temperature: 0,
       dollarSigns: 0,
     },
+
     // https://openrouter.ai/moonshotai/kimi-k2.5
     {
       name: "moonshotai/kimi-k2.5",
@@ -263,11 +244,31 @@ export const MODEL_OPTIONS: Record<string, ModelOption[]> = {
       temperature: 1.0,
       dollarSigns: 2,
     },
+    {
+      name: "openai/gpt-oss-120b:free",
+      displayName: "OpenAI GPT OSS 120B",
+      description: "OpenAI's capable model via OpenRouter",
+      dollarSigns: 1,
+      temperature: 0,
+      maxOutputTokens: 32_000,
+      contextWindow: 256_000,
+    },
+    // https://openrouter.ai/mistralai/mistral-small-2603
+    {
+      name: "mistralai/mistral-small-2603",
+      displayName: "Mistral Small 2603",
+      description: "Mistral AI's latest small model via OpenRouter",
+      dollarSigns: 2,
+      temperature: 0,
+      maxOutputTokens: 32_000,
+      contextWindow: 256_000,
+    },
     // https://openrouter.ai/deepseek/deepseek-v4-flash
     {
       name: "deepseek/deepseek-v4-flash",
       displayName: "DeepSeek V4 Flash",
-      description: "DeepSeek's capable model for coding workflows via OpenRouter",
+      description:
+        "DeepSeek's capable model for coding workflows via OpenRouter",
       dollarSigns: 1,
       temperature: 0,
       maxOutputTokens: 131_072,
@@ -353,213 +354,8 @@ export const MODEL_OPTIONS: Record<string, ModelOption[]> = {
       contextWindow: 128_000,
       temperature: 0,
     },
-    {
-      name: "turbo",
-      displayName: "Turbo (Pro)",
-      description: "Use very fast open-source frontier models",
-      maxOutputTokens: 32_000,
-      contextWindow: 256_000,
-      temperature: 0,
-      tag: "Fast",
-      tagColor: "bg-rose-800 text-white",
-    },
-    {
-      name: "value",
-      displayName: "Super Value (Pro)",
-      description: "Uses the most cost-effective models available",
-      maxOutputTokens: 32_000,
-      contextWindow: 256_000,
-      temperature: 0,
-      tag: "Budget",
-      tagColor: "bg-emerald-700 text-white",
-    },
-  ],
-  azure: [
-    {
-      name: "gpt-5.1",
-      displayName: "GPT-5.1",
-      description: "Azure OpenAI GPT-5.1 model",
-      // See OpenAI comment above
-      // maxOutputTokens: 128_000,
-      contextWindow: 400_000,
-      temperature: 1,
-    },
-    {
-      name: "gpt-5.1-codex",
-      displayName: "GPT-5.1 Codex",
-      description: "Azure OpenAI GPT-5.1 Codex model",
-      // See OpenAI comment above
-      // maxOutputTokens: 128_000,
-      contextWindow: 400_000,
-      temperature: 1,
-    },
-    {
-      name: "gpt-5.1-codex-mini",
-      displayName: "GPT-5.1 Codex Mini",
-      description: "Azure OpenAI GPT-5.1 Codex Mini model",
-      // See OpenAI comment above
-      // maxOutputTokens: 128_000,
-      contextWindow: 400_000,
-      temperature: 1,
-    },
-    {
-      name: "gpt-5-codex",
-      displayName: "GPT-5 Codex",
-      description: "Azure OpenAI GPT-5 Codex model",
-      // See OpenAI comment above
-      // maxOutputTokens: 128_000,
-      contextWindow: 400_000,
-      temperature: 1,
-    },
-    {
-      name: "gpt-5",
-      displayName: "GPT-5",
-      description: "Azure OpenAI GPT-5 model with reasoning capabilities",
-      // See OpenAI comment above
-      // maxOutputTokens: 128_000,
-      contextWindow: 400_000,
-      temperature: 1,
-    },
-    {
-      name: "gpt-5-mini",
-      displayName: "GPT-5 Mini",
-      description: "Azure OpenAI GPT-5 Mini model",
-      // See OpenAI comment above
-      // maxOutputTokens: 128_000,
-      contextWindow: 400_000,
-      temperature: 1,
-    },
-    {
-      name: "gpt-5-nano",
-      displayName: "GPT-5 Nano",
-      description: "Azure OpenAI GPT-5 Nano model",
-      // See OpenAI comment above
-      // maxOutputTokens: 128_000,
-      contextWindow: 400_000,
-      temperature: 1,
-    },
-    {
-      name: "gpt-5-chat",
-      displayName: "GPT-5 Chat",
-      description: "Azure OpenAI GPT-5 Chat model",
-      // See OpenAI comment above
-      // maxOutputTokens: 16_384,
-      contextWindow: 128_000,
-      temperature: 1,
-    },
-  ],
-  xai: [
-    // https://docs.x.ai/docs/models
-    {
-      name: "grok-code-fast-1",
-      displayName: "Grok Code Fast",
-      description: "Fast coding model",
-      maxOutputTokens: 32_000,
-      contextWindow: 256_000,
-      temperature: 0,
-      dollarSigns: 1,
-    },
-    {
-      name: "grok-4",
-      displayName: "Grok 4",
-      description: "Most capable coding model",
-      maxOutputTokens: 32_000,
-      contextWindow: 256_000,
-      temperature: 0,
-      dollarSigns: 4,
-    },
-    {
-      name: "grok-3",
-      displayName: "Grok 3",
-      description: "Powerful coding model",
-      maxOutputTokens: 32_000,
-      contextWindow: 131_072,
-      temperature: 0,
-      dollarSigns: 4,
-    },
-  ],
-  bedrock: [
-    {
-      name: "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
-      displayName: "Claude 4.5 Sonnet",
-      description:
-        "Anthropic's best model for coding (note: >200k tokens is very expensive!)",
-      maxOutputTokens: 32_000,
-      contextWindow: 1_000_000,
-      temperature: 0,
-    },
-    {
-      name: "us.anthropic.claude-sonnet-4-20250514-v1:0",
-      displayName: "Claude 4 Sonnet",
-      description: "Excellent coder (note: >200k tokens is very expensive!)",
-      maxOutputTokens: 32_000,
-      contextWindow: 1_000_000,
-      temperature: 0,
-    },
-  ],
-  // https://platform.minimax.io/docs/api-reference/text-anthropic-api
-  minimax: [
-    {
-      name: "MiniMax-M2.7",
-      displayName: "MiniMax M2.7",
-      description: "Latest flagship model with enhanced reasoning and coding",
-      maxOutputTokens: 32_000,
-      contextWindow: 204_800,
-      temperature: 1.0,
-      dollarSigns: 1,
-    },
-    {
-      name: "MiniMax-M2.7-highspeed",
-      displayName: "MiniMax M2.7 High Speed",
-      description: "High-speed version of M2.7 for low-latency scenarios",
-      maxOutputTokens: 32_000,
-      contextWindow: 204_800,
-      temperature: 1.0,
-      dollarSigns: 1,
-    },
-    {
-      name: "MiniMax-M2.5",
-      displayName: "MiniMax M2.5",
-      description: "Peak Performance. Ultimate Value. Master the Complex",
-      maxOutputTokens: 32_000,
-      contextWindow: 204_800,
-      temperature: 1.0,
-      dollarSigns: 1,
-    },
-    {
-      name: "MiniMax-M2.5-highspeed",
-      displayName: "MiniMax M2.5 High Speed",
-      description: "Same performance, faster and more agile",
-      maxOutputTokens: 32_000,
-      contextWindow: 204_800,
-      temperature: 1.0,
-      dollarSigns: 1,
-    },
   ],
 };
-
-// export const TURBO_MODELS: LanguageModel[] = [
-//   {
-//     apiName: "glm-4.7:turbo",
-//     displayName: "GLM 4.7",
-//     description: "Strong coding model (very fast)",
-//     maxOutputTokens: 32_000,
-//     contextWindow: 131_000,
-//     temperature: 0.7,
-//     dollarSigns: 3,
-//     type: "cloud",
-//   },
-//   {
-//     apiName: "kimi-k2:turbo",
-//     displayName: "Kimi K2",
-//     description: "Kimi 0905 update (fast)",
-//     maxOutputTokens: 16_000,
-//     contextWindow: 256_000,
-//     temperature: 0,
-//     dollarSigns: 2,
-//     type: "cloud",
-//   },
-// ];
 
 export const FREE_OPENROUTER_MODEL_NAMES = MODEL_OPTIONS.openrouter
   .filter(
@@ -572,10 +368,6 @@ export const PROVIDER_TO_ENV_VAR: Record<string, string> = {
   anthropic: "ANTHROPIC_API_KEY",
   google: "GOOGLE_GENERATIVE_AI_API_KEY",
   openrouter: "OPENROUTER_API_KEY",
-  azure: "AZURE_API_KEY",
-  xai: "XAI_API_KEY",
-  bedrock: "AWS_BEARER_TOKEN_BEDROCK",
-  minimax: "MINIMAX_API_KEY",
 };
 
 export const CLOUD_PROVIDERS: Record<
@@ -606,14 +398,7 @@ export const CLOUD_PROVIDERS: Record<
     websiteUrl: "https://aistudio.google.com/app/apikey",
     gatewayPrefix: "gemini/",
   },
-  vertex: {
-    displayName: "Google Vertex AI",
-    hasFreeTier: false,
-    websiteUrl: "https://console.cloud.google.com/vertex-ai",
-    // Use the same gateway prefix as Google Gemini for Dyad Pro compatibility.
-    gatewayPrefix: "gemini/",
-    secondary: true,
-  },
+
   openrouter: {
     displayName: "OpenRouter",
     hasFreeTier: true,
@@ -624,34 +409,6 @@ export const CLOUD_PROVIDERS: Record<
     displayName: "Dyad",
     websiteUrl: "https://academy.dyad.sh/subscription",
     gatewayPrefix: "dyad/",
-  },
-  azure: {
-    displayName: "Azure OpenAI",
-    hasFreeTier: false,
-    websiteUrl: "https://portal.azure.com/",
-    gatewayPrefix: "",
-    secondary: true,
-  },
-  xai: {
-    displayName: "xAI",
-    hasFreeTier: false,
-    websiteUrl: "https://console.x.ai/",
-    gatewayPrefix: "xai/",
-    secondary: true,
-  },
-  bedrock: {
-    displayName: "AWS Bedrock",
-    hasFreeTier: false,
-    websiteUrl: "https://console.aws.amazon.com/bedrock/",
-    gatewayPrefix: "bedrock/",
-    secondary: true,
-  },
-  minimax: {
-    displayName: "MiniMax",
-    hasFreeTier: false,
-    websiteUrl: "https://platform.minimax.io/",
-    gatewayPrefix: "minimax/",
-    secondary: true,
   },
 };
 

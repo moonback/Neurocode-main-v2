@@ -114,6 +114,64 @@ export function registerSkillHandlers(): void {
     return skill;
   });
 
+  // ── importWithFiles ───────────────────────────────────────────────────────
+  createTypedHandler(skillContracts.importWithFiles, async (_event, params) => {
+    const { name, description, content, scope, additionalFiles } = params;
+
+    // Validate the main SKILL.md content
+    const parsedResult = parser.parse(
+      `---\nname: ${name}\ndescription: ${description}\n---\n\n${content}`,
+    );
+    if (!parsedResult.success) {
+      throw new DyadError(parsedResult.error.message, DyadErrorKind.Validation);
+    }
+    const validationResult = validator.validate(parsedResult.data);
+    if (!validationResult.valid) {
+      const messages = validationResult.errors.map((e) => e.message).join("; ");
+      throw new DyadError(
+        `Skill validation failed: ${messages}`,
+        DyadErrorKind.Validation,
+      );
+    }
+
+    // Check for duplicate
+    if (skillRegistry.get(name)) {
+      throw new DyadError(
+        `A skill named "${name}" already exists. Use update to modify it.`,
+        DyadErrorKind.Conflict,
+      );
+    }
+
+    const dir = getSkillDirectory(name, scope);
+
+    // Write the main SKILL.md file
+    const skillPath = writeSkillFile(dir, name, description, content);
+
+    // Write additional files if provided
+    if (additionalFiles && additionalFiles.length > 0) {
+      for (const file of additionalFiles) {
+        const filePath = path.join(dir, file.relativePath);
+        const fileDir = path.dirname(filePath);
+
+        // Create subdirectories if needed
+        if (!fs.existsSync(fileDir)) {
+          fs.mkdirSync(fileDir, { recursive: true });
+        }
+
+        // Write the file
+        fs.writeFileSync(filePath, file.content, "utf-8");
+      }
+      logger.info(
+        `Imported skill "${name}" with ${additionalFiles.length} additional file(s)`,
+      );
+    }
+
+    const skill = await reregisterSkill(skillPath, scope);
+
+    logger.info(`Imported skill: ${name} (${scope})`);
+    return skill;
+  });
+
   // ── update ────────────────────────────────────────────────────────────────
   createTypedHandler(skillContracts.update, async (_event, params) => {
     const { name, description, content } = params;

@@ -137,13 +137,20 @@ export const updateTodosTool: ToolDefinition<
       }
       ctx.todos = Array.from(existingTodosMap.values());
     } else {
-      // Replace mode: require all fields
+      // Replace mode: handle missing fields gracefully
+      const existingTodosMap = new Map(ctx.todos.map((t) => [t.id, t]));
       for (const todo of args.todos) {
+        const existing = existingTodosMap.get(todo.id);
         if (todo.content === undefined || todo.status === undefined) {
-          throw new DyadError(
-            `Todo with id "${todo.id}" must have content and status defined when merge is false`,
-            DyadErrorKind.Validation,
-          );
+          if (existing) {
+            // If it exists, use existing values for missing fields
+            todo.content = todo.content ?? existing.content;
+            todo.status = todo.status ?? existing.status;
+          } else {
+            // For brand new todos in replace mode, use defaults if missing
+            todo.content = todo.content ?? "New Task";
+            todo.status = todo.status ?? "pending";
+          }
         }
       }
       ctx.todos = args.todos as Todo[];

@@ -14,7 +14,7 @@ import {
   Bot,
   Globe,
   Database,
-  Lock
+  Lock,
 } from "lucide-react";
 
 export const INSPIRATION_PROMPTS = [

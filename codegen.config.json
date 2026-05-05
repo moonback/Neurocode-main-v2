@@ -1,0 +1,58 @@
+{
+  "templates": {
+    "directory": "src/codegen/templates",
+    "ipc": {
+      "contract": "ipc-contract.template",
+      "handler": "ipc-handler.template",
+      "hook": "ipc-hook.template",
+      "test": "ipc-test.template"
+    },
+    "component": {
+      "component": "react-component.template",
+      "test": "react-component-test.template",
+      "story": "react-component-story.template"
+    },
+    "schema": {
+      "schema": "db-schema.template",
+      "migration": "db-migration.template"
+    },
+    "test": {
+      "e2e": "e2e-test.template",
+      "unit": "unit-test.template"
+    }
+  },
+  "naming": {
+    "ipc": {
+      "contractSuffix": "Contract",
+      "handlerSuffix": "Handler",
+      "hookPrefix": "use"
+    },
+    "component": {
+      "suffix": "",
+      "testSuffix": ".test",
+      "storySuffix": ".stories"
+    },
+    "schema": {
+      "tableSuffix": "Table"
+    }
+  },
+  "paths": {
+    "ipc": {
+      "contracts": "src/ipc/types",
+      "handlers": "src/ipc/handlers",
+      "hooks": "src/hooks"
+    },
+    "components": "src/components",
+    "schemas": "src/db",
+    "tests": {
+      "e2e": "e2e-tests",
+      "unit": "src/__tests__"
+    }
+  },
+  "formatting": {
+    "enabled": true,
+    "lint": true,
+    "autoFix": true,
+    "typeCheck": true
+  }
+}

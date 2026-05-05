@@ -312,7 +312,8 @@ export function AuxiliaryActionsMenu({
                   }
                 />
                 <span className="flex-1">
-                  {showTokenBar ? "Masquer" : "Afficher"} l'utilisation des tokens
+                  {showTokenBar ? "Masquer" : "Afficher"} l'utilisation des
+                  tokens
                 </span>
               </DropdownMenuItem>
             </>
@@ -348,8 +349,9 @@ export function AuxiliaryActionsMenu({
                     handleThemeSelect(themeId);
                     setAllThemesDialogOpen(false);
                   }}
-                  className={`flex items-center p-3 rounded-lg cursor-pointer hover:bg-muted transition-colors ${isSelected ? "bg-primary/10" : ""
-                    }`}
+                  className={`flex items-center p-3 rounded-lg cursor-pointer hover:bg-muted transition-colors ${
+                    isSelected ? "bg-primary/10" : ""
+                  }`}
                 >
                   <Brush size={18} className="mr-3 text-muted-foreground" />
                   <div className="flex-1">

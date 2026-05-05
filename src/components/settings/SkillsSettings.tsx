@@ -1,9 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Plus, BookOpen, Trash2, Edit, Play, RefreshCw } from "lucide-react";
+import {
+  Plus,
+  BookOpen,
+  Trash2,
+  Edit,
+  Play,
+  RefreshCw,
+  Upload,
+} from "lucide-react";
 import { showSuccess, showError } from "@/lib/toast";
 import { CreateSkillDialog } from "./CreateSkillDialog";
 import { EditSkillDialog } from "./EditSkillDialog";
+import { ImportSkillDialog } from "./ImportSkillDialog";
 import { useState } from "react";
 import { ipc } from "@/ipc/types";
 import { queryKeys } from "@/lib/queryKeys";
@@ -12,6 +21,7 @@ export function SkillsSettings() {
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [editingSkillName, setEditingSkillName] = useState<string | null>(null);
 
   // ── Fetch skills list ────────────────────────────────────────────────────
@@ -80,14 +90,25 @@ export function SkillsSettings() {
           capacités de l'IA. Créez vos propres skills ou utilisez les exemples
           fournis.
         </p>
-        <Button
-          onClick={() => setIsCreateDialogOpen(true)}
-          size="sm"
-          className="flex items-center gap-2 shrink-0 ml-4"
-        >
-          <Plus size={16} />
-          Nouveau Skill
-        </Button>
+        <div className="flex items-center gap-2 shrink-0 ml-4">
+          <Button
+            onClick={() => setIsImportDialogOpen(true)}
+            size="sm"
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <Upload size={16} />
+            Importer
+          </Button>
+          <Button
+            onClick={() => setIsCreateDialogOpen(true)}
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <Plus size={16} />
+            Nouveau Skill
+          </Button>
+        </div>
       </div>
 
       {/* Info box */}
@@ -256,6 +277,16 @@ export function SkillsSettings() {
           setIsEditDialogOpen(false);
           setEditingSkillName(null);
           queryClient.invalidateQueries({ queryKey: queryKeys.skills.all });
+        }}
+      />
+
+      <ImportSkillDialog
+        isOpen={isImportDialogOpen}
+        onClose={() => setIsImportDialogOpen(false)}
+        onSkillImported={() => {
+          setIsImportDialogOpen(false);
+          queryClient.invalidateQueries({ queryKey: queryKeys.skills.all });
+          showSuccess("Skill importé avec succès !");
         }}
       />
     </div>
