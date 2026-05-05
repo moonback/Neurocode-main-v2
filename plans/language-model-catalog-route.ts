@@ -251,6 +251,15 @@ function buildCatalogResponse(now = new Date()) {
           contextWindow: 200_000,
         },
         {
+          apiName: "openai/gpt-oss-120b:free",
+          displayName: "GPT OSS 120B (Free)",
+          description: "OpenAI's open-source 120B model via OpenRouter",
+          dollarSigns: 0,
+          temperature: 0,
+          maxOutputTokens: 32_000,
+          contextWindow: 128_000,
+        },
+        {
           apiName: "moonshotai/kimi-k2.5",
           displayName: "Kimi K2.5",
           description: "Moonshot AI's capable model via OpenRouter",

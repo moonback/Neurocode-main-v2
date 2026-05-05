@@ -123,8 +123,6 @@ export const generateImageTool: ToolDefinition<
   defaultConsent: "always",
   modifiesState: true,
 
-  isEnabled: (ctx) => ctx.isDyadPro,
-
   getConsentPreview: (args) => `Generate image: "${args.prompt}"`,
 
   buildXml: (args, isComplete) => {

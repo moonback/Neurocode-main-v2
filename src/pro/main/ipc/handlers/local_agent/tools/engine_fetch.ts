@@ -33,19 +33,20 @@ export async function engineFetch(
   const settings = readSettings();
   const apiKey = settings.providerSettings?.auto?.apiKey?.value;
 
-  if (!apiKey) {
-    throw new DyadError("Dyad Pro API key is required", DyadErrorKind.Auth);
-  }
-
   const { headers: extraHeaders, ...restOptions } = options;
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    "X-Dyad-Request-Id": ctx.dyadRequestId,
+    ...extraHeaders,
+  };
+
+  if (apiKey) {
+    headers["Authorization"] = `Bearer ${apiKey}`;
+  }
 
   return fetch(`${DYAD_ENGINE_URL}${endpoint}`, {
     ...restOptions,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-      "X-Dyad-Request-Id": ctx.dyadRequestId,
-      ...extraHeaders,
-    },
+    headers,
   });
 }

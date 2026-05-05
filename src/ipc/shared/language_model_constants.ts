@@ -254,6 +254,15 @@ export const MODEL_OPTIONS: Record<string, ModelOption[]> = {
       temperature: 0,
       dollarSigns: 0,
     },
+    {
+      name: "openai/gpt-oss-120b:free",
+      displayName: "GPT OSS 120B (Free)",
+      description: "OpenAI's open-source 120B model via OpenRouter",
+      maxOutputTokens: 32_000,
+      contextWindow: 128_000,
+      temperature: 0,
+      dollarSigns: 0,
+    },
     // https://openrouter.ai/moonshotai/kimi-k2.5
     {
       name: "moonshotai/kimi-k2.5",

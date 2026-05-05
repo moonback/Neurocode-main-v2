@@ -26,7 +26,7 @@ interface AISuggestionsStripProps {
 
 // ── Atoms ────────────────────────────────────────────────────────────────────
 
-const suggestionsCollapsedAtom = atom(false);
+const suggestionsCollapsedAtom = atom(true);
 const suggestionsCacheAtom = atom<Record<number, AISuggestion[]>>({});
 
 // ── Category config ──────────────────────────────────────────────────────────
