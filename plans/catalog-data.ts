@@ -4,9 +4,7 @@ export const ProviderIdSchema = z.enum([
   "openai",
   "anthropic",
   "google",
-  "vertex",
   "openrouter",
-  "xai",
 ]);
 
 export const ThemeGenerationAliasIdSchema = z.enum([
@@ -110,25 +108,11 @@ const providers = [
     gatewayPrefix: "gemini/",
   },
   {
-    id: "vertex",
-    displayName: "Google Vertex AI",
-    type: "cloud",
-    websiteUrl: "https://cloud.google.com/vertex-ai/generative-ai/docs/models",
-    supportsThinking: true,
-    gatewayPrefix: "gemini/",
-  },
-  {
     id: "openrouter",
     displayName: "OpenRouter",
     type: "cloud",
     hasFreeTier: true,
     websiteUrl: "https://openrouter.ai/models",
-  },
-  {
-    id: "xai",
-    displayName: "xAI",
-    type: "cloud",
-    websiteUrl: "https://docs.x.ai/docs/models",
   },
 ] satisfies z.infer<typeof CatalogProviderSchema>[];
 
@@ -218,24 +202,7 @@ const modelsByProvider = {
       contextWindow: 1_048_576,
     },
   ],
-  vertex: [
-    {
-      apiName: "gemini-2.5-pro",
-      displayName: "Gemini 2.5 Pro",
-      description: "Vertex Gemini 2.5 Pro",
-      temperature: 0,
-      maxOutputTokens: 65_535,
-      contextWindow: 1_048_576,
-    },
-    {
-      apiName: "gemini-flash-latest",
-      displayName: "Gemini 2.5 Flash",
-      description: "Vertex Gemini 2.5 Flash",
-      temperature: 0,
-      maxOutputTokens: 65_535,
-      contextWindow: 1_048_576,
-    },
-  ],
+
   openrouter: [
     {
       apiName: "openrouter/free",
@@ -246,15 +213,7 @@ const modelsByProvider = {
       maxOutputTokens: 32_000,
       contextWindow: 200_000,
     },
-    {
-      apiName: "openai/gpt-oss-120b:free",
-      displayName: "GPT OSS 120B (Free)",
-      description: "OpenAI's open-source 120B model via OpenRouter",
-      dollarSigns: 0,
-      temperature: 0,
-      maxOutputTokens: 32_000,
-      contextWindow: 128_000,
-    },
+
     {
       apiName: "deepseek/deepseek-v4-flash",
       displayName: "DeepSeek V4 Flash",
@@ -274,14 +233,22 @@ const modelsByProvider = {
       maxOutputTokens: 32_000,
       contextWindow: 256_000,
     },
-  ],
-  xai: [
     {
-      apiName: "grok-4",
-      displayName: "Grok 4",
-      description: "xAI flagship model",
-      dollarSigns: 3,
+      apiName: "openai/gpt-oss-120b:free",
+      displayName: "OpenAI GPT OSS 120B",
+      description: "OpenAI's capable model via OpenRouter",
+      dollarSigns: 1,
       temperature: 0,
+      maxOutputTokens: 32_000,
+      contextWindow: 256_000,
+    },
+    {
+      apiName: "mistralai/mistral-small-2603",
+      displayName: "Mistral Small 2603",
+      description: "Mistral AI's capable model via OpenRouter",
+      dollarSigns: 1,
+      temperature: 0,
+      maxOutputTokens: 32_000,
       contextWindow: 256_000,
     },
   ],
