@@ -63,7 +63,8 @@ export function ChatErrorBox({
     return (
       <ChatInfoContainer onDismiss={onDismiss}>
         <span>
-          Votre clé Neurocode est invalide ou a expiré. Veuillez vérifier vos paramètres.
+          Votre clé Neurocode est invalide ou a expiré. Veuillez vérifier vos
+          paramètres.
         </span>
       </ChatInfoContainer>
     );
@@ -91,8 +92,8 @@ export function ChatErrorBox({
   if (error.includes("FREE_AGENT_QUOTA_EXCEEDED")) {
     return (
       <ChatErrorContainer onDismiss={onDismiss}>
-        Vous avez atteint votre limite de messages pour aujourd'hui.
-        Veuillez réessayer plus tard ou basculer en mode Création.
+        Vous avez atteint votre limite de messages pour aujourd'hui. Veuillez
+        réessayer plus tard ou basculer en mode Création.
       </ChatErrorContainer>
     );
   }

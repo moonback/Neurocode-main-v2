@@ -32,6 +32,7 @@
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
+    "db:reset": "node scripts/reset-database.js",
     "fmt:check": "npx oxfmt --check",
     "fmt": "npx oxfmt",
     "presubmit": "npm run fmt:check && npm run lint",

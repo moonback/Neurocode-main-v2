@@ -476,10 +476,22 @@ export async function handleLocalAgentStream(
 
   try {
     // Get model client
+    logger.info("🔧 Getting model client", {
+      chatId: req.chatId,
+      selectedModel: settings.selectedModel,
+      provider: settings.selectedModel.provider,
+      modelName: settings.selectedModel.name,
+    });
+
     const { modelClient } = await getModelClient(
       settings.selectedModel,
       settings,
     );
+
+    logger.info("✅ Model client obtained", {
+      chatId: req.chatId,
+      builtinProviderId: modelClient.builtinProviderId,
+    });
 
     // Load persisted todos from a previous turn (if any)
     const persistedTodos = await loadTodos(appPath, chat.id);

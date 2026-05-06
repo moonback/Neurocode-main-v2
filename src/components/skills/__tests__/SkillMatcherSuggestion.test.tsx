@@ -8,7 +8,6 @@ function calculateRelevancePercentage(relevance: number): number {
   return Math.round(relevance * 100);
 }
 
-
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------

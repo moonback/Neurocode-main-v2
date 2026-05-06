@@ -8,7 +8,6 @@ const keywordArb = fc.stringMatching(/^[a-z]{2,20}$/);
 
 // Arbitrary for a set of keywords (1–5 keywords)
 
-
 // **Validates: Requirements 1.3**
 describe("Property 13: Keyword-based candidate selection without active file", () => {
   it("a file whose basename matches a keyword is selected", () => {

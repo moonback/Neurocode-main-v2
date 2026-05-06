@@ -348,6 +348,26 @@ export const queryKeys = {
     /** Single-skill key by name */
     detail: ({ name }: { name: string }) => ["skills", "detail", name] as const,
   },
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Multi-Agent
+  // ─────────────────────────────────────────────────────────────────────────────
+  multiAgent: {
+    all: ["multiAgent"] as const,
+    profiles: () => ["multiAgent", "profiles"] as const,
+    profile: ({ profileId }: { profileId: number }) =>
+      ["multiAgent", "profile", profileId] as const,
+    executions: ({ chatId }: { chatId: number }) =>
+      ["multiAgent", "executions", chatId] as const,
+    execution: ({ executionId }: { executionId: number }) =>
+      ["multiAgent", "execution", executionId] as const,
+    messages: ({ executionId }: { executionId: number }) =>
+      ["multiAgent", "messages", executionId] as const,
+    communications: ({ chatId }: { chatId: number }) =>
+      ["multiAgent", "communications", chatId] as const,
+    agentChat: ({ appId }: { appId: number }) =>
+      ["multiAgent", "agentChat", appId] as const,
+  },
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────────────

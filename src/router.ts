@@ -10,6 +10,7 @@ import { libraryRoute } from "./routes/library";
 import { themesRoute } from "./routes/themes";
 import { promptsRoute } from "./routes/prompts";
 import { mediaRoute } from "./routes/media";
+import { agentsRoute } from "./routes/agents";
 
 const routeTree = rootRoute.addChildren([
   homeRoute,
@@ -18,6 +19,7 @@ const routeTree = rootRoute.addChildren([
   themesRoute,
   promptsRoute,
   mediaRoute,
+  agentsRoute,
   chatRoute,
   appDetailsRoute,
   settingsRoute.addChildren([providerSettingsRoute]),

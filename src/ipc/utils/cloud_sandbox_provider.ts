@@ -214,7 +214,6 @@ function getDyadEngineApiKey() {
   const settings = readSettings();
   const apiKey = settings.providerSettings?.auto?.apiKey?.value;
 
-
   return apiKey;
 }
 

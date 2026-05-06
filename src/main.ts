@@ -174,6 +174,16 @@ export async function onReady() {
   }
   initializeDatabase();
 
+  // Initialize builtin agent profiles
+  try {
+    const { initializeBuiltinAgents } =
+      await import("./pro/main/ipc/handlers/multi_agent/builtin_agents");
+    await initializeBuiltinAgents();
+    logger.info("Builtin agents initialized");
+  } catch (error) {
+    logger.error("Failed to initialize builtin agents:", error);
+  }
+
   // Discover and register user-level skills
   try {
     await skillRegistry.discoverAndRegister();

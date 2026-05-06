@@ -17,6 +17,7 @@ import {
   SendHorizontalIcon,
   Mic,
   MicOff,
+  Bot,
 } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState, useMemo } from "react";
@@ -109,6 +110,7 @@ import { matchedSkillsAtom, dismissedSkillsAtom } from "@/atoms/chatAtoms";
 import type { MatchedSkill } from "@/skills/types";
 import { PromptOptimizerButton } from "./PromptOptimizerButton";
 import { AISuggestionsStrip } from "./AISuggestionsStrip";
+import { DelegateToAgentDialog } from "./DelegateToAgentDialog";
 
 const showTokenBarAtom = atom(true);
 
@@ -187,6 +189,16 @@ export function ChatInput({ chatId }: { chatId?: number }) {
   const handleOpenImageGenerator = useCallback(() => {
     setImageGeneratorOpen(true);
   }, []);
+
+  // Delegate to agent dialog state
+  const [delegateDialogOpen, setDelegateDialogOpen] = useState(false);
+  const handleOpenDelegateDialog = useCallback(() => {
+    if (!inputValue.trim()) {
+      showErrorToast("Veuillez entrer une tâche à déléguer");
+      return;
+    }
+    setDelegateDialogOpen(true);
+  }, [inputValue]);
 
   // Image generation jobs for auto-adding to chat on send
   const chatImageJobs = useAtomValue(chatImageGenerationJobsAtom);
@@ -1095,26 +1107,46 @@ export function ChatInput({ chatId }: { chatId?: number }) {
                 <TooltipContent>{t("cancelGeneration")}</TooltipContent>
               </Tooltip>
             ) : (
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <button
-                      onClick={handleSubmit}
-                      disabled={
-                        (!inputValue.trim() &&
-                          attachments.length === 0 &&
-                          !hasSuccessfulImageJobs) ||
-                        disableSendButton
-                      }
-                      aria-label={t("sendMessage")}
-                      className="px-2 py-2 mb-0.5 mr-1 text-muted-foreground hover:text-primary rounded-lg transition-colors duration-150 disabled:opacity-30 disabled:hover:text-muted-foreground cursor-pointer disabled:cursor-default"
-                    />
-                  }
-                >
-                  <SendHorizontalIcon size={20} />
-                </TooltipTrigger>
-                <TooltipContent>{t("sendMessage")}</TooltipContent>
-              </Tooltip>
+              <>
+                {/* Delegate to Agent Button */}
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <button
+                        onClick={handleOpenDelegateDialog}
+                        disabled={!inputValue.trim() || !chatId}
+                        aria-label="Déléguer à un agent"
+                        className="px-2 py-2 mb-0.5 mr-1 text-muted-foreground hover:text-primary rounded-lg transition-colors duration-150 disabled:opacity-30 disabled:hover:text-muted-foreground cursor-pointer disabled:cursor-default"
+                      />
+                    }
+                  >
+                    <Bot size={20} />
+                  </TooltipTrigger>
+                  <TooltipContent>Déléguer à un agent</TooltipContent>
+                </Tooltip>
+
+                {/* Send Button */}
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <button
+                        onClick={handleSubmit}
+                        disabled={
+                          (!inputValue.trim() &&
+                            attachments.length === 0 &&
+                            !hasSuccessfulImageJobs) ||
+                          disableSendButton
+                        }
+                        aria-label={t("sendMessage")}
+                        className="px-2 py-2 mb-0.5 mr-1 text-muted-foreground hover:text-primary rounded-lg transition-colors duration-150 disabled:opacity-30 disabled:hover:text-muted-foreground cursor-pointer disabled:cursor-default"
+                      />
+                    }
+                  >
+                    <SendHorizontalIcon size={20} />
+                  </TooltipTrigger>
+                  <TooltipContent>{t("sendMessage")}</TooltipContent>
+                </Tooltip>
+              </>
             )}
           </div>
           <div className="px-2 flex items-center justify-between pb-0.5 pt-0.5">
@@ -1142,6 +1174,21 @@ export function ChatInput({ chatId }: { chatId?: number }) {
         defaultAppId={appId ?? undefined}
         source="chat"
       />
+
+      {/* Delegate to Agent Dialog */}
+      {chatId && (
+        <DelegateToAgentDialog
+          open={delegateDialogOpen}
+          onOpenChange={setDelegateDialogOpen}
+          chatId={chatId}
+          task={inputValue}
+          onSuccess={() => {
+            setInputValue("");
+            clearAttachments();
+            showInfo("Tâche déléguée à l'agent avec succès");
+          }}
+        />
+      )}
     </>
   );
 }

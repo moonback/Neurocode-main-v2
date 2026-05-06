@@ -281,3 +281,205 @@ export const customThemes = sqliteTable("custom_themes", {
     .notNull()
     .default(sql`(unixepoch())`),
 });
+
+// --- Multi-Agent System tables ---
+
+/**
+ * Agent profiles define specialized agents with their capabilities and tools.
+ * Each agent has a specific role and set of allowed tools.
+ */
+export const agentProfiles = sqliteTable("agent_profiles", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull().unique(),
+  displayName: text("display_name").notNull(),
+  description: text("description").notNull(),
+  role: text("role", {
+    enum: [
+      "orchestrator",
+      "code",
+      "test",
+      "documentation",
+      "research",
+      "database",
+      "custom",
+    ],
+  }).notNull(),
+  systemPrompt: text("system_prompt").notNull(),
+  // JSON array of tool names this agent can use
+  allowedTools: text("allowed_tools", { mode: "json" }).$type<string[]>(),
+  // JSON object for agent-specific configuration
+  config: text("config", { mode: "json" }).$type<Record<
+    string,
+    unknown
+  > | null>(),
+  isBuiltin: integer("is_builtin", { mode: "boolean" })
+    .notNull()
+    .default(sql`0`),
+  isEnabled: integer("is_enabled", { mode: "boolean" })
+    .notNull()
+    .default(sql`1`),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+/**
+ * Agent executions track individual agent runs within a chat.
+ * Multiple agents can execute in parallel for the same chat.
+ */
+export const agentExecutions = sqliteTable("agent_executions", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  chatId: integer("chat_id")
+    .notNull()
+    .references(() => chats.id, { onDelete: "cascade" }),
+  agentProfileId: integer("agent_profile_id")
+    .notNull()
+    .references(() => agentProfiles.id, { onDelete: "cascade" }),
+  // Parent execution ID for delegated agents (null for top-level)
+  parentExecutionId: integer("parent_execution_id"),
+  status: text("status", {
+    enum: ["pending", "running", "completed", "failed", "cancelled"],
+  })
+    .notNull()
+    .default("pending"),
+  // The task/goal assigned to this agent
+  task: text("task").notNull(),
+  // Result summary from the agent
+  result: text("result"),
+  // Error message if failed
+  error: text("error"),
+  // Execution metadata (tokens used, tool calls, etc.)
+  metadata: text("metadata", { mode: "json" }).$type<Record<
+    string,
+    unknown
+  > | null>(),
+  // Agent selection reasoning (from LLM or keyword-based)
+  selectionReasoning: text("selection_reasoning"),
+  selectionMethod: text("selection_method", {
+    enum: ["llm", "fallback", "manual"],
+  }),
+  selectionConfidence: integer("selection_confidence"), // 0-100
+  startedAt: integer("started_at", { mode: "timestamp" }),
+  completedAt: integer("completed_at", { mode: "timestamp" }),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+/**
+ * Agent messages store the conversation history for each agent execution.
+ * This allows tracking what each agent did independently.
+ */
+export const agentMessages = sqliteTable("agent_messages", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  executionId: integer("execution_id")
+    .notNull()
+    .references(() => agentExecutions.id, { onDelete: "cascade" }),
+  role: text("role", { enum: ["user", "assistant", "system"] }).notNull(),
+  content: text("content").notNull(),
+  // AI SDK messages for tool calls/results
+  aiMessagesJson: text("ai_messages_json", {
+    mode: "json",
+  }).$type<AiMessagesJsonV6 | null>(),
+  // Tool execution details
+  toolName: text("tool_name"),
+  toolInput: text("tool_input", { mode: "json" }).$type<Record<
+    string,
+    unknown
+  > | null>(),
+  toolOutput: text("tool_output"),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+/**
+ * Agent communication tracks messages between agents for coordination.
+ */
+export const agentCommunications = sqliteTable("agent_communications", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  chatId: integer("chat_id")
+    .notNull()
+    .references(() => chats.id, { onDelete: "cascade" }),
+  fromExecutionId: integer("from_execution_id")
+    .notNull()
+    .references(() => agentExecutions.id, { onDelete: "cascade" }),
+  toExecutionId: integer("to_execution_id")
+    .notNull()
+    .references(() => agentExecutions.id, { onDelete: "cascade" }),
+  messageType: text("message_type", {
+    enum: ["task_delegation", "result_report", "question", "answer"],
+  }).notNull(),
+  content: text("content").notNull(),
+  metadata: text("metadata", { mode: "json" }).$type<Record<
+    string,
+    unknown
+  > | null>(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+// Multi-Agent relations
+export const agentProfilesRelations = relations(agentProfiles, ({ many }) => ({
+  executions: many(agentExecutions),
+}));
+
+export const agentExecutionsRelations = relations(
+  agentExecutions,
+  ({ one, many }) => ({
+    chat: one(chats, {
+      fields: [agentExecutions.chatId],
+      references: [chats.id],
+    }),
+    agentProfile: one(agentProfiles, {
+      fields: [agentExecutions.agentProfileId],
+      references: [agentProfiles.id],
+    }),
+    parentExecution: one(agentExecutions, {
+      fields: [agentExecutions.parentExecutionId],
+      references: [agentExecutions.id],
+      relationName: "agent_delegation",
+    }),
+    childExecutions: many(agentExecutions, {
+      relationName: "agent_delegation",
+    }),
+    messages: many(agentMessages),
+    sentCommunications: many(agentCommunications, {
+      relationName: "from_agent",
+    }),
+    receivedCommunications: many(agentCommunications, {
+      relationName: "to_agent",
+    }),
+  }),
+);
+
+export const agentMessagesRelations = relations(agentMessages, ({ one }) => ({
+  execution: one(agentExecutions, {
+    fields: [agentMessages.executionId],
+    references: [agentExecutions.id],
+  }),
+}));
+
+export const agentCommunicationsRelations = relations(
+  agentCommunications,
+  ({ one }) => ({
+    chat: one(chats, {
+      fields: [agentCommunications.chatId],
+      references: [chats.id],
+    }),
+    fromExecution: one(agentExecutions, {
+      fields: [agentCommunications.fromExecutionId],
+      references: [agentExecutions.id],
+      relationName: "from_agent",
+    }),
+    toExecution: one(agentExecutions, {
+      fields: [agentCommunications.toExecutionId],
+      references: [agentExecutions.id],
+      relationName: "to_agent",
+    }),
+  }),
+);

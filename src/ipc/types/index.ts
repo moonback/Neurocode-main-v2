@@ -56,6 +56,7 @@ export { mediaContracts } from "./media";
 export { imageGenerationContracts } from "./image_generation";
 export { smartContextContracts } from "./smart-context";
 export { skillContracts } from "./skills";
+export { multiAgentContracts, multiAgentEvents } from "./multi_agent";
 
 // =============================================================================
 // Client Exports
@@ -91,6 +92,7 @@ export { mediaClient } from "./media";
 export { imageGenerationClient } from "./image_generation";
 export { smartContextClient } from "./smart-context";
 export { skillClient } from "./skills";
+export { multiAgentClient, multiAgentEventClient } from "./multi_agent";
 
 // =============================================================================
 // Type Exports
@@ -358,6 +360,24 @@ export {
   ValidationResultSchema,
 } from "./skills";
 
+// Multi-agent types
+export type {
+  AgentRole,
+  AgentProfile,
+  AgentExecutionStatus,
+  AgentExecution,
+  AgentMessage,
+  AgentCommunicationType,
+  AgentCommunication,
+  CreateAgentProfileParams,
+  UpdateAgentProfileParams,
+  StartAgentExecutionParams,
+  AgentExecutionDetail,
+  MultiAgentOrchestrationParams,
+  AgentExecutionUpdate,
+  AgentCommunicationEvent,
+} from "./multi_agent";
+
 // =============================================================================
 // Schema Exports (for validation in handlers/components)
 // =============================================================================
@@ -385,6 +405,13 @@ export {
 } from "./agent";
 
 export { UserBudgetInfoSchema } from "./system";
+
+export {
+  AgentProfileSchema,
+  AgentExecutionSchema,
+  AgentMessageSchema,
+  AgentCommunicationSchema,
+} from "./multi_agent";
 
 // =============================================================================
 // Aggregated IPC Client
@@ -420,6 +447,7 @@ import { mediaClient } from "./media";
 import { imageGenerationClient } from "./image_generation";
 import { smartContextClient } from "./smart-context";
 import { skillClient } from "./skills";
+import { multiAgentClient, multiAgentEventClient } from "./multi_agent";
 
 /**
  * Unified IPC client with all domains organized by namespace.
@@ -481,6 +509,7 @@ export const ipc = {
   imageGeneration: imageGenerationClient,
   smartContext: smartContextClient,
   skills: skillClient,
+  multiAgent: multiAgentClient,
 
   // Event clients for main->renderer pub/sub
   events: {
@@ -489,5 +518,6 @@ export const ipc = {
     mcp: mcpEventClient,
     system: systemEventClient,
     misc: miscEventClient,
+    multiAgent: multiAgentEventClient,
   },
 } as const;

@@ -204,9 +204,7 @@ describe("Skills Integration Tests", () => {
       });
 
       vi.spyOn(fs, "readdirSync").mockImplementation(() => {
-        return [
-          { name: "lint", isDirectory: () => true },
-        ] as any;
+        return [{ name: "lint", isDirectory: () => true }] as any;
       });
 
       vi.spyOn(fs, "readFileSync").mockImplementation((p) => {
