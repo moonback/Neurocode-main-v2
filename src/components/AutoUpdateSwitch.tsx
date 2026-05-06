@@ -14,26 +14,23 @@ export function AutoUpdateSwitch() {
   }
 
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex items-center space-x-2 opacity-50">
       <Switch
         id="enable-auto-update"
         aria-label="Auto-update"
-        checked={settings.enableAutoUpdate}
+        checked={false}
+        disabled={true}
         onCheckedChange={(checked) => {
-          updateSettings({ enableAutoUpdate: checked });
-          toast("Paramètres de mise à jour automatique modifiés", {
+          // Désactivé - ne fait rien
+          toast("Mise à jour automatique désactivée", {
             description:
-              "Vous devez redémarrer NeuroCode pour que vos paramètres prennent effet.",
-            action: {
-              label: "Redémarrer NeuroCode",
-              onClick: () => {
-                ipc.system.restartDyad();
-              },
-            },
+              "La mise à jour automatique est actuellement désactivée et ne peut pas être activée.",
           });
         }}
       />
-      <Label htmlFor="enable-auto-update">{t("general.autoUpdate")}</Label>
+      <Label htmlFor="enable-auto-update" className="cursor-not-allowed">
+        {t("general.autoUpdate")} (Désactivé)
+      </Label>
     </div>
   );
 }
