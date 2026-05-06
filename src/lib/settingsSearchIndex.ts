@@ -109,7 +109,14 @@ export const SETTINGS_SEARCH_INDEX: SearchableSettingItem[] = [
     label: "Customize Apps Folder",
     description:
       "Set the top-level folder that Dyad will store new applications in",
-    keywords: ["customize", "apps", "path", "folder", "directory", "neuro-apps"],
+    keywords: [
+      "customize",
+      "apps",
+      "path",
+      "folder",
+      "directory",
+      "neuro-apps",
+    ],
     sectionId: SECTION_IDS.general,
     sectionLabel: "General",
   },

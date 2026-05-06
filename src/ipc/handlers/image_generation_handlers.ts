@@ -45,10 +45,13 @@ export function registerImageGenerationHandlers() {
       const settings = readSettings();
 
       // Use OpenRouter API key for image generation
-      const openrouterApiKey = settings.providerSettings?.openrouter?.apiKey?.value;
+      const openrouterApiKey =
+        settings.providerSettings?.openrouter?.apiKey?.value;
 
       // Log for debugging (without exposing the full key)
-      logger.log(`OpenRouter API key configured: ${openrouterApiKey ? 'Yes (length: ' + openrouterApiKey.length + ')' : 'No'}`);
+      logger.log(
+        `OpenRouter API key configured: ${openrouterApiKey ? "Yes (length: " + openrouterApiKey.length + ")" : "No"}`,
+      );
 
       if (!openrouterApiKey) {
         throw new DyadError(
@@ -80,7 +83,9 @@ export function registerImageGenerationHandlers() {
         IMAGE_GENERATION_TIMEOUT_MS,
       );
 
-      logger.log(`Sending image generation request to OpenRouter with model: bytedance-seed/seedream-4.5`);
+      logger.log(
+        `Sending image generation request to OpenRouter with model: bytedance-seed/seedream-4.5`,
+      );
 
       let response: Response;
       try {

@@ -26,14 +26,18 @@ export function CustomAppsFolderSelector() {
         // Save the custom path to settings
         await ipc.system.setCustomAppsFolder(result.path);
         await fetchCustomAppsFolder();
-        showSuccess("Dossier d'applications personnalisé mis à jour avec succès");
+        showSuccess(
+          "Dossier d'applications personnalisé mis à jour avec succès",
+        );
       } else if (result.path === null && result.canceled === false) {
         showError(
           "Impossible d'utiliser le dossier sélectionné. Veuillez vous assurer qu'il s'agit d'un répertoire valide avec des permissions d'écriture.",
         );
       }
     } catch (error: any) {
-      showError(`Échec de la définition du dossier d'applications personnalisé : ${error.message}`);
+      showError(
+        `Échec de la définition du dossier d'applications personnalisé : ${error.message}`,
+      );
     } finally {
       setIsSelectingPath(false);
     }
@@ -47,7 +51,9 @@ export function CustomAppsFolderSelector() {
       await fetchCustomAppsFolder();
       showSuccess("Dossier d'applications Neuro réinitialisé avec succès");
     } catch (error: any) {
-      showError(`Échec de la réinitialisation du chemin du dossier d'applications Neuro : ${error.message}`);
+      showError(
+        `Échec de la réinitialisation du chemin du dossier d'applications Neuro : ${error.message}`,
+      );
     }
   };
 
@@ -59,7 +65,9 @@ export function CustomAppsFolderSelector() {
       setIsPathAvailable(isPathAvailable);
       setIsPathDefault(isPathDefault);
     } catch (error: any) {
-      showError(`Échec de la récupération du chemin du dossier d'applications Neuro : ${error.message}`);
+      showError(
+        `Échec de la récupération du chemin du dossier d'applications Neuro : ${error.message}`,
+      );
     }
   };
 
@@ -67,7 +75,9 @@ export function CustomAppsFolderSelector() {
     <div className="space-y-4">
       <div className="space-y-2">
         <div className="flex gap-2">
-          <Label className="text-sm font-medium">Personnaliser le dossier d'applications</Label>
+          <Label className="text-sm font-medium">
+            Personnaliser le dossier d'applications
+          </Label>
 
           <Button
             onClick={handleSelectCustomAppsFolder}
@@ -98,7 +108,9 @@ export function CustomAppsFolderSelector() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {isPathDefault ? "Dossier par défaut :" : "Dossier personnalisé :"}
+                  {isPathDefault
+                    ? "Dossier par défaut :"
+                    : "Dossier personnalisé :"}
                 </span>
               </div>
               <p

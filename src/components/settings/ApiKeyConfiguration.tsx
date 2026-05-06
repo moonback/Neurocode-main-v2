@@ -34,6 +34,9 @@ interface ApiKeyConfigurationProps {
   onDeleteKey: () => Promise<void>;
   isDyad: boolean;
   updateSettings: (settings: Partial<UserSettings>) => Promise<UserSettings>;
+  imageModelInput?: string;
+  onImageModelInputChange?: (value: string) => void;
+  onSaveImageModel?: (value: string) => Promise<void>;
 }
 
 export function ApiKeyConfiguration({
@@ -50,6 +53,9 @@ export function ApiKeyConfiguration({
   onDeleteKey,
   isDyad,
   updateSettings,
+  imageModelInput,
+  onImageModelInputChange,
+  onSaveImageModel,
 }: ApiKeyConfigurationProps) {
   // Special handling for Azure OpenAI which requires environment variables
   if (provider === "azure") {
@@ -87,6 +93,12 @@ export function ApiKeyConfiguration({
   }
   if (!isDyad && hasEnvKey) {
     defaultAccordionValue.push("env-key");
+  }
+
+  // For OpenRouter, also show image model configuration
+  const isOpenRouter = provider === "openrouter";
+  if (isOpenRouter) {
+    defaultAccordionValue.push("image-model");
   }
 
   return (
@@ -230,6 +242,52 @@ export function ApiKeyConfiguration({
               used only if no key is configured in the Settings section above.
               Requires app restart to detect changes.
             </p>
+          </AccordionContent>
+        </AccordionItem>
+      )}
+
+      {isOpenRouter && onImageModelInputChange && onSaveImageModel && (
+        <AccordionItem
+          value="image-model"
+          className="border rounded-lg px-4 bg-(--background-lightest)"
+        >
+          <AccordionTrigger className="text-lg font-medium hover:no-underline cursor-pointer">
+            Modèle de Génération d'Images
+          </AccordionTrigger>
+          <AccordionContent className="pt-4">
+            <div className="space-y-2">
+              <label
+                htmlFor="imageModelInput"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Modèle OpenRouter pour les images
+              </label>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                Spécifiez le modèle OpenRouter à utiliser pour la génération
+                d'images (ex: black-forest-labs/flux-1.1-pro,
+                bytedance-seed/seedream-4.5)
+              </p>
+              <div className="flex items-start space-x-2">
+                <Input
+                  id="imageModelInput"
+                  value={imageModelInput || ""}
+                  onChange={(e) => onImageModelInputChange(e.target.value)}
+                  placeholder="black-forest-labs/flux-1.1-pro"
+                  className="flex-grow"
+                />
+                <Button
+                  onClick={() => onSaveImageModel(imageModelInput || "")}
+                  disabled={isSaving || !imageModelInput}
+                >
+                  {isSaving ? "Enregistrement..." : "Enregistrer"}
+                </Button>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Modèle actuel:{" "}
+                {(settings?.providerSettings?.openrouter as any)?.imageModel ||
+                  "black-forest-labs/flux-1.1-pro (par défaut)"}
+              </p>
+            </div>
           </AccordionContent>
         </AccordionItem>
       )}

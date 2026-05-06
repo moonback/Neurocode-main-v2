@@ -98,6 +98,7 @@ export type LargeLanguageModel = z.infer<typeof LargeLanguageModelSchema>;
  */
 export const RegularProviderSettingSchema = z.object({
   apiKey: SecretSchema.optional(),
+  imageModel: z.string().optional(), // For OpenRouter image generation
 });
 
 export const AzureProviderSettingSchema = z.object({

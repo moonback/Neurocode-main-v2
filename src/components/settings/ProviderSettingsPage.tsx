@@ -60,6 +60,7 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
   const isDyad = provider === "auto";
 
   const [apiKeyInput, setApiKeyInput] = useState("");
+  const [imageModelInput, setImageModelInput] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const router = useRouter();
@@ -186,6 +187,34 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
     }
   };
 
+  // --- Image Model Save Handler ---
+  const handleSaveImageModel = async (value: string) => {
+    if (!value.trim()) {
+      setSaveError("Le modèle d'image ne peut pas être vide.");
+      return;
+    }
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      const settingsUpdate: Partial<UserSettings> = {
+        providerSettings: {
+          ...settings?.providerSettings,
+          [provider]: {
+            ...settings?.providerSettings?.[provider],
+            imageModel: value.trim(),
+          },
+        },
+      };
+      await updateSettings(settingsUpdate);
+      setImageModelInput(""); // Clear input on success
+    } catch (error: any) {
+      console.error("Error saving image model:", error);
+      setSaveError(error.message || "Failed to save image model.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   // Effect to clear input error when input changes
   useEffect(() => {
     if (saveError) {
@@ -306,6 +335,9 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
             onDeleteKey={handleDeleteKey}
             isDyad={isDyad}
             updateSettings={updateSettings}
+            imageModelInput={imageModelInput}
+            onImageModelInputChange={setImageModelInput}
+            onSaveImageModel={handleSaveImageModel}
           />
         )}
 
