@@ -47,9 +47,12 @@ export function registerImageGenerationHandlers() {
       // Use OpenRouter API key for image generation
       const openrouterApiKey = settings.providerSettings?.openrouter?.apiKey?.value;
 
+      // Log for debugging (without exposing the full key)
+      logger.log(`OpenRouter API key configured: ${openrouterApiKey ? 'Yes (length: ' + openrouterApiKey.length + ')' : 'No'}`);
+
       if (!openrouterApiKey) {
         throw new DyadError(
-          "Une clé API OpenRouter est requise pour la génération d'images. Configurez une clé OpenRouter dans les paramètres.",
+          "Une clé API OpenRouter est requise pour la génération d'images. Configurez une clé OpenRouter dans les paramètres (Paramètres > Fournisseurs d'IA > OpenRouter).",
           DyadErrorKind.Auth,
         );
       }
@@ -77,6 +80,8 @@ export function registerImageGenerationHandlers() {
         IMAGE_GENERATION_TIMEOUT_MS,
       );
 
+      logger.log(`Sending image generation request to OpenRouter with model: bytedance-seed/seedream-4.5`);
+
       let response: Response;
       try {
         response = await fetch(`${baseUrl}/images/generations`, {
@@ -103,6 +108,7 @@ export function registerImageGenerationHandlers() {
             DyadErrorKind.UserCancelled,
           );
         }
+        logger.error("Failed to connect to OpenRouter:", error);
         throw new DyadError(
           "Failed to connect to image generation service.",
           DyadErrorKind.External,
@@ -117,8 +123,9 @@ export function registerImageGenerationHandlers() {
         logger.error(
           `Image generation API error: HTTP ${response.status} (request: ${requestId}), Response: ${errorText}`,
         );
-        throw new Error(
+        throw new DyadError(
           `Image generation failed: ${response.status} ${response.statusText} - ${errorText}`,
+          DyadErrorKind.External,
         );
       }
 
