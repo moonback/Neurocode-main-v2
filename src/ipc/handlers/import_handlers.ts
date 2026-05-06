@@ -52,7 +52,7 @@ export function registerImportHandlers() {
       _,
       { appName, skipCopy }: { appName: string; skipCopy?: boolean },
     ) => {
-      // Only check filesystem if we're copying to dyad-apps
+      // Only check filesystem if we're copying to neuro-apps
       if (!skipCopy) {
         const appPath = getDyadAppPath(appName);
         try {
@@ -105,7 +105,7 @@ export function registerImportHandlers() {
           );
         }
 
-        // Check if the app already exists in dyad-apps
+        // Check if the app already exists in neuro-apps
         const errorMessage = "An app with this name already exists";
         try {
           await fs.access(appPath);

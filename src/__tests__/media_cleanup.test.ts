@@ -37,7 +37,7 @@ vi.mock("@/paths/paths", () => ({
   getDyadAppPath: vi.fn((appPath: string) => {
     const path = require("node:path");
     if (path.isAbsolute(appPath)) return appPath;
-    return `/home/user/dyad-apps/${appPath}`;
+    return `/home/user/neuro-apps/${appPath}`;
   }),
 }));
 
@@ -89,7 +89,7 @@ describe("cleanupOldMediaFiles", () => {
 
     fsMocks.readdir.mockImplementation((dirPath: string) => {
       const normalized = dirPath.replace(/\\/g, "/");
-      if (normalized === "/home/user/dyad-apps/my-app/.dyad/media") {
+      if (normalized === "/home/user/neuro-apps/my-app/.dyad/media") {
         return Promise.resolve(["old-image.png", "recent-image.png"]);
       }
       return Promise.reject(new Error("ENOENT"));
@@ -114,7 +114,7 @@ describe("cleanupOldMediaFiles", () => {
 
     expect(fsMocks.unlink).toHaveBeenCalledTimes(1);
     expect(fsMocks.unlink).toHaveBeenCalledWith(
-      path.join("/home/user/dyad-apps/my-app/.dyad/media", "old-image.png"),
+      path.join("/home/user/neuro-apps/my-app/.dyad/media", "old-image.png"),
     );
     expect(logMocks.log).toHaveBeenCalledWith("Cleaned up 1 old media files");
     expect(logMocks.warn).not.toHaveBeenCalled();

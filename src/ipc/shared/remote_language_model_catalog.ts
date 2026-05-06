@@ -58,9 +58,7 @@ const KNOWN_BUILTIN_MODEL_ALIASES = [
   "dyad/theme-generator/google",
   "dyad/theme-generator/anthropic",
   "dyad/theme-generator/openai",
-  "dyad/auto/openai",
-  "dyad/auto/anthropic",
-  "dyad/auto/google",
+  "dyad/auto/gpt-oss",
   "dyad/help-bot/default",
 ] as const;
 
@@ -182,30 +180,12 @@ function buildFallbackCatalog(): BuiltinLanguageModelCatalog {
         purpose: "theme-generation",
       },
       {
-        id: "dyad/auto/openai",
+        id: "dyad/auto/gpt-oss",
         resolvedModel: {
-          providerId: "openai",
-          apiName: "gpt-4o",
+          providerId: "openrouter",
+          apiName: "openai/gpt-oss-120b:free",
         },
-        displayName: "Auto OpenAI",
-        purpose: "auto-mode",
-      },
-      {
-        id: "dyad/auto/anthropic",
-        resolvedModel: {
-          providerId: "anthropic",
-          apiName: "claude-3-5-sonnet-20240620",
-        },
-        displayName: "Auto Anthropic",
-        purpose: "auto-mode",
-      },
-      {
-        id: "dyad/auto/google",
-        resolvedModel: {
-          providerId: "google",
-          apiName: "gemini-3-flash-preview",
-        },
-        displayName: "Auto Google",
+        displayName: "Auto GPT OSS",
         purpose: "auto-mode",
       },
       {

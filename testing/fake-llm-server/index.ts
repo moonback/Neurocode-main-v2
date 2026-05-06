@@ -339,26 +339,10 @@ app.get("/api/language-model-catalog", (req, res) => {
         purpose: "theme-generation",
       },
       {
-        id: "dyad/auto/openai",
+        id: "dyad/auto/gpt-oss",
         resolvedModel: {
-          providerId: "openai",
-          apiName: "gpt-5.2",
-        },
-        purpose: "auto-mode",
-      },
-      {
-        id: "dyad/auto/anthropic",
-        resolvedModel: {
-          providerId: "anthropic",
-          apiName: "claude-sonnet-4-6",
-        },
-        purpose: "auto-mode",
-      },
-      {
-        id: "dyad/auto/google",
-        resolvedModel: {
-          providerId: "google",
-          apiName: "gemini-3-flash-preview",
+          providerId: "openrouter",
+          apiName: "openai/gpt-oss-120b:free",
         },
         purpose: "auto-mode",
       },

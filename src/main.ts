@@ -190,7 +190,7 @@ export async function onReady() {
 
   const settings = await readEffectiveSettings();
 
-  // Add dyad-apps directory to git safe.directory (required for Windows).
+  // Add neuro-apps directory to git safe.directory (required for Windows).
   // The trailing /* allows access to all repositories under the named directory.
   // See: https://git-scm.com/docs/git-config#Documentation/git-config.txt-safedirectory
   if (settings.enableNativeGit) {

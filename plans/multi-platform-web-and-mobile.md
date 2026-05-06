@@ -196,7 +196,7 @@ Web/PWA:  Browser        -> Cloud Node.js server -> Cloud DB + Container filesys
 
 **File storage:**
 
-- Desktop: Local filesystem (`~/dyad-apps/`) -- unchanged
+- Desktop: Local filesystem (`~/neuro-apps/`) -- unchanged
 - Web: Container filesystem (ephemeral per session) + persistent cloud storage per project (S3/GCS or container volumes)
 
 ### API Changes

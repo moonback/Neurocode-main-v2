@@ -18,9 +18,7 @@ const AliasIdSchema = z.enum([
   "dyad/theme-generator/google",
   "dyad/theme-generator/anthropic",
   "dyad/theme-generator/openai",
-  "dyad/auto/openai",
-  "dyad/auto/anthropic",
-  "dyad/auto/google",
+  "dyad/auto/gpt-oss",
   "dyad/help-bot/default",
 ]);
 
@@ -286,30 +284,12 @@ function buildCatalogResponse(now = new Date()) {
         purpose: "theme-generation",
       },
       {
-        id: "dyad/auto/openai",
+        id: "dyad/auto/gpt-oss",
         resolvedModel: {
-          providerId: "openai",
-          apiName: "gpt-5.2",
+          providerId: "openrouter",
+          apiName: "openai/gpt-oss-120b:free",
         },
-        displayName: "Auto OpenAI",
-        purpose: "auto-mode",
-      },
-      {
-        id: "dyad/auto/anthropic",
-        resolvedModel: {
-          providerId: "anthropic",
-          apiName: "claude-sonnet-4-6",
-        },
-        displayName: "Auto Anthropic",
-        purpose: "auto-mode",
-      },
-      {
-        id: "dyad/auto/google",
-        resolvedModel: {
-          providerId: "google",
-          apiName: "gemini-3-flash-preview",
-        },
-        displayName: "Auto Google",
+        displayName: "Auto GPT OSS",
         purpose: "auto-mode",
       },
       {

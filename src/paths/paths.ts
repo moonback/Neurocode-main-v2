@@ -7,22 +7,22 @@ import { readSettings } from "../main/settings";
 // Cached result of getDyadAppsBaseDirectory
 let cachedBaseDirectory: string | null = null;
 let cachedCustomFolderSetting: string | null | undefined;
-// Whether `dyad-apps` has been created
+// Whether `neuro-apps` has been created
 let defaultDirCreated = false;
 
 /**
- * Gets the default path of the base dyad-apps directory (without a specific app subdirectory)
+ * Gets the default path of the base neuro-apps directory (without a specific app subdirectory)
  */
 export function getDefaultDyadAppsDirectory(): string {
   if (IS_TEST_BUILD) {
     const electron = getElectron();
-    return path.join(electron!.app.getPath("userData"), "dyad-apps");
+    return path.join(electron!.app.getPath("userData"), "neuro-apps");
   }
-  return path.join(os.homedir(), "dyad-apps");
+  return path.join(os.homedir(), "neuro-apps");
 }
 
 /**
- * Gets the default path of the base dyad-apps directory (without a specific app subdirectory),
+ * Gets the default path of the base neuro-apps directory (without a specific app subdirectory),
  * but creates the directory the first time that this function is called
  */
 function resolveDefaultDyadAppsDirectory(): string {

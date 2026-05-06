@@ -32,11 +32,7 @@ import { DyadError, DyadErrorKind } from "@/errors/dyad_error";
 
 const dyadEngineUrl = process.env.DYAD_ENGINE_URL;
 
-const AUTO_MODEL_ALIASES = [
-  "dyad/auto/openai",
-  "dyad/auto/anthropic",
-  "dyad/auto/google",
-] as const;
+const AUTO_MODEL_ALIASES = ["dyad/auto/gpt-oss"] as const;
 
 export interface ModelClient {
   model: LanguageModel;

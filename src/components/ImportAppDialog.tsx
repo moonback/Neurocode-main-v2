@@ -394,8 +394,8 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
 
                     <div className="flex items-center space-x-2">
                       <Checkbox
-                        id="copy-to-dyad-apps"
-                        aria-label="Copy to the dyad-apps folder"
+                        id="copy-to-neuro-apps"
+                        aria-label="Copy to the neuro-apps folder"
                         checked={copyToDyadApps}
                         onCheckedChange={(checked) =>
                           setCopyToDyadApps(checked === true)
@@ -403,7 +403,7 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
                         disabled={importAppMutation.isPending}
                       />
                       <label
-                        htmlFor="copy-to-dyad-apps"
+                        htmlFor="copy-to-neuro-apps"
                         className="text-xs sm:text-sm cursor-pointer"
                       >
                         {t("home:copyToDyadApps")}

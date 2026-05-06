@@ -2226,7 +2226,7 @@ export function registerAppHandlers() {
       });
     }
     const dyadAppPath = getDefaultDyadAppsDirectory();
-    // Delete the default `dyad-apps` folder, even if the user no longer uses it
+    // Delete the default `neuro-apps` folder, even if the user no longer uses it
     if (fs.existsSync(dyadAppPath)) {
       await fsPromises.rm(dyadAppPath, { recursive: true, force: true });
       // Recreate the base directory
