@@ -262,45 +262,47 @@ export function HomeChatInput({
               disabled={isStreaming}
             />
 
-            {/* Voice-to-text button */}
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <button
-                    onClick={toggleRecording}
-                    disabled={isTranscribing}
-                    aria-label={
-                      isRecording
-                        ? "Stop recording"
-                        : isTranscribing
-                          ? "Transcribing..."
-                          : "Voice to text"
-                    }
-                    className={cn(
-                      "px-2 py-2 mb-0.5 text-muted-foreground rounded-lg transition-colors duration-150 cursor-pointer disabled:cursor-default disabled:opacity-30",
-                      isRecording &&
-                        "text-red-500 hover:text-red-600 animate-pulse",
-                      !isRecording && !isTranscribing && "hover:text-primary",
-                    )}
-                  />
-                }
-              >
-                {isTranscribing ? (
-                  <Loader2 size={20} className="animate-spin" />
-                ) : isRecording ? (
-                  <MicOff size={20} />
-                ) : (
-                  <Mic size={20} />
-                )}
-              </TooltipTrigger>
-              <TooltipContent>
-                {isRecording
-                  ? "Stop recording"
-                  : isTranscribing
-                    ? "Transcribing..."
-                    : "Voice to text"}
-              </TooltipContent>
-            </Tooltip>
+            {/* Voice-to-text button - HIDDEN */}
+            {false && (
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      onClick={toggleRecording}
+                      disabled={isTranscribing}
+                      aria-label={
+                        isRecording
+                          ? "Stop recording"
+                          : isTranscribing
+                            ? "Transcribing..."
+                            : "Voice to text"
+                      }
+                      className={cn(
+                        "px-2 py-2 mb-0.5 text-muted-foreground rounded-lg transition-colors duration-150 cursor-pointer disabled:cursor-default disabled:opacity-30",
+                        isRecording &&
+                          "text-red-500 hover:text-red-600 animate-pulse",
+                        !isRecording && !isTranscribing && "hover:text-primary",
+                      )}
+                    />
+                  }
+                >
+                  {isTranscribing ? (
+                    <Loader2 size={20} className="animate-spin" />
+                  ) : isRecording ? (
+                    <MicOff size={20} />
+                  ) : (
+                    <Mic size={20} />
+                  )}
+                </TooltipTrigger>
+                <TooltipContent>
+                  {isRecording
+                    ? "Stop recording"
+                    : isTranscribing
+                      ? "Transcribing..."
+                      : "Voice to text"}
+                </TooltipContent>
+              </Tooltip>
+            )}
 
             {isStreaming ? (
               <Tooltip>
