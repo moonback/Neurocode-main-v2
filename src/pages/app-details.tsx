@@ -468,10 +468,7 @@ export default function AppDetailsPage() {
 
           {/* Codebase Export Button */}
           {appId && (
-            <CodebaseExportButton
-              appId={appId}
-              className="w-full py-5"
-            />
+            <CodebaseExportButton appId={appId} className="w-full py-5" />
           )}
 
           <div className="border border-gray-200 rounded-md p-4">
