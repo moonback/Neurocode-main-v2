@@ -44,22 +44,18 @@ export function registerImageGenerationHandlers() {
     async (_, params) => {
       const settings = readSettings();
 
-      // Use Dyad Pro key if available, otherwise fall back to user's OpenAI key
-      const dyadApiKey = settings.providerSettings?.auto?.apiKey?.value;
-      const openaiApiKey = settings.providerSettings?.openai?.apiKey?.value;
-      const apiKey = dyadApiKey || openaiApiKey;
+      // Use OpenRouter API key for image generation
+      const openrouterApiKey = settings.providerSettings?.openrouter?.apiKey?.value;
 
-      if (!apiKey) {
+      if (!openrouterApiKey) {
         throw new DyadError(
-          "Une clé API est requise pour la génération d'images. Configurez une clé OpenAI dans les paramètres.",
+          "Une clé API OpenRouter est requise pour la génération d'images. Configurez une clé OpenRouter dans les paramètres.",
           DyadErrorKind.Auth,
         );
       }
 
-      // Use OpenAI directly if no Dyad Pro key
-      const baseUrl = dyadApiKey
-        ? DYAD_ENGINE_URL
-        : "https://api.openai.com/v1";
+      // Use OpenRouter for image generation
+      const baseUrl = "https://openrouter.ai/api/v1";
 
       const app = await db.query.apps.findFirst({
         where: eq(apps.id, params.targetAppId),
@@ -87,15 +83,15 @@ export function registerImageGenerationHandlers() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${apiKey}`,
-            ...(dyadApiKey && { "X-Dyad-Request-Id": requestId }),
+            Authorization: `Bearer ${openrouterApiKey}`,
+            "HTTP-Referer": "https://neurocode.app",
+            "X-Title": "NeuroCode",
           },
           body: JSON.stringify({
             prompt: fullPrompt,
-            model: dyadApiKey ? "gpt-image-1.5" : "dall-e-3",
-            ...(dyadApiKey
-              ? {}
-              : { response_format: "b64_json", size: "1024x1024" }),
+            model: "bytedance-seed/seedream-4.5",
+            response_format: "b64_json",
+            size: "1024x1024",
           }),
           signal: controller.signal,
         });
@@ -116,13 +112,13 @@ export function registerImageGenerationHandlers() {
       }
 
       if (!response.ok) {
-        // Only log status code and request ID — never log response body
-        // as it may echo back request details including credentials
+        // Log the error response for debugging
+        const errorText = await response.text();
         logger.error(
-          `Image generation API error: HTTP ${response.status} (request: ${requestId})`,
+          `Image generation API error: HTTP ${response.status} (request: ${requestId}), Response: ${errorText}`,
         );
         throw new Error(
-          `Image generation failed (HTTP ${response.status}). Please try again.`,
+          `Image generation failed: ${response.status} ${response.statusText} - ${errorText}`,
         );
       }
 
