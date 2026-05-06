@@ -195,7 +195,6 @@
     "configuredDescription": "NeuroCode utilisera les identifiants enregistrés dans les Paramètres pour les modèles Azure OpenAI.",
     "usingEnvVars": "Utilisation des variables d'environnement",
     "usingEnvVarsDescription": "AZURE_API_KEY et AZURE_RESOURCE_NAME sont définies. Les valeurs enregistrées ci-dessous les remplaceront.",
-    "configRequired": "Configuration Azure OpenAI requise",
     "configRequiredDescription": "Fournissez votre nom de ressource Azure et votre clé API ci-dessous, ou configurez les variables d'environnement AZURE_API_KEY et AZURE_RESOURCE_NAME.",
     "resourceName": "Nom de la ressource",
     "resourceNamePlaceholder": "votre-ressource-azure-openai",
@@ -203,7 +202,6 @@
     "apiKeyPlaceholder": "Entrez votre clé API Azure OpenAI",
     "saveSettings": "Enregistrer les paramètres",
     "saved": "Enregistré",
-    "configNeeded": "Configuration requise",
     "configNeededDescription": "Les requêtes Azure OpenAI nécessitent à la fois un nom de ressource et une clé API. Entrez-les ci-dessus ou fournissez les variables d'environnement correspondantes.",
     "saveError": "Erreur d'enregistrement",
     "envVarsOptional": "Variables d'environnement (optionnelles)",
@@ -220,7 +218,6 @@
     "serviceAccountKeyPlaceholder": "Collez ici le contenu JSON complet de votre clé de compte de service",
     "saveSettings": "Enregistrer les paramètres",
     "saved": "Enregistré",
-    "configRequired": "Configuration requise",
     "configRequiredDescription": "Fournissez le projet, l'emplacement et une clé JSON de compte de service avec accès Vertex AI.",
     "saveError": "Erreur d'enregistrement",
     "invalidJson": "Le JSON du compte de service est invalide : {{message}}"
