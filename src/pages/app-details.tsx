@@ -54,6 +54,7 @@ import { CapacitorControls } from "@/components/CapacitorControls";
 import { GithubCollaboratorManager } from "@/components/GithubCollaboratorManager";
 import { useAddAppToFavorite } from "@/hooks/useAddAppToFavorite";
 import { useTranslation } from "react-i18next";
+import { CodebaseExportButton } from "@/components/CodebaseExportButton";
 
 function UnavailableIntegrationCard({
   provider,
@@ -464,6 +465,15 @@ export default function AppDetailsPage() {
             Open in Chat
             <MessageCircle className="h-4 w-4" />
           </Button>
+
+          {/* Codebase Export Button */}
+          {appId && (
+            <CodebaseExportButton
+              appId={appId}
+              className="w-full py-5"
+            />
+          )}
+
           <div className="border border-gray-200 rounded-md p-4">
             <GitHubConnector appId={appId} folderName={selectedApp.path} />
             {selectedApp.githubOrg && selectedApp.githubRepo && appId && (

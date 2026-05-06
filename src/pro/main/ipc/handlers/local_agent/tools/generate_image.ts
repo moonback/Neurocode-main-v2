@@ -56,7 +56,7 @@ async function callGenerateImage(
   const openaiKey = settings.providerSettings?.openai?.apiKey?.value;
 
   if (!openaiKey) {
-    // Fallback to engineFetch if OpenAI key is not provided, 
+    // Fallback to engineFetch if OpenAI key is not provided,
     // but the user asked for OpenAI specifically so we might want to warn or just use engine if it's OpenAI-backed.
     // However, to strictly follow "must use openai", we should probably require the key or use a public OpenAI-compatible endpoint.
     // Let's use engineFetch as a fallback but with a model name that might be OpenAI.
@@ -77,7 +77,10 @@ async function callGenerateImage(
 
     const data = ImageGenerationApiResponseSchema.parse(await response.json());
     if (!data.data || data.data.length === 0) {
-      throw new DyadError("Image generation returned no results", DyadErrorKind.External);
+      throw new DyadError(
+        "Image generation returned no results",
+        DyadErrorKind.External,
+      );
     }
     return data.data[0];
   }
@@ -99,7 +102,9 @@ async function callGenerateImage(
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`OpenAI Image generation failed: ${response.status} - ${errorText}`);
+    throw new Error(
+      `OpenAI Image generation failed: ${response.status} - ${errorText}`,
+    );
   }
 
   const data = ImageGenerationApiResponseSchema.parse(await response.json());

@@ -89,6 +89,15 @@ NeuroCode est une puissante application de bureau qui permet aux développeurs d
 - Optimisation et nettoyage des fichiers médias
 - Service de médias persistant avec protocole personnalisé
 
+#### 📦 Export de Codebase pour LLM
+
+- **Export en un clic :** Exportez toute votre codebase en un seul fichier Markdown optimisé pour les LLM
+- **Format structuré :** Table des matières, coloration syntaxique, métadonnées de fichiers
+- **Options configurables :** Inclure/exclure les tests, fichiers cachés, avec taille maximale personnalisable
+- **Filtrage intelligent :** Exclusion automatique de node_modules, .git, dist, fichiers binaires
+- **Ouverture automatique :** Le dossier contenant le fichier exporté s'ouvre automatiquement après l'export
+- **Cas d'usage :** Analyse de code par IA, documentation automatique, revue de code, migration de projet
+
 #### 🧩 Système de Skills
 
 - **Création de skills :** Définissez des instructions réutilisables dans des fichiers SKILL.md
@@ -429,6 +438,99 @@ Pour plus de détails sur le système de génération de code, consultez :
 
 ---
 
+## Export de Codebase pour LLM
+
+NeuroCode permet d'exporter l'intégralité de votre codebase en un seul fichier Markdown optimisé pour les Large Language Models (LLM).
+
+### 🎯 Cas d'usage
+
+- **Analyse de code par IA :** Fournir tout votre code à un LLM pour analyse complète
+- **Documentation automatique :** Générer de la documentation basée sur l'ensemble du code
+- **Revue de code :** Partager facilement tout le code avec un LLM pour revue approfondie
+- **Migration :** Analyser un projet complet avant migration vers une nouvelle technologie
+- **Apprentissage :** Permettre à un LLM de comprendre l'architecture complète de votre projet
+
+### 📍 Comment utiliser
+
+1. Allez dans **Apps** (page d'accueil)
+2. Cliquez sur une application
+3. Cliquez sur le bouton **"Exporter pour LLM"** (sous le bouton "Open in Chat")
+4. Configurez les options d'export :
+   - ☑️ Inclure les fichiers de tests
+   - ☑️ Inclure les fichiers cachés (.env.example, .gitignore, etc.)
+5. Cliquez sur **"Exporter"**
+6. Le fichier est généré et le dossier s'ouvre automatiquement
+
+### 📄 Format du fichier généré
+
+Le fichier Markdown contient :
+
+- **En-tête :** Informations sur l'export (date, chemin, nombre de fichiers, taille)
+- **Table des matières :** Liste cliquable de tous les fichiers
+- **Fichiers :** Chaque fichier avec coloration syntaxique appropriée
+- **Résumé :** Statistiques finales de l'export
+
+**Nom du fichier :** `codebase-export-[timestamp].md`
+
+### ✅ Ce qui est inclus
+
+- Tous les fichiers de code source (.ts, .tsx, .js, .jsx, .py, etc.)
+- Fichiers de configuration (.json, .yaml, .toml, etc.)
+- Documentation (.md, .txt)
+- Fichiers de build (Dockerfile, Makefile)
+- Structure de dossiers complète
+
+### 🚫 Ce qui est exclu automatiquement
+
+- `node_modules/`, `.git/`
+- `dist/`, `build/`, `.next/`, `.nuxt/`
+- `coverage/`, `.cache/`
+- Fichiers binaires (images, vidéos, etc.)
+- Fichiers > 1MB (configurable)
+- Fichiers de lock (package-lock.json, yarn.lock, etc.)
+
+### 💡 Exemples d'utilisation
+
+**Analyse d'architecture :**
+
+```
+Prompt : "Voici ma codebase complète. Analyse l'architecture et suggère des améliorations."
+[Coller le contenu du fichier exporté]
+```
+
+**Génération de documentation :**
+
+```
+Prompt : "Génère une documentation complète pour ce projet."
+[Coller le contenu du fichier exporté]
+```
+
+**Détection de bugs :**
+
+```
+Prompt : "Analyse ce code et identifie les bugs potentiels et problèmes de sécurité."
+[Coller le contenu du fichier exporté]
+```
+
+### 📊 Limites des LLM
+
+Gardez en tête les limites de contexte des LLM :
+
+| Modèle     | Limite de contexte | Fichiers moyens supportés |
+| ---------- | ------------------ | ------------------------- |
+| GPT-4      | ~128K tokens       | ~300-400 fichiers         |
+| Claude 3   | ~200K tokens       | ~500-600 fichiers         |
+| GPT-3.5    | ~16K tokens        | ~40-50 fichiers           |
+| Claude 3.5 | ~200K tokens       | ~500-600 fichiers         |
+
+Si votre export est trop volumineux, désactivez l'inclusion des tests ou exportez seulement certains dossiers.
+
+### 📚 Documentation complète
+
+Pour plus de détails, consultez [docs/EXPORT_CODEBASE_LLM.md](docs/EXPORT_CODEBASE_LLM.md)
+
+---
+
 ## Fournisseurs d'IA supportés
 
 NeuroCode supporte de nombreux fournisseurs d'IA nativement :
@@ -541,6 +643,10 @@ IA : [Analyse la base de code, crée un plan, exécute la refactorisation]
 - `Ctrl/Cmd + ,` - Paramètres
 - `Ctrl/Cmd + R` - Redémarrer le serveur de l'application
 - `Ctrl/Cmd + Shift + R` - Reconstruire l'application
+
+### Fonctionnalités rapides
+
+- **Export de codebase :** Accessible via le bouton "Exporter pour LLM" sur la page de détails de l'application
 
 ### Optimisation de prompt
 

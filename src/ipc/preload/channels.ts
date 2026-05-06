@@ -106,6 +106,12 @@ export const VALID_INVOKE_CHANNELS = [
   ...getInvokeChannels(smartContextContracts),
   ...getInvokeChannels(skillContracts),
 
+  // Codebase export
+  "codebase:export",
+
+  // Shell operations
+  "shell:showItemInFolder",
+
   // Test-only channels
   ...TEST_INVOKE_CHANNELS,
 ] as const;

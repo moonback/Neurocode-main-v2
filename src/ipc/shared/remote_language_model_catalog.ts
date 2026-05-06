@@ -224,7 +224,6 @@ function buildFallbackCatalog(): BuiltinLanguageModelCatalog {
   };
 }
 
-
 async function fetchRemoteCatalog(): Promise<BuiltinLanguageModelCatalog | null> {
   return null;
 }
