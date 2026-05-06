@@ -109,21 +109,23 @@ export function ModelPicker() {
     return selectedModel.name;
   };
 
-  // Get auto provider models (if any)
-  const autoModels =
-    !loading && modelsByProviders && modelsByProviders["auto"]
-      ? modelsByProviders["auto"].filter((model) => {
-          if (
-            settings &&
-            !isDyadProEnabled(settings) &&
-            ["turbo", "value"].includes(model.apiName)
-          ) {
-            return false;
-          }
-          // Afficher tous les modèles, y compris gratuits, si Dyad Pro est activé
-          return true;
-        })
-      : [];
+  // Get auto provider models (if any) - HIDDEN FROM UI
+  const autoModels: any[] = [];
+  // Commented out to hide Dyad provider from UI
+  // const autoModels =
+  //   !loading && modelsByProviders && modelsByProviders["auto"]
+  //     ? modelsByProviders["auto"].filter((model) => {
+  //         if (
+  //           settings &&
+  //           !isDyadProEnabled(settings) &&
+  //           ["turbo", "value"].includes(model.apiName)
+  //         ) {
+  //           return false;
+  //         }
+  //         // Afficher tous les modèles, y compris gratuits, si Dyad Pro est activé
+  //         return true;
+  //       })
+  //     : [];
 
   // Determine availability of local models
   const hasOllamaModels =

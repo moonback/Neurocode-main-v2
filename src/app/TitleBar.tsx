@@ -77,7 +77,8 @@ export const TitleBar = () => {
     }
   };
 
-  const isDyadPro = !!settings?.providerSettings?.auto?.apiKey?.value;
+  // HIDDEN: Dyad Pro button removed from UI
+  const isDyadPro = false; // !!settings?.providerSettings?.auto?.apiKey?.value;
   const isDyadProEnabled = true;
 
   return (
