@@ -366,9 +366,11 @@ export function registerChatStreamHandlers() {
       let userPrompt = req.prompt + (attachmentInfo ? attachmentInfo : "");
       // Build the display prompt (with <dyad-attachment> tags for inline rendering)
       // This separates what the user sees from what the AI receives.
-      let displayUserPrompt: string | undefined;
+      // IMPORTANT: Always initialize displayUserPrompt with the original prompt
+      // to preserve /skill-name format instead of expanded skill content
+      let displayUserPrompt: string = req.prompt;
       if (displayAttachmentInfo) {
-        displayUserPrompt = req.prompt + displayAttachmentInfo;
+        displayUserPrompt = displayUserPrompt + displayAttachmentInfo;
       }
       // Inline referenced prompt contents for mentions like @prompt:<id>
       try {
@@ -392,6 +394,7 @@ export function registerChatStreamHandlers() {
       }
 
       // Expand /slug skill references (e.g. /webapp-testing) to prompt content
+      // Keep the original /slug format for display, but expand for AI processing
       try {
         const slashSkillPattern = /(?:^|\s)\/([a-zA-Z0-9-]+)(?=\s|$)/;
         if (slashSkillPattern.test(userPrompt)) {
@@ -402,6 +405,8 @@ export function registerChatStreamHandlers() {
               promptsBySlug[p.slug] = p.content;
             }
           }
+          // Expand skills in the actual prompt sent to AI
+          // displayUserPrompt already contains the original /slug format
           userPrompt = replaceSlashSkillReference(userPrompt, promptsBySlug);
         }
       } catch (e) {
@@ -436,7 +441,7 @@ export function registerChatStreamHandlers() {
           // Build display prompt with attachment tags for inline rendering.
           if (mediaDisplayInfo) {
             const strippedPrompt = stripResolvedMediaMentions(
-              displayUserPrompt ?? req.prompt,
+              displayUserPrompt,
               resolvedMediaRefs,
             );
             displayUserPrompt = strippedPrompt + mediaDisplayInfo;

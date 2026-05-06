@@ -1,85 +1,85 @@
 import {
-  LineChart,
-  ShieldCheck,
-  Columns,
-  Moon,
-  Briefcase,
-  PenTool,
-  Wallet,
-  Share2,
-  Calendar,
-  Utensils,
-  Monitor,
-  Activity,
+  Sparkles,
+  ShoppingCart,
+  Palette,
+  Rocket,
+  Store,
+  Smartphone,
+  Zap,
+  Crown,
+  Package,
+  Gem,
+  TrendingUp,
+  Award,
   Bot,
-  Globe,
-  Database,
-  Lock,
+  Layers,
+  Box,
+  ShoppingBag,
 } from "lucide-react";
 
 export const INSPIRATION_PROMPTS = [
   {
-    icon: <LineChart className="w-5 h-5" />,
-    label: "Dashboard SaaS Analytics",
+    icon: <Sparkles className="w-5 h-5" />,
+    label: "Landing Page 3D Interactive SaaS",
   },
   {
-    icon: <ShieldCheck className="w-5 h-5" />,
-    label: "Auditeur de Sécurité IA",
+    icon: <ShoppingCart className="w-5 h-5" />,
+    label: "E-commerce Mode Luxe Complet",
   },
   {
-    icon: <Columns className="w-5 h-5" />,
-    label: "Gestionnaire de Projet Agile",
-  },
-  {
-    icon: <Moon className="w-5 h-5" />,
-    label: "App de Méditation & Sommeil",
-  },
-  {
-    icon: <Briefcase className="w-5 h-5" />,
-    label: "Portail Client Freelance",
-  },
-  {
-    icon: <PenTool className="w-5 h-5" />,
-    label: "Blog Moderne & CMS",
-  },
-  {
-    icon: <Wallet className="w-5 h-5" />,
-    label: "Tracker de Portfolio Crypto",
-  },
-  {
-    icon: <Share2 className="w-5 h-5" />,
-    label: "Planificateur Social Media IA",
-  },
-  {
-    icon: <Calendar className="w-5 h-5" />,
-    label: "Système de Réservation",
-  },
-  {
-    icon: <Utensils className="w-5 h-5" />,
-    label: "Coach Nutritionnel IA",
-  },
-  {
-    icon: <Monitor className="w-5 h-5" />,
-    label: "Portfolio Design Premium",
-  },
-  {
-    icon: <Activity className="w-5 h-5" />,
-    label: "Tracker de Santé & Sport",
-  },
-  {
-    icon: <Globe className="w-5 h-5" />,
-    label: "Plateforme de Booking Voyage",
-  },
-  {
-    icon: <Database className="w-5 h-5" />,
-    label: "Gestionnaire de Stock ERP",
-  },
-  {
-    icon: <Lock className="w-5 h-5" />,
-    label: "Gestionnaire de Mots de Passe",
+    icon: <Palette className="w-5 h-5" />,
+    label: "Site Vitrine Agence Créative 3D",
   },
   {
     icon: <Bot className="w-5 h-5" />,
-    label: "Assistant Clientèle IA",
+    label: "Landing Page Produit IA avec Démo",
+  },
+  {
+    icon: <Rocket className="w-5 h-5" />,
+    label: "Landing Page Startup Tech 3D",
+  },
+  {
+    icon: <Store className="w-5 h-5" />,
+    label: "E-commerce Multi-vendeurs Marketplace",
+  },
+  {
+    icon: <Layers className="w-5 h-5" />,
+    label: "Site Vitrine Architecture 3D",
+  },
+  {
+    icon: <Zap className="w-5 h-5" />,
+    label: "Landing Page App Mobile avec 3D",
+  },
+  {
+    icon: <Crown className="w-5 h-5" />,
+    label: "E-commerce Bijouterie Premium",
+  },
+  {
+    icon: <Box className="w-5 h-5" />,
+    label: "Site Vitrine Produit 3D Interactif",
+  },
+  {
+    icon: <Smartphone className="w-5 h-5" />,
+    label: "Landing Page SaaS B2B Moderne",
+  },
+  {
+    icon: <Package className="w-5 h-5" />,
+    label: "E-commerce Électronique & Tech",
+  },
+  {
+    icon: <Gem className="w-5 h-5" />,
+    label: "Site Vitrine Restaurant Gastronomique",
+  },
+  {
+    icon: <TrendingUp className="w-5 h-5" />,
+    label: "Landing Page Crypto/NFT avec 3D",
+  },
+  {
+    icon: <ShoppingBag className="w-5 h-5" />,
+    label: "E-commerce Cosmétiques & Beauté",
+  },
+  {
+    icon: <Award className="w-5 h-5" />,
+    label: "Site Vitrine Portfolio Designer 3D",
   },
 ];

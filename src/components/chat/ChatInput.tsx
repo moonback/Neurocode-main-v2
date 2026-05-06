@@ -918,8 +918,8 @@ export function ChatInput({ chatId }: { chatId?: number }) {
               onResumeQueue={resumeQueue}
             />
           )}
-          {/* Show skill suggestions - only the most relevant one */}
-          {matchedSkills.length > 0 &&
+          {/* Show skill suggestions - DISABLED */}
+          {/* {matchedSkills.length > 0 &&
             !isStreaming &&
             (() => {
               const topMatch = matchedSkills.reduce((best, current) =>
@@ -934,7 +934,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
                   />
                 </div>
               );
-            })()}
+            })()} */}
           {/* Show editing indicator when editing a queued message */}
           {editingQueuedMessageId && (
             <div className="border-b border-border p-2 bg-yellow-500/10 flex items-center justify-between">

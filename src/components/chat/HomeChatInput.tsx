@@ -214,8 +214,8 @@ export function HomeChatInput({
             onRemove={removeAttachment}
           />
 
-          {/* Show skill suggestions - only the most relevant one */}
-          {matchedSkills.length > 0 &&
+          {/* Show skill suggestions - DISABLED */}
+          {/* {matchedSkills.length > 0 &&
             !isStreaming &&
             (() => {
               const topMatch = matchedSkills.reduce((best, current) =>
@@ -230,7 +230,7 @@ export function HomeChatInput({
                   />
                 </div>
               );
-            })()}
+            })()} */}
 
           {/* Drag and drop overlay */}
           <DragDropOverlay isDraggingOver={isDraggingOver} />
