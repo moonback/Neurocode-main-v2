@@ -262,6 +262,17 @@ export const MODEL_OPTIONS: Record<string, ModelOption[]> = {
       maxOutputTokens: 32_000,
       contextWindow: 256_000,
     },
+    // https://openrouter.ai/mistralai/mistral-medium-3-5
+    {
+      name: "mistralai/mistral-medium-3-5",
+      displayName: "Mistral Medium 3.5",
+      description:
+        "Mistral's 128B flagship model for agentic workflows and coding",
+      dollarSigns: 3,
+      temperature: 0,
+      maxOutputTokens: 32_000,
+      contextWindow: 262_144,
+    },
     // https://openrouter.ai/deepseek/deepseek-v4-flash
     {
       name: "deepseek/deepseek-v4-flash",
