@@ -58,11 +58,13 @@ export default function SettingsPage() {
     setIsResetting(true);
     try {
       await ipc.system.resetAll();
-      showSuccess("Successfully reset everything. Restart the application.");
+      showSuccess("Réinitialisation réussie. L'application va redémarrer...");
     } catch (error) {
       console.error("Error resetting:", error);
       showError(
-        error instanceof Error ? error.message : "An unknown error occurred",
+        error instanceof Error
+          ? error.message
+          : "Une erreur inconnue s'est produite",
       );
     } finally {
       setIsResetting(false);
@@ -316,8 +318,8 @@ export default function SettingsPage() {
       <ConfirmationDialog
         isOpen={isResetDialogOpen}
         title="Tout réinitialiser"
-        message="Êtes-vous sûr de vouloir tout réinitialiser ? Cela supprimera toutes vos applications, chats et paramètres. Cette action ne peut pas être annulée."
-        confirmText={isResetting ? "Resetting..." : "Tout réinitialiser"}
+        message="Êtes-vous sûr de vouloir tout réinitialiser ? Cela supprimera toutes vos applications, chats et paramètres. L'application redémarrera automatiquement après la réinitialisation. Cette action ne peut pas être annulée."
+        confirmText={isResetting ? "Réinitialisation..." : "Tout réinitialiser"}
         cancelText="Annuler"
         confirmDisabled={isResetting}
         onConfirm={handleResetEverything}

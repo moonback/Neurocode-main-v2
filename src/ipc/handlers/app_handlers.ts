@@ -2234,6 +2234,11 @@ export function registerAppHandlers() {
     }
     logger.log("all app files removed.");
     logger.log("reset all complete.");
+
+    // Automatically restart the application after reset
+    logger.log("restarting application...");
+    app.relaunch();
+    app.quit();
   });
 
   createTypedHandler(systemContracts.getAppVersion, async () => {

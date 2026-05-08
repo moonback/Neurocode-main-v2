@@ -65,20 +65,23 @@ async function callGenerateImage(
     // Use OpenAI's DALL-E for image generation
     logger.log("Using OpenAI DALL-E for image generation");
 
-    const response = await fetch("https://api.openai.com/v1/images/generations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${openaiApiKey}`,
+    const response = await fetch(
+      "https://api.openai.com/v1/images/generations",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${openaiApiKey}`,
+        },
+        body: JSON.stringify({
+          model: "dall-e-3",
+          prompt,
+          n: 1,
+          size: "1024x1024",
+          quality: "standard",
+        }),
       },
-      body: JSON.stringify({
-        model: "dall-e-3",
-        prompt,
-        n: 1,
-        size: "1024x1024",
-        quality: "standard",
-      }),
-    });
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -161,7 +164,7 @@ async function callGenerateImage(
       logger.log(
         `Message structure: ${JSON.stringify(message, null, 2).substring(0, 1000)}`,
       );
-      
+
       // Check for images in the message
       if (message.images && message.images.length > 0) {
         const imageData = message.images[0];
@@ -169,35 +172,45 @@ async function callGenerateImage(
           `Found images array with ${message.images.length} image(s). First image structure: ${JSON.stringify(imageData, null, 2)}`,
         );
         const imageUrl = imageData.image_url?.url;
-        
+
         if (imageUrl) {
           logger.log(`Found image URL: ${imageUrl.substring(0, 100)}...`);
-          
+
           // Check if it's a base64 data URL or a regular URL
           if (imageUrl.startsWith("data:image/")) {
             // It's a base64 data URL, extract the base64 part
-            const base64Match = imageUrl.match(/^data:image\/[^;]+;base64,(.+)$/);
+            const base64Match = imageUrl.match(
+              /^data:image\/[^;]+;base64,(.+)$/,
+            );
             if (base64Match) {
-              logger.log(`Extracted base64 image data (${base64Match[1].length} chars)`);
+              logger.log(
+                `Extracted base64 image data (${base64Match[1].length} chars)`,
+              );
               return {
                 b64_json: base64Match[1],
               };
             }
           }
-          
+
           // It's a regular URL
           logger.log(`Using regular image URL`);
           return {
             url: imageUrl,
           };
         } else {
-          logger.error(`image_url.url is missing in imageData: ${JSON.stringify(imageData)}`);
+          logger.error(
+            `image_url.url is missing in imageData: ${JSON.stringify(imageData)}`,
+          );
         }
       } else {
-        logger.error(`No images array found in message. Message keys: ${Object.keys(message).join(", ")}`);
+        logger.error(
+          `No images array found in message. Message keys: ${Object.keys(message).join(", ")}`,
+        );
       }
     } else {
-      logger.error(`No choices found in response. Response keys: ${Object.keys(data).join(", ")}`);
+      logger.error(
+        `No choices found in response. Response keys: ${Object.keys(data).join(", ")}`,
+      );
     }
 
     logger.error(
