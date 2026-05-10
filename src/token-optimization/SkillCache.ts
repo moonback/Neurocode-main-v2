@@ -74,6 +74,7 @@ export class SkillCache<T = string> {
 
     if (!entry) {
       this.stats.misses++;
+      console.log(`❌ SkillCache.get: Cache MISS for "${key}"`);
       return undefined;
     }
 
@@ -84,6 +85,9 @@ export class SkillCache<T = string> {
       this.cache.delete(key);
       this.stats.misses++;
       this.stats.evictions++;
+      console.log(
+        `⏰ SkillCache.get: Cache entry expired for "${key}" (idle for ${((now - entry.lastAccessed) / 60000).toFixed(1)} minutes)`,
+      );
       return undefined;
     }
 
@@ -94,6 +98,10 @@ export class SkillCache<T = string> {
     // Move to end (most recently used) by deleting and re-inserting
     this.cache.delete(key);
     this.cache.set(key, entry);
+
+    console.log(
+      `✅ SkillCache.get: Cache HIT for "${key}" (hit rate: ${((this.stats.hits / (this.stats.hits + this.stats.misses)) * 100).toFixed(1)}%)`,
+    );
 
     return entry.value;
   }
@@ -114,6 +122,9 @@ export class SkillCache<T = string> {
     // If key already exists, remove it first
     if (this.cache.has(key)) {
       this.cache.delete(key);
+      console.log(`🔄 SkillCache.put: Updating existing cache entry for "${key}"`);
+    } else {
+      console.log(`💾 SkillCache.put: Adding new cache entry for "${key}" (size: ${size} bytes)`);
     }
 
     // If cache is at max size, evict least recently used (first entry)
@@ -122,6 +133,9 @@ export class SkillCache<T = string> {
       if (firstKey !== undefined) {
         this.cache.delete(firstKey);
         this.stats.evictions++;
+        console.log(
+          `🗑️ SkillCache.put: Evicted LRU entry "${firstKey}" (cache full: ${this.cache.size}/${this.maxSize})`,
+        );
       }
     }
 
@@ -132,6 +146,10 @@ export class SkillCache<T = string> {
       lastAccessed: now,
       createdAt: now,
     });
+    
+    console.log(
+      `✅ SkillCache.put: Successfully cached "${key}" (cache size: ${this.cache.size}/${this.maxSize})`,
+    );
   }
 
   /**

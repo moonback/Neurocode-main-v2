@@ -611,7 +611,9 @@ export async function handleLocalAgentStream(
     const temperature = await getTemperature(settings.selectedModel);
 
     // Initialize token optimization system
+    logger.info("🚀 Token Optimization System: ACTIVATING...");
     initializeTokenOptimization();
+    logger.info("✅ Token Optimization System: ACTIVE and ready to track usage");
 
     // Allocate token budget for this request
     // Determine task complexity based on message history and tools
@@ -630,7 +632,7 @@ export async function handleLocalAgentStream(
     );
 
     logger.info(
-      `Allocated token budget for chat ${chat.id}: ${tokenBudget.total} tokens (${taskComplexity} task)`,
+      `📊 Token Budget Allocated: ${tokenBudget.total} tokens for chat ${chat.id} (${taskComplexity} task complexity)`,
     );
 
     // Track token usage at the end

@@ -97,6 +97,10 @@ export class SkillLoader {
     const startTime = performance.now();
     const operation = "loadMetadata";
 
+    console.log(
+      `📖 SkillLoader.loadMetadata: Loading metadata for skill "${skillName}" (scope: ${scope})`,
+    );
+
     try {
       // Get skill file path
       const skillPath = this.getSkillPath(skillName, scope);
@@ -106,6 +110,9 @@ export class SkillLoader {
         await fs.access(skillPath);
       } catch {
         const endTime = performance.now();
+        console.log(
+          `❌ SkillLoader.loadMetadata: Skill file not found: ${skillPath}`,
+        );
         return {
           success: false,
           error: `Skill file not found: ${skillPath}`,
@@ -135,6 +142,9 @@ export class SkillLoader {
       const frontmatterMatch = partialContent.match(/^---\n([\s\S]*?)\n---/);
       if (!frontmatterMatch) {
         const endTime = performance.now();
+        console.log(
+          `❌ SkillLoader.loadMetadata: Invalid skill file (missing frontmatter): ${skillPath}`,
+        );
         return {
           success: false,
           error: "Invalid skill file: missing frontmatter",
@@ -157,6 +167,9 @@ export class SkillLoader {
 
       if (!nameMatch || !descriptionMatch) {
         const endTime = performance.now();
+        console.log(
+          `❌ SkillLoader.loadMetadata: Invalid frontmatter (missing name or description): ${skillPath}`,
+        );
         return {
           success: false,
           error: "Invalid frontmatter: missing name or description",
@@ -196,6 +209,10 @@ export class SkillLoader {
         lastModified: stats.mtimeMs,
       };
 
+      console.log(
+        `✅ SkillLoader.loadMetadata: Successfully loaded metadata for "${skillName}" (${estimatedTokens} tokens, ${(endTime - startTime).toFixed(2)}ms)`,
+      );
+
       return {
         success: true,
         data: metadata,
@@ -210,6 +227,10 @@ export class SkillLoader {
       };
     } catch (error) {
       const endTime = performance.now();
+      console.error(
+        `❌ SkillLoader.loadMetadata: Error loading metadata for "${skillName}":`,
+        error,
+      );
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
@@ -245,6 +266,10 @@ export class SkillLoader {
     const startTime = performance.now();
     const operation = "loadSkill";
 
+    console.log(
+      `📚 SkillLoader.loadSkill: Loading full skill "${skillName}" (scope: ${scope})`,
+    );
+
     try {
       // Get skill file path
       const skillPath = this.getSkillPath(skillName, scope);
@@ -252,10 +277,17 @@ export class SkillLoader {
       // Read full file content asynchronously
       const content = await fs.readFile(skillPath, "utf-8");
 
+      console.log(
+        `📄 SkillLoader.loadSkill: Read ${content.length} characters from ${skillPath}`,
+      );
+
       // Parse skill content
       const parseResult = this.parser.parse(content);
       if (!parseResult.success) {
         const endTime = performance.now();
+        console.log(
+          `❌ SkillLoader.loadSkill: Failed to parse skill "${skillName}": ${parseResult.error.message}`,
+        );
         return {
           success: false,
           error: `Failed to parse skill: ${parseResult.error.message}`,
@@ -287,6 +319,10 @@ export class SkillLoader {
       };
 
       const endTime = performance.now();
+      console.log(
+        `✅ SkillLoader.loadSkill: Successfully loaded skill "${skillName}" (${(endTime - startTime).toFixed(2)}ms)`,
+      );
+      
       return {
         success: true,
         data: skill,
@@ -301,6 +337,10 @@ export class SkillLoader {
       };
     } catch (error) {
       const endTime = performance.now();
+      console.error(
+        `❌ SkillLoader.loadSkill: Error loading skill "${skillName}":`,
+        error,
+      );
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),

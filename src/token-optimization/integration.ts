@@ -22,12 +22,13 @@ let contextOptimizer: ContextOptimizer | null = null;
 export function initializeTokenOptimization(): void {
   if (!tokenManager) {
     tokenManager = new TokenManager();
-    logger.info("TokenManager initialized");
+    logger.info("✅ TokenManager initialized successfully");
   }
   if (!contextOptimizer) {
     contextOptimizer = new ContextOptimizer();
-    logger.info("ContextOptimizer initialized");
+    logger.info("✅ ContextOptimizer initialized successfully");
   }
+  logger.info("🚀 Token Optimization System is ready");
 }
 
 /**
@@ -101,7 +102,16 @@ export async function trackTokenUsage(
     modelType: "unknown",
     conversationId,
   };
+  
+  logger.info(
+    `📊 Tracking token usage: ${tokensUsed} tokens for conversation ${conversationId} (request: ${usage.requestId})`,
+  );
+  
   await manager.trackUsage(conversationId, usage);
+  
+  logger.info(
+    `✅ Token usage tracked successfully: ${tokensUsed} tokens saved to database`,
+  );
 }
 
 /**

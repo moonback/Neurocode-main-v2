@@ -314,6 +314,10 @@ export class TokenManager {
    */
   trackUsage(requestId: string, usage: TokenUsage): void {
     try {
+      console.log(
+        `💾 TokenManager.trackUsage: Saving ${usage.totalTokens} tokens to database for conversation ${usage.conversationId}`,
+      );
+      
       // Insert usage record into database
       db.insert(tokenAnalytics)
         .values({
@@ -329,9 +333,13 @@ export class TokenManager {
           costEstimate: null, // Will be calculated if pricing is available
         })
         .run();
+        
+      console.log(
+        `✅ TokenManager.trackUsage: Successfully saved token usage to database (requestId: ${usage.requestId})`,
+      );
     } catch (error) {
       // Log error but don't throw - tracking failures shouldn't break the main flow
-      console.error("Failed to track token usage:", error);
+      console.error("❌ TokenManager.trackUsage: Failed to track token usage:", error);
     }
   }
 
