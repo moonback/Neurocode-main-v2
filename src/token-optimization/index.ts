@@ -79,3 +79,13 @@ export {
   type PredictionConfig,
   type UsageEvent,
 } from "./PreloaderPredictor";
+
+export {
+  SkillAnalyzer,
+  type TokenEstimate,
+  type TokenWarning,
+  type RedundancyReport,
+  type RedundancyItem,
+  type OptimizationSuggestion,
+  type AnalysisReport,
+} from "./SkillAnalyzer";
