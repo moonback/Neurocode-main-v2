@@ -8,12 +8,12 @@
 - **Backend** : Collecte et stockage des données en base de données
 - **Calculs** : Statistiques, top consommateurs, coûts, export
 - **Tests** : 41 tests unitaires validant toutes les fonctionnalités
+- **Dashboard UI** : Interface graphique React avec Recharts pour visualiser les analytics
+- **Bug Fix** : Correction du problème de données vides dans le dashboard (voir [BUGFIX_DASHBOARD_EMPTY_DATA.md](BUGFIX_DASHBOARD_EMPTY_DATA.md))
 
-### ⏳ Ce qui Manque
+### ⚠️ Note Importante
 
-- **Dashboard UI** : Interface graphique pour visualiser les analytics (Task 15.1 - optionnelle)
-- **Graphiques** : Visualisations des tendances et métriques
-- **Interface Settings** : Panneau dédié dans l'application
+**Si le dashboard affiche des données vides** malgré l'utilisation en mode Agent Local, consultez [BUGFIX_DASHBOARD_EMPTY_DATA.md](BUGFIX_DASHBOARD_EMPTY_DATA.md) pour la solution. Le problème était lié à la conversion des timestamps en objets Date dans les handlers IPC.
 
 ---
 

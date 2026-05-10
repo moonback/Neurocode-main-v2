@@ -10,6 +10,7 @@ const handle = createLoggedHandler(logger);
 export function registerTokenAnalyticsHandlers() {
   // Get token usage statistics
   handle(tokenAnalyticsContracts.getStatistics.channel, async (_, params) => {
+    logger.info("📊 getStatistics called with params:", params);
     const manager = getTokenManager();
 
     // Build filter object from params
@@ -17,10 +18,12 @@ export function registerTokenAnalyticsHandlers() {
     if (params.conversationId) filter.conversationId = params.conversationId;
     if (params.skillName) filter.skillName = params.skillName;
     if (params.modelType) filter.modelType = params.modelType;
-    if (params.startDate) filter.startTime = params.startDate;
-    if (params.endDate) filter.endTime = params.endDate;
+    if (params.startDate) filter.startTime = new Date(params.startDate);
+    if (params.endDate) filter.endTime = new Date(params.endDate);
 
+    logger.info("📊 Filter object:", filter);
     const stats = manager.getStatistics(filter);
+    logger.info("📊 Statistics result:", stats);
 
     // Map UsageStatistics to TokenStatistics schema
     return {
@@ -39,15 +42,18 @@ export function registerTokenAnalyticsHandlers() {
 
   // Get top token consumers
   handle(tokenAnalyticsContracts.getTopConsumers.channel, async (_, params) => {
+    logger.info("🔥 getTopConsumers called with params:", params);
     const manager = getTokenManager();
 
     // Build filter object from params
     const filter: Record<string, unknown> = {};
-    if (params.startDate) filter.startTime = params.startDate;
-    if (params.endDate) filter.endTime = params.endDate;
+    if (params.startDate) filter.startTime = new Date(params.startDate);
+    if (params.endDate) filter.endTime = new Date(params.endDate);
 
+    logger.info("🔥 Filter object:", filter);
     const limit = params.limit || 10;
     const consumers = manager.getTopConsumers(filter, limit, params.type);
+    logger.info(`🔥 Found ${consumers.length} consumers`);
 
     // Map TopConsumer[] to schema (id -> name)
     return consumers.map((consumer) => ({
@@ -60,15 +66,18 @@ export function registerTokenAnalyticsHandlers() {
 
   // Calculate cost breakdown
   handle(tokenAnalyticsContracts.calculateCost.channel, async (_, params) => {
+    logger.info("💰 calculateCost called with params:", params);
     const manager = getTokenManager();
 
     // Build filter object from params
     const filter: Record<string, unknown> = {};
     if (params.conversationId) filter.conversationId = params.conversationId;
-    if (params.startDate) filter.startTime = params.startDate;
-    if (params.endDate) filter.endTime = params.endDate;
+    if (params.startDate) filter.startTime = new Date(params.startDate);
+    if (params.endDate) filter.endTime = new Date(params.endDate);
 
+    logger.info("💰 Filter object:", filter);
     const costBreakdownArray = manager.calculateCost(filter);
+    logger.info(`💰 Cost breakdown has ${costBreakdownArray.length} models`);
 
     // Convert CostBreakdown[] to the schema format
     let totalCost = 0;
@@ -103,24 +112,28 @@ export function registerTokenAnalyticsHandlers() {
 
   // Export usage data
   handle(tokenAnalyticsContracts.exportUsageData.channel, async (_, params) => {
+    logger.info("📥 exportUsageData called with params:", params);
     const manager = getTokenManager();
 
     // Build filter object from params
     const filter: Record<string, unknown> = {};
     if (params.conversationId) filter.conversationId = params.conversationId;
-    if (params.startDate) filter.startTime = params.startDate;
-    if (params.endDate) filter.endTime = params.endDate;
+    if (params.startDate) filter.startTime = new Date(params.startDate);
+    if (params.endDate) filter.endTime = new Date(params.endDate);
 
+    logger.info("📥 Filter object:", filter);
     try {
       const data = manager.exportData(params.format, filter);
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const filename = `token-usage-${timestamp}.${params.format}`;
 
+      logger.info(`📥 Export successful: ${filename}`);
       return {
         data,
         filename,
       };
     } catch (error) {
+      logger.error("📥 Export failed:", error);
       throw new DyadError(
         `Failed to export usage data: ${error instanceof Error ? error.message : String(error)}`,
         DyadErrorKind.Internal,
@@ -132,16 +145,19 @@ export function registerTokenAnalyticsHandlers() {
   handle(
     tokenAnalyticsContracts.getUsageOverTime.channel,
     async (_, params) => {
+      logger.info("📈 getUsageOverTime called with params:", params);
       const manager = getTokenManager();
 
       // Build filter object from params
       const filter: Record<string, unknown> = {};
       if (params.conversationId) filter.conversationId = params.conversationId;
-      if (params.startDate) filter.startTime = params.startDate;
-      if (params.endDate) filter.endTime = params.endDate;
+      if (params.startDate) filter.startTime = new Date(params.startDate);
+      if (params.endDate) filter.endTime = new Date(params.endDate);
 
+      logger.info("📈 Filter object:", filter);
       // Get all usage data
       const stats = manager.getStatistics(filter);
+      logger.info("📈 Statistics result:", stats);
 
       // For now, return a simple aggregation
       // In a real implementation, this would query the database with time-based grouping
