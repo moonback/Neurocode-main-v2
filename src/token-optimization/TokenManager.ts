@@ -312,14 +312,14 @@ export class TokenManager {
    *
    * Requirements: 3.4, 7.1, 7.2
    */
-  trackUsage(requestId: string, usage: TokenUsage): void {
+  async trackUsage(requestId: string, usage: TokenUsage): Promise<void> {
     try {
       console.log(
         `💾 TokenManager.trackUsage: Saving ${usage.totalTokens} tokens to database for conversation ${usage.conversationId}`,
       );
       
       // Insert usage record into database
-      db.insert(tokenAnalytics)
+      await db.insert(tokenAnalytics)
         .values({
           requestId: usage.requestId || requestId,
           conversationId: usage.conversationId || null,
@@ -340,6 +340,7 @@ export class TokenManager {
     } catch (error) {
       // Log error but don't throw - tracking failures shouldn't break the main flow
       console.error("❌ TokenManager.trackUsage: Failed to track token usage:", error);
+      console.error("Error details:", error);
     }
   }
 
