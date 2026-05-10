@@ -137,6 +137,38 @@ export interface ModelStats {
   outputTokens: number;
 }
 
+/**
+ * Top consumer entry (conversation, skill, or model)
+ */
+export interface TopConsumer {
+  id: string; // conversationId, skillName, or modelType
+  type: "conversation" | "skill" | "model";
+  totalTokens: number;
+  requestCount: number;
+  percentage: number; // percentage of total tokens
+}
+
+/**
+ * Model pricing information (in USD per 1M tokens)
+ */
+export interface ModelPricing {
+  modelType: string;
+  inputPricePerMillion: number; // USD per 1M input tokens
+  outputPricePerMillion: number; // USD per 1M output tokens
+}
+
+/**
+ * Cost breakdown by model
+ */
+export interface CostBreakdown {
+  modelType: string;
+  inputTokens: number;
+  outputTokens: number;
+  inputCost: number; // in USD
+  outputCost: number; // in USD
+  totalCost: number; // in USD
+}
+
 // =============================================================================
 // Constants
 // =============================================================================
@@ -483,15 +515,433 @@ export class TokenManager {
   /**
    * Export usage data in specified format
    *
-   * @param _format - Export format (csv or json)
+   * @param format - Export format (csv or json)
+   * @param filter - Filter criteria for data to export
    * @returns Exported data as string
    *
-   * TODO: Implement in Task 14.1 (Phase 3)
+   * Requirements: 7.5
    */
-  async exportData(_format: "csv" | "json"): Promise<string> {
-    // To be implemented in Task 14.1
-    throw new Error(
-      "exportData not yet implemented - will be added in Task 14.1",
-    );
+  async exportData(
+    format: "csv" | "json",
+    filter: StatisticsFilter = {},
+  ): Promise<string> {
+    try {
+      // Build WHERE conditions based on filter
+      const conditions = [];
+
+      if (filter.conversationId) {
+        conditions.push(
+          eq(tokenAnalytics.conversationId, filter.conversationId),
+        );
+      }
+
+      if (filter.skillName) {
+        conditions.push(eq(tokenAnalytics.skillName, filter.skillName));
+      }
+
+      if (filter.startTime) {
+        conditions.push(gte(tokenAnalytics.timestamp, filter.startTime));
+      }
+
+      if (filter.endTime) {
+        conditions.push(lte(tokenAnalytics.timestamp, filter.endTime));
+      }
+
+      if (filter.modelType) {
+        conditions.push(eq(tokenAnalytics.modelType, filter.modelType));
+      }
+
+      const whereClause =
+        conditions.length > 0 ? and(...conditions) : undefined;
+
+      // Get all matching records
+      const records = db
+        .select()
+        .from(tokenAnalytics)
+        .where(whereClause)
+        .all();
+
+      if (format === "csv") {
+        return this.exportToCSV(records);
+      } else {
+        return this.exportToJSON(records);
+      }
+    } catch (error) {
+      console.error("Failed to export data:", error);
+      throw new Error(
+        `Failed to export data: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+
+  /**
+   * Export records to CSV format
+   *
+   * @param records - Records to export
+   * @returns CSV string with proper headers and escaping
+   *
+   * @private
+   */
+  private exportToCSV(records: any[]): string {
+    if (records.length === 0) {
+      return "requestId,conversationId,skillName,modelType,inputTokens,outputTokens,totalTokens,optimizationsSaved,costEstimate,timestamp\n";
+    }
+
+    // CSV header
+    const headers = [
+      "requestId",
+      "conversationId",
+      "skillName",
+      "modelType",
+      "inputTokens",
+      "outputTokens",
+      "totalTokens",
+      "optimizationsSaved",
+      "costEstimate",
+      "timestamp",
+    ];
+
+    const csvLines = [headers.join(",")];
+
+    // CSV rows
+    for (const record of records) {
+      const row = [
+        this.escapeCSVField(record.requestId || ""),
+        this.escapeCSVField(record.conversationId || ""),
+        this.escapeCSVField(record.skillName || ""),
+        this.escapeCSVField(record.modelType || ""),
+        record.inputTokens || 0,
+        record.outputTokens || 0,
+        record.totalTokens || 0,
+        record.optimizationsSaved || 0,
+        record.costEstimate || 0,
+        record.timestamp || 0,
+      ];
+
+      csvLines.push(row.join(","));
+    }
+
+    return csvLines.join("\n") + "\n";
+  }
+
+  /**
+   * Escape a CSV field value
+   *
+   * @param value - Value to escape
+   * @returns Escaped value
+   *
+   * @private
+   */
+  private escapeCSVField(value: string): string {
+    // If value contains comma, quote, or newline, wrap in quotes and escape quotes
+    if (value.includes(",") || value.includes('"') || value.includes("\n")) {
+      return `"${value.replace(/"/g, '""')}"`;
+    }
+    return value;
+  }
+
+  /**
+   * Export records to JSON format
+   *
+   * @param records - Records to export
+   * @returns JSON string
+   *
+   * @private
+   */
+  private exportToJSON(records: any[]): string {
+    return JSON.stringify(records, null, 2);
+  }
+
+  /**
+   * Get top token consumers (conversations, skills, or models)
+   *
+   * @param filter - Filter criteria for statistics
+   * @param limit - Maximum number of top consumers to return (default: 10)
+   * @param type - Type of consumers to return (default: all types)
+   * @returns Array of top consumers sorted by token usage
+   *
+   * Requirements: 7.3
+   */
+  getTopConsumers(
+    filter: StatisticsFilter,
+    limit: number = 10,
+    type?: "conversation" | "skill" | "model",
+  ): TopConsumer[] {
+    try {
+      // Build WHERE conditions based on filter
+      const conditions = [];
+
+      if (filter.conversationId) {
+        conditions.push(
+          eq(tokenAnalytics.conversationId, filter.conversationId),
+        );
+      }
+
+      if (filter.skillName) {
+        conditions.push(eq(tokenAnalytics.skillName, filter.skillName));
+      }
+
+      if (filter.startTime) {
+        conditions.push(gte(tokenAnalytics.timestamp, filter.startTime));
+      }
+
+      if (filter.endTime) {
+        conditions.push(lte(tokenAnalytics.timestamp, filter.endTime));
+      }
+
+      if (filter.modelType) {
+        conditions.push(eq(tokenAnalytics.modelType, filter.modelType));
+      }
+
+      const whereClause =
+        conditions.length > 0 ? and(...conditions) : undefined;
+
+      // Get total tokens for percentage calculation
+      const totalStats = db
+        .select({
+          totalTokens: sql<number>`SUM(${tokenAnalytics.totalTokens})`,
+        })
+        .from(tokenAnalytics)
+        .where(whereClause)
+        .get();
+
+      const grandTotal = Number(totalStats?.totalTokens || 0);
+
+      const consumers: TopConsumer[] = [];
+
+      // Get top conversations
+      if (!type || type === "conversation") {
+        const conversationConsumers = db
+          .select({
+            id: tokenAnalytics.conversationId,
+            totalTokens: sql<number>`SUM(${tokenAnalytics.totalTokens})`,
+            requestCount: sql<number>`COUNT(*)`,
+          })
+          .from(tokenAnalytics)
+          .where(whereClause)
+          .groupBy(tokenAnalytics.conversationId)
+          .orderBy(sql`SUM(${tokenAnalytics.totalTokens}) DESC`)
+          .limit(limit)
+          .all();
+
+        for (const consumer of conversationConsumers) {
+          if (consumer.id) {
+            consumers.push({
+              id: consumer.id,
+              type: "conversation",
+              totalTokens: Number(consumer.totalTokens),
+              requestCount: Number(consumer.requestCount),
+              percentage:
+                grandTotal > 0
+                  ? (Number(consumer.totalTokens) / grandTotal) * 100
+                  : 0,
+            });
+          }
+        }
+      }
+
+      // Get top skills
+      if (!type || type === "skill") {
+        const skillConsumers = db
+          .select({
+            id: tokenAnalytics.skillName,
+            totalTokens: sql<number>`SUM(${tokenAnalytics.totalTokens})`,
+            requestCount: sql<number>`COUNT(*)`,
+          })
+          .from(tokenAnalytics)
+          .where(whereClause)
+          .groupBy(tokenAnalytics.skillName)
+          .orderBy(sql`SUM(${tokenAnalytics.totalTokens}) DESC`)
+          .limit(limit)
+          .all();
+
+        for (const consumer of skillConsumers) {
+          if (consumer.id) {
+            consumers.push({
+              id: consumer.id,
+              type: "skill",
+              totalTokens: Number(consumer.totalTokens),
+              requestCount: Number(consumer.requestCount),
+              percentage:
+                grandTotal > 0
+                  ? (Number(consumer.totalTokens) / grandTotal) * 100
+                  : 0,
+            });
+          }
+        }
+      }
+
+      // Get top models
+      if (!type || type === "model") {
+        const modelConsumers = db
+          .select({
+            id: tokenAnalytics.modelType,
+            totalTokens: sql<number>`SUM(${tokenAnalytics.totalTokens})`,
+            requestCount: sql<number>`COUNT(*)`,
+          })
+          .from(tokenAnalytics)
+          .where(whereClause)
+          .groupBy(tokenAnalytics.modelType)
+          .orderBy(sql`SUM(${tokenAnalytics.totalTokens}) DESC`)
+          .limit(limit)
+          .all();
+
+        for (const consumer of modelConsumers) {
+          consumers.push({
+            id: consumer.id,
+            type: "model",
+            totalTokens: Number(consumer.totalTokens),
+            requestCount: Number(consumer.requestCount),
+            percentage:
+              grandTotal > 0
+                ? (Number(consumer.totalTokens) / grandTotal) * 100
+                : 0,
+          });
+        }
+      }
+
+      // Sort all consumers by total tokens and limit
+      consumers.sort((a, b) => b.totalTokens - a.totalTokens);
+      return consumers.slice(0, limit);
+    } catch (error) {
+      console.error("Failed to get top consumers:", error);
+      return [];
+    }
+  }
+
+  /**
+   * Calculate cost estimates based on token usage and model pricing
+   *
+   * @param filter - Filter criteria for statistics
+   * @param pricing - Model pricing information (optional, uses default pricing if not provided)
+   * @returns Cost breakdown by model
+   *
+   * Requirements: 7.6
+   */
+  calculateCost(
+    filter: StatisticsFilter,
+    pricing?: ModelPricing[],
+  ): CostBreakdown[] {
+    try {
+      // Default pricing for common models (in USD per 1M tokens)
+      const defaultPricing: Record<string, ModelPricing> = {
+        "claude-3-5-sonnet-20241022": {
+          modelType: "claude-3-5-sonnet-20241022",
+          inputPricePerMillion: 3.0,
+          outputPricePerMillion: 15.0,
+        },
+        "claude-3-5-haiku-20241022": {
+          modelType: "claude-3-5-haiku-20241022",
+          inputPricePerMillion: 1.0,
+          outputPricePerMillion: 5.0,
+        },
+        "claude-3-opus-20240229": {
+          modelType: "claude-3-opus-20240229",
+          inputPricePerMillion: 15.0,
+          outputPricePerMillion: 75.0,
+        },
+        "gpt-4o": {
+          modelType: "gpt-4o",
+          inputPricePerMillion: 2.5,
+          outputPricePerMillion: 10.0,
+        },
+        "gpt-4o-mini": {
+          modelType: "gpt-4o-mini",
+          inputPricePerMillion: 0.15,
+          outputPricePerMillion: 0.6,
+        },
+        "gpt-4-turbo": {
+          modelType: "gpt-4-turbo",
+          inputPricePerMillion: 10.0,
+          outputPricePerMillion: 30.0,
+        },
+      };
+
+      // Build pricing map
+      const pricingMap: Record<string, ModelPricing> = { ...defaultPricing };
+      if (pricing) {
+        for (const price of pricing) {
+          pricingMap[price.modelType] = price;
+        }
+      }
+
+      // Build WHERE conditions based on filter
+      const conditions = [];
+
+      if (filter.conversationId) {
+        conditions.push(
+          eq(tokenAnalytics.conversationId, filter.conversationId),
+        );
+      }
+
+      if (filter.skillName) {
+        conditions.push(eq(tokenAnalytics.skillName, filter.skillName));
+      }
+
+      if (filter.startTime) {
+        conditions.push(gte(tokenAnalytics.timestamp, filter.startTime));
+      }
+
+      if (filter.endTime) {
+        conditions.push(lte(tokenAnalytics.timestamp, filter.endTime));
+      }
+
+      if (filter.modelType) {
+        conditions.push(eq(tokenAnalytics.modelType, filter.modelType));
+      }
+
+      const whereClause =
+        conditions.length > 0 ? and(...conditions) : undefined;
+
+      // Get token usage by model
+      const modelUsage = db
+        .select({
+          modelType: tokenAnalytics.modelType,
+          inputTokens: sql<number>`SUM(${tokenAnalytics.inputTokens})`,
+          outputTokens: sql<number>`SUM(${tokenAnalytics.outputTokens})`,
+        })
+        .from(tokenAnalytics)
+        .where(whereClause)
+        .groupBy(tokenAnalytics.modelType)
+        .all();
+
+      const costBreakdown: CostBreakdown[] = [];
+
+      for (const usage of modelUsage) {
+        const inputTokens = Number(usage.inputTokens);
+        const outputTokens = Number(usage.outputTokens);
+
+        // Get pricing for this model (use default if not found)
+        const modelPricing = pricingMap[usage.modelType] || {
+          modelType: usage.modelType,
+          inputPricePerMillion: 3.0, // default fallback
+          outputPricePerMillion: 15.0, // default fallback
+        };
+
+        // Calculate costs (convert from per-million to actual cost)
+        const inputCost =
+          (inputTokens / 1_000_000) * modelPricing.inputPricePerMillion;
+        const outputCost =
+          (outputTokens / 1_000_000) * modelPricing.outputPricePerMillion;
+        const totalCost = inputCost + outputCost;
+
+        costBreakdown.push({
+          modelType: usage.modelType,
+          inputTokens,
+          outputTokens,
+          inputCost,
+          outputCost,
+          totalCost,
+        });
+      }
+
+      // Sort by total cost descending
+      costBreakdown.sort((a, b) => b.totalCost - a.totalCost);
+
+      return costBreakdown;
+    } catch (error) {
+      console.error("Failed to calculate cost:", error);
+      return [];
+    }
   }
 }

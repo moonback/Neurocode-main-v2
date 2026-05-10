@@ -221,8 +221,8 @@ This implementation plan follows a 4-phase migration strategy to add token optim
 
 ### Phase 3: Analytics and Reporting
 
-- [ ] 13. Implement token usage analytics
-  - [ ] 13.1 Enhance TokenManager with analytics methods
+- [x] 13. Implement token usage analytics
+  - [x] 13.1 Enhance TokenManager with analytics methods
     - Implement database persistence for token usage events
     - Implement aggregation queries by conversation, skill, time period
     - Implement top consumer identification and ranking
@@ -238,8 +238,8 @@ This implementation plan follows a 4-phase migration strategy to add token optim
     - **Property 32: Cost Calculation**
     - **Validates: Requirements 7.6**
 
-- [ ] 14. Implement data export functionality
-  - [ ] 14.1 Add CSV export to TokenManager
+- [x] 14. Implement data export functionality
+  - [-] 14.1 Add CSV export to TokenManager
     - Implement `exportData()` method with CSV format support
     - Add JSON export format as well
     - Validate CSV format with proper headers and escaping
@@ -267,13 +267,13 @@ This implementation plan follows a 4-phase migration strategy to add token optim
     - Test export functionality from UI
     - _Requirements: 7.4_
 
-- [ ] 16. Checkpoint - Phase 3 validation
+- [x] 16. Checkpoint - Phase 3 validation
   - Ensure all tests pass, ask the user if questions arise.
 
 ### Phase 4: Preloading and Prediction
 
-- [ ] 17. Implement usage pattern analysis
-  - [ ] 17.1 Create PreloaderPredictor class with pattern analysis
+- [x] 17. Implement usage pattern analysis
+  - [x] 17.1 Create PreloaderPredictor class with pattern analysis
     - Implement usage pattern tracking and storage
     - Implement prediction algorithm based on historical frequency
     - Implement accuracy measurement and algorithm adjustment
@@ -282,8 +282,8 @@ This implementation plan follows a 4-phase migration strategy to add token optim
     - **Property 38: Usage Pattern Prediction**
     - **Validates: Requirements 9.1**
 
-- [ ] 18. Implement skill preloading
-  - [ ] 18.1 Add background preloading to SkillEngine
+- [-] 18. Implement skill preloading
+  - [x] 18.1 Add background preloading to SkillEngine
     - Implement idle detection for background preloading
     - Implement priority-based preloading using historical frequency
     - Implement memory limits for preloading

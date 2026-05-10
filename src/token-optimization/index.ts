@@ -12,6 +12,14 @@ export {
   type TokenBudgetConfig,
   type ValidationResult,
   type AgentRequest,
+  type StatisticsFilter,
+  type UsageStatistics,
+  type ConversationStats,
+  type SkillStats,
+  type ModelStats,
+  type TopConsumer,
+  type ModelPricing,
+  type CostBreakdown,
 } from "./TokenManager";
 
 export {
@@ -60,4 +68,14 @@ export {
   type ExecutionContext,
   type ExecutionResult,
   type SkillEngineConfig,
+  type PreloadingStats,
 } from "./SkillEngine";
+
+export {
+  PreloaderPredictor,
+  type UsagePattern,
+  type SkillPrediction,
+  type PredictionAccuracy,
+  type PredictionConfig,
+  type UsageEvent,
+} from "./PreloaderPredictor";

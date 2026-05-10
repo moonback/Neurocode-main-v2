@@ -2,13 +2,15 @@
  * SkillEngine - Optimized skill execution engine
  * 
  * Provides optimized skill execution with context reuse, parallel execution,
- * concurrency limiting, performance warnings, and detailed error reporting.
+ * concurrency limiting, performance warnings, detailed error reporting, and
+ * background preloading with prediction.
  * 
- * Requirements: 4.7, 5.1, 5.2, 5.3, 5.4, 5.5
+ * Requirements: 4.7, 5.1, 5.2, 5.3, 5.4, 5.5, 9.2, 9.3, 9.4, 9.5
  */
 
 import { SkillLoader } from './SkillLoader';
 import { ResultCache, type SkillInput } from './ResultCache';
+import { PreloaderPredictor, type UsageEvent } from './PreloaderPredictor';
 import type { Skill } from '@/skills/types';
 
 export interface ExecutionContext {
@@ -37,6 +39,19 @@ export interface SkillEngineConfig {
   enableResultCache: boolean;
   resultCacheSize: number;
   resultCacheTimeout: number; // minutes
+  enablePreloading: boolean;
+  preloadingIdleThreshold: number; // milliseconds of idle time before preloading
+  preloadingMemoryLimit: number; // max number of skills to preload
+  preloadingMaxPredictions: number; // max number of predictions to preload
+}
+
+export interface PreloadingStats {
+  preloadedSkills: number;
+  preloadHits: number;
+  preloadMisses: number;
+  preloadHitRate: number;
+  lastPreloadTime: number | null;
+  memoryUsage: number; // number of preloaded skills in memory
 }
 
 const DEFAULT_CONFIG: SkillEngineConfig = {
@@ -45,16 +60,25 @@ const DEFAULT_CONFIG: SkillEngineConfig = {
   enableResultCache: true,
   resultCacheSize: 100,
   resultCacheTimeout: 10,
+  enablePreloading: true,
+  preloadingIdleThreshold: 2000, // 2 seconds of idle time
+  preloadingMemoryLimit: 10, // max 10 preloaded skills
+  preloadingMaxPredictions: 5, // preload top 5 predictions
 };
 
 export class SkillEngine {
   private loader: SkillLoader;
   private resultCache: ResultCache;
+  private predictor: PreloaderPredictor;
   private config: SkillEngineConfig;
   private activeExecutions: Map<string, ExecutionContext>;
   private executionQueue: Array<() => Promise<void>>;
   private runningCount: number;
   private loadedSkills: Map<string, Skill>; // skillName -> Skill object
+  private preloadedSkills: Set<string>; // Set of preloaded skill names
+  private lastActivityTime: number;
+  private idleTimer: NodeJS.Timeout | null;
+  private preloadingStats: PreloadingStats;
 
   constructor(
     loader: SkillLoader,
@@ -66,10 +90,27 @@ export class SkillEngine {
       this.config.resultCacheSize,
       this.config.resultCacheTimeout
     );
+    this.predictor = new PreloaderPredictor();
     this.activeExecutions = new Map();
     this.executionQueue = [];
     this.runningCount = 0;
     this.loadedSkills = new Map();
+    this.preloadedSkills = new Set();
+    this.lastActivityTime = Date.now();
+    this.idleTimer = null;
+    this.preloadingStats = {
+      preloadedSkills: 0,
+      preloadHits: 0,
+      preloadMisses: 0,
+      preloadHitRate: 0,
+      lastPreloadTime: null,
+      memoryUsage: 0,
+    };
+
+    // Start idle detection if preloading is enabled
+    if (this.config.enablePreloading) {
+      this.startIdleDetection();
+    }
   }
 
   /**
@@ -84,6 +125,9 @@ export class SkillEngine {
     inputs: SkillInput,
     isDeterministic: boolean = false
   ): Promise<ExecutionResult<T>> {
+    // Update activity time for idle detection
+    this.updateActivity();
+
     const contextId = this.generateContextId();
     const context: ExecutionContext = {
       id: contextId,
@@ -95,6 +139,22 @@ export class SkillEngine {
 
     this.activeExecutions.set(contextId, context);
 
+    // Track if skill was preloaded
+    const wasPreloaded = this.preloadedSkills.has(skillName);
+    if (wasPreloaded) {
+      this.preloadingStats.preloadHits++;
+    } else if (this.config.enablePreloading) {
+      this.preloadingStats.preloadMisses++;
+    }
+
+    // Update preload hit rate
+    const totalPreloadAttempts =
+      this.preloadingStats.preloadHits + this.preloadingStats.preloadMisses;
+    if (totalPreloadAttempts > 0) {
+      this.preloadingStats.preloadHitRate =
+        this.preloadingStats.preloadHits / totalPreloadAttempts;
+    }
+
     try {
       // Check result cache if enabled and skill is deterministic
       if (this.config.enableResultCache && isDeterministic) {
@@ -103,6 +163,9 @@ export class SkillEngine {
           context.status = 'completed';
           context.result = cached.result;
           context.endTime = Date.now();
+
+          // Track usage for prediction
+          this.trackSkillUsage(skillName, wasPreloaded);
 
           return {
             success: true,
@@ -147,6 +210,9 @@ export class SkillEngine {
         this.resultCache.put(skillName, inputs, result, executionTime);
       }
 
+      // Track usage for prediction
+      this.trackSkillUsage(skillName, wasPreloaded);
+
       return {
         success: true,
         result,
@@ -160,6 +226,9 @@ export class SkillEngine {
       context.endTime = Date.now();
 
       const executionTime = context.endTime - context.startTime;
+
+      // Track usage even on failure
+      this.trackSkillUsage(skillName, wasPreloaded);
 
       return {
         success: false,
@@ -186,6 +255,9 @@ export class SkillEngine {
       isDeterministic?: boolean;
     }>
   ): Promise<Array<ExecutionResult<T>>> {
+    // Update activity time for idle detection
+    this.updateActivity();
+
     const promises = executions.map((exec) =>
       this.executeSkill<T>(
         exec.skillName,
@@ -195,6 +267,158 @@ export class SkillEngine {
     );
 
     return Promise.all(promises);
+  }
+
+  /**
+   * Start idle detection for background preloading
+   * Requirements: 9.2
+   */
+  private startIdleDetection(): void {
+    // Clear existing timer if any
+    if (this.idleTimer) {
+      clearTimeout(this.idleTimer);
+    }
+
+    // Set up recurring idle check
+    const checkIdle = () => {
+      const idleTime = Date.now() - this.lastActivityTime;
+
+      if (
+        idleTime >= this.config.preloadingIdleThreshold &&
+        this.runningCount === 0
+      ) {
+        // System is idle, trigger preloading
+        this.performBackgroundPreloading().catch((error) => {
+          console.error('[SkillEngine] Background preloading failed:', error);
+        });
+      }
+
+      // Schedule next check
+      this.idleTimer = setTimeout(
+        checkIdle,
+        this.config.preloadingIdleThreshold
+      );
+    };
+
+    // Start checking
+    this.idleTimer = setTimeout(checkIdle, this.config.preloadingIdleThreshold);
+  }
+
+  /**
+   * Update last activity time
+   */
+  private updateActivity(): void {
+    this.lastActivityTime = Date.now();
+  }
+
+  /**
+   * Perform background preloading of predicted skills
+   * Requirements: 9.2, 9.3, 9.4
+   */
+  private async performBackgroundPreloading(): Promise<void> {
+    if (!this.config.enablePreloading) {
+      return;
+    }
+
+    // Check memory limit
+    if (this.loadedSkills.size >= this.config.preloadingMemoryLimit) {
+      // Evict least recently used preloaded skills
+      this.evictPreloadedSkills();
+    }
+
+    // Get predictions from predictor
+    const predictions = this.predictor.predictSkills();
+
+    // Limit to configured max predictions
+    const topPredictions = predictions.slice(
+      0,
+      this.config.preloadingMaxPredictions
+    );
+
+    // Preload skills in priority order
+    for (const prediction of topPredictions) {
+      // Skip if already loaded
+      if (this.loadedSkills.has(prediction.skillName)) {
+        continue;
+      }
+
+      // Check memory limit again
+      if (this.loadedSkills.size >= this.config.preloadingMemoryLimit) {
+        break;
+      }
+
+      try {
+        // Preload the skill
+        await this.preloadSkill(prediction.skillName);
+        this.preloadingStats.preloadedSkills++;
+      } catch (error) {
+        console.error(
+          `[SkillEngine] Failed to preload skill "${prediction.skillName}":`,
+          error
+        );
+      }
+    }
+
+    // Update stats
+    this.preloadingStats.lastPreloadTime = Date.now();
+    this.preloadingStats.memoryUsage = this.preloadedSkills.size;
+  }
+
+  /**
+   * Preload a skill into memory
+   * Requirements: 9.4, 9.5
+   */
+  private async preloadSkill(skillName: string): Promise<void> {
+    try {
+      const result = await this.loader.loadSkill(skillName, 'user');
+      if (result.success) {
+        this.loadedSkills.set(skillName, result.data);
+        this.preloadedSkills.add(skillName);
+      }
+    } catch (error) {
+      throw new Error(`Failed to preload skill "${skillName}": ${error}`);
+    }
+  }
+
+  /**
+   * Evict preloaded skills to free memory
+   * Requirements: 9.4
+   */
+  private evictPreloadedSkills(): void {
+    // Get all preloaded skills
+    const preloadedArray = Array.from(this.preloadedSkills);
+
+    // Calculate how many to evict (evict 20% to make room)
+    const evictCount = Math.max(
+      1,
+      Math.floor(preloadedArray.length * 0.2)
+    );
+
+    // Evict oldest preloaded skills
+    for (let i = 0; i < evictCount && i < preloadedArray.length; i++) {
+      const skillName = preloadedArray[i];
+      this.loadedSkills.delete(skillName);
+      this.preloadedSkills.delete(skillName);
+    }
+
+    this.preloadingStats.memoryUsage = this.preloadedSkills.size;
+  }
+
+  /**
+   * Track skill usage for prediction
+   */
+  private trackSkillUsage(skillName: string, wasPreloaded: boolean): void {
+    if (!this.config.enablePreloading) {
+      return;
+    }
+
+    const event: UsageEvent = {
+      skillName,
+      timestamp: new Date(),
+      wasPreloaded,
+    };
+
+    this.predictor.trackUsage(event);
   }
 
   /**
@@ -256,7 +480,12 @@ export class SkillEngine {
    * @returns True if the skill was unloaded, false if it wasn't loaded
    */
   unloadSkill(skillName: string): boolean {
-    return this.loadedSkills.delete(skillName);
+    const wasLoaded = this.loadedSkills.delete(skillName);
+    this.preloadedSkills.delete(skillName);
+    if (wasLoaded) {
+      this.preloadingStats.memoryUsage = this.preloadedSkills.size;
+    }
+    return wasLoaded;
   }
 
   /**
@@ -264,6 +493,8 @@ export class SkillEngine {
    */
   unloadAllSkills(): void {
     this.loadedSkills.clear();
+    this.preloadedSkills.clear();
+    this.preloadingStats.memoryUsage = 0;
   }
 
   /**
@@ -282,6 +513,22 @@ export class SkillEngine {
   }
 
   /**
+   * Get preloading statistics
+   * Requirements: 9.6
+   */
+  getPreloadingStats(): PreloadingStats {
+    return { ...this.preloadingStats };
+  }
+
+  /**
+   * Get prediction accuracy metrics
+   * Requirements: 9.6
+   */
+  getPredictionAccuracy() {
+    return this.predictor.measureAccuracy();
+  }
+
+  /**
    * Clear result cache
    */
   clearCache(): void {
@@ -295,6 +542,16 @@ export class SkillEngine {
    */
   invalidateSkillCache(skillName: string): number {
     return this.resultCache.invalidateSkill(skillName);
+  }
+
+  /**
+   * Stop idle detection and cleanup
+   */
+  destroy(): void {
+    if (this.idleTimer) {
+      clearTimeout(this.idleTimer);
+      this.idleTimer = null;
+    }
   }
 
   /**

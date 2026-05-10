@@ -186,10 +186,65 @@ describe("TokenManager - Usage Tracking", () => {
   });
 
   describe("exportData", () => {
-    it("should throw not implemented error", async () => {
-      await expect(tokenManager.exportData("csv")).rejects.toThrow(
-        "exportData not yet implemented",
-      );
+    it("should export data in CSV format", async () => {
+      const mockRecords = [
+        {
+          requestId: "req-1",
+          conversationId: "conv-1",
+          skillName: "skill-a",
+          modelType: "claude-3-5-sonnet-20241022",
+          inputTokens: 1000,
+          outputTokens: 500,
+          totalTokens: 1500,
+          optimizationsSaved: 0,
+          costEstimate: 0,
+          timestamp: 1234567890,
+        },
+      ];
+
+      vi.mocked(db.select).mockReturnValue({
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            all: vi.fn().mockReturnValue(mockRecords),
+          }),
+          all: vi.fn().mockReturnValue(mockRecords),
+        }),
+      } as any);
+
+      const csv = await tokenManager.exportData("csv");
+      expect(csv).toContain("requestId,conversationId");
+      expect(csv).toContain("req-1,conv-1");
+    });
+
+    it("should export data in JSON format", async () => {
+      const mockRecords = [
+        {
+          requestId: "req-1",
+          conversationId: "conv-1",
+          skillName: "skill-a",
+          modelType: "claude-3-5-sonnet-20241022",
+          inputTokens: 1000,
+          outputTokens: 500,
+          totalTokens: 1500,
+          optimizationsSaved: 0,
+          costEstimate: 0,
+          timestamp: 1234567890,
+        },
+      ];
+
+      vi.mocked(db.select).mockReturnValue({
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            all: vi.fn().mockReturnValue(mockRecords),
+          }),
+          all: vi.fn().mockReturnValue(mockRecords),
+        }),
+      } as any);
+
+      const json = await tokenManager.exportData("json");
+      const parsed = JSON.parse(json);
+      expect(Array.isArray(parsed)).toBe(true);
+      expect(parsed[0].requestId).toBe("req-1");
     });
   });
 });
