@@ -98,6 +98,15 @@ export {
   type FormatOptions,
 } from "./SkillParser";
 
+export {
+  DependencyManager,
+  type DependencyNode,
+  type DependencyEdge,
+  type DependencyGraph,
+  type DependencyResolutionResult,
+  type DependencyValidationResult,
+} from "./DependencyManager";
+
 // Integration functions
 export {
   initializeTokenOptimization,
