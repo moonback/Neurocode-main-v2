@@ -11,6 +11,9 @@
  */
 
 import { TokenBudget } from "./TokenManager";
+import { PruningEngine } from "./PruningEngine";
+import { CompressionEngine } from "./CompressionEngine";
+import { AdaptiveSelector } from "./AdaptiveSelector";
 
 // =============================================================================
 // Type Definitions
@@ -132,6 +135,15 @@ export interface CompressedContext extends Context {
 // =============================================================================
 
 export class ContextOptimizer {
+  private pruningEngine: PruningEngine;
+  private compressionEngine: CompressionEngine;
+  private adaptiveSelector: AdaptiveSelector;
+
+  constructor() {
+    this.pruningEngine = new PruningEngine();
+    this.compressionEngine = new CompressionEngine();
+    this.adaptiveSelector = new AdaptiveSelector();
+  }
   /**
    * Check if optimization should be triggered based on token budget thresholds
    *
@@ -332,19 +344,23 @@ export class ContextOptimizer {
    * @param context - The context to prune
    * @returns Pruned context with metrics
    *
-   * TODO: Implement in Task 4.1 (Pruning Engine)
+   * Requirements: 1.3, 1.4, 1.5, 1.6
    */
   prune(context: Context): PrunedContext {
-    // Placeholder implementation - will be implemented in Task 4.1
-    // For now, return context unchanged with zero metrics
+    // Use PruningEngine to perform all pruning operations
+    // We don't specify maxConversationTurns here - that will be handled
+    // by the adaptive selector if needed
+    const { context: prunedContext, metrics } =
+      this.pruningEngine.prune(context);
+
     return {
-      ...context,
+      ...prunedContext,
       pruningMetrics: {
-        duplicatesRemoved: 0,
-        loggingStatementsRemoved: 0,
-        commentsRemoved: 0,
-        turnsRemoved: 0,
-        tokensSaved: 0,
+        duplicatesRemoved: metrics.duplicatesRemoved,
+        loggingStatementsRemoved: metrics.loggingStatementsRemoved,
+        commentsRemoved: metrics.commentsRemoved,
+        turnsRemoved: metrics.turnsRemoved,
+        tokensSaved: metrics.tokensSaved,
       },
     };
   }
@@ -360,18 +376,65 @@ export class ContextOptimizer {
    * @param context - The context to compress
    * @returns Compressed context with metrics
    *
-   * TODO: Implement in Task 5.1 (Compression Engine)
+   * Requirements: 2.1, 2.3, 2.5
    */
   compress(context: Context): CompressedContext {
-    // Placeholder implementation - will be implemented in Task 5.1
-    // For now, return context unchanged with zero metrics
+    let compressedContext = { ...context };
+    let filesCompressed = 0;
+    let signaturesExtracted = 0;
+    let patternsReplaced = 0;
+
+    // Step 1: Extract signatures from large files
+    const filesWithSignatures = compressedContext.files.map((file) => {
+      // Skip user-provided files
+      if (file.isUserProvided) {
+        return file;
+      }
+
+      const extractedFile = this.compressionEngine.extractSignatures(file);
+      if (extractedFile.content !== file.content) {
+        filesCompressed++;
+        signaturesExtracted++;
+      }
+      return extractedFile;
+    });
+
+    compressedContext = {
+      ...compressedContext,
+      files: filesWithSignatures,
+    };
+
+    // Step 2: Deduplicate patterns across files
+    compressedContext =
+      this.compressionEngine.deduplicatePatterns(compressedContext);
+
+    // Count how many patterns were replaced
+    patternsReplaced = compressedContext.files.filter((file) =>
+      file.content.includes("[Pattern #"),
+    ).length;
+
+    // Step 3: Calculate metrics
+    const metrics = this.compressionEngine.measureCompression(
+      context,
+      compressedContext,
+    );
+
+    // Update metadata with new token count
+    compressedContext = {
+      ...compressedContext,
+      metadata: {
+        ...compressedContext.metadata,
+        totalTokens: metrics.compressedTokens,
+      },
+    };
+
     return {
-      ...context,
+      ...compressedContext,
       compressionMetrics: {
-        filesCompressed: 0,
-        signaturesExtracted: 0,
-        patternsReplaced: 0,
-        tokensSaved: 0,
+        filesCompressed,
+        signaturesExtracted,
+        patternsReplaced,
+        tokensSaved: metrics.tokensSaved,
       },
     };
   }
@@ -386,17 +449,14 @@ export class ContextOptimizer {
    * - Prioritizes user-provided content
    *
    * @param context - The context to select from
-   * @param _task - Description of the current task for relevance scoring
-   * @param _budget - Maximum tokens allowed
+   * @param task - Description of the current task for relevance scoring
+   * @param budget - Maximum tokens allowed
    * @returns Context with only the most relevant sections
    *
-   * TODO: Implement in Task 6.1 (Adaptive Selector)
+   * Requirements: 8.1, 8.2, 8.3, 8.4, 8.5
    */
-  selectRelevant(context: Context, _task: string, _budget: number): Context {
-    // Placeholder implementation - will be implemented in Task 6.1
-    // For now, return context unchanged
-    // In the real implementation, this will use semantic similarity
-    // to rank and select the most relevant content
-    return context;
+  selectRelevant(context: Context, task: string, budget: number): Context {
+    // Use AdaptiveSelector to perform intelligent context selection
+    return this.adaptiveSelector.selectRelevant(context, task, budget);
   }
 }

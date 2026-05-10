@@ -63,8 +63,8 @@ This implementation plan follows a 4-phase migration strategy to add token optim
     - **Property 2: User Content Preservation**
     - **Validates: Requirements 1.2**
 
-- [ ] 4. Implement Pruning Engine
-  - [ ] 4.1 Create PruningEngine class with duplicate removal
+- [x] 4. Implement Pruning Engine
+  - [x] 4.1 Create PruningEngine class with duplicate removal
     - Implement `removeDuplicates()` using content hashing
     - Implement `removeLogging()` with regex patterns for console.log, logger.debug, etc.
     - Implement `removeComments()` with language-aware parsing
@@ -83,8 +83,8 @@ This implementation plan follows a 4-phase migration strategy to add token optim
     - **Property 6: Recent Turn Prioritization**
     - **Validates: Requirements 1.6**
 
-- [ ] 5. Implement Compression Engine
-  - [ ] 5.1 Create CompressionEngine class with signature extraction
+- [x] 5. Implement Compression Engine
+  - [x] 5.1 Create CompressionEngine class with signature extraction
     - Implement `extractSignatures()` using TypeScript compiler API for files >500 lines
     - Implement `summarizeDocumentation()` for verbose docs
     - Implement `deduplicatePatterns()` with pattern matching
@@ -100,8 +100,8 @@ This implementation plan follows a 4-phase migration strategy to add token optim
     - **Property 9: Compression Ratio Measurement**
     - **Validates: Requirements 2.5**
 
-- [ ] 6. Implement Adaptive Selector
-  - [ ] 6.1 Create AdaptiveSelector class with relevance ranking
+- [x] 6. Implement Adaptive Selector
+  - [x] 6.1 Create AdaptiveSelector class with relevance ranking
     - Implement file relevance ranking by semantic similarity
     - Implement differential inclusion (full vs summary)
     - Implement conversation turn selection with semantic similarity
@@ -123,7 +123,7 @@ This implementation plan follows a 4-phase migration strategy to add token optim
     - **Property 37: User File Prioritization**
     - **Validates: Requirements 8.5**
 
-- [ ] 7. Checkpoint - Phase 1 validation
+- [x] 7. Checkpoint - Phase 1 validation
   - Ensure all tests pass, ask the user if questions arise.
 
 ### Phase 2: Skill Engine Enhancements

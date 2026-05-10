@@ -26,3 +26,12 @@ export {
   type SkillContext,
   type OptimizationDebugInfo,
 } from "./ContextOptimizer";
+
+export { PruningEngine, type PruningMetrics } from "./PruningEngine";
+
+export {
+  CompressionEngine,
+  type CompressionMetrics,
+} from "./CompressionEngine";
+
+export { AdaptiveSelector } from "./AdaptiveSelector";
