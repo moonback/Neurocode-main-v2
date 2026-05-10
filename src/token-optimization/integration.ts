@@ -84,27 +84,33 @@ export async function allocateTokenBudget(
  * Track token usage for a conversation
  *
  * @param conversationId - The conversation ID
- * @param tokensUsed - Number of tokens used
+ * @param tokensUsed - Number of tokens used (total)
  * @param requestId - Optional request ID
+ * @param details - Optional detailed token counts and model info
  */
 export async function trackTokenUsage(
   conversationId: string,
   tokensUsed: number,
   requestId?: string,
+  details?: {
+    inputTokens?: number;
+    outputTokens?: number;
+    modelType?: string;
+  },
 ): Promise<void> {
   const manager = getTokenManager();
   const usage: TokenUsage = {
     requestId: requestId || `req-${Date.now()}`,
-    inputTokens: Math.floor(tokensUsed * 0.7), // Estimate 70% input
-    outputTokens: Math.floor(tokensUsed * 0.3), // Estimate 30% output
+    inputTokens: details?.inputTokens ?? Math.floor(tokensUsed * 0.7), // Estimate 70% input if not provided
+    outputTokens: details?.outputTokens ?? Math.floor(tokensUsed * 0.3), // Estimate 30% output if not provided
     totalTokens: tokensUsed,
     timestamp: Date.now(),
-    modelType: "unknown",
+    modelType: details?.modelType || "unknown",
     conversationId,
   };
   
   logger.info(
-    `📊 Tracking token usage: ${tokensUsed} tokens for conversation ${conversationId} (request: ${usage.requestId})`,
+    `📊 Tracking token usage: ${tokensUsed} tokens for conversation ${conversationId} (model: ${usage.modelType}, request: ${usage.requestId})`,
   );
   
   await manager.trackUsage(conversationId, usage);

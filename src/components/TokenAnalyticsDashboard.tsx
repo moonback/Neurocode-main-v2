@@ -129,30 +129,88 @@ export function TokenAnalyticsDashboard() {
   const [activeRange, setActiveRange] = useState<'week' | 'month' | 'quarter'>('month');
 
   // Queries
-  const { data: statistics, isLoading: statsLoading } = useQuery({
+  const { 
+    data: statistics, 
+    isLoading: statsLoading, 
+    error: statsError,
+    refetch: refetchStats 
+  } = useQuery({
     queryKey: queryKeys.tokenAnalytics.statistics(filters.dateRange),
-    queryFn: () => ipc.tokenAnalytics.getStatistics(filters.dateRange),
+    queryFn: async () => {
+      try {
+        console.log('📡 Calling getStatistics with:', filters.dateRange);
+        const res = await ipc.tokenAnalytics.getStatistics(filters.dateRange);
+        console.log('✅ Statistics result:', res);
+        return res;
+      } catch (err) {
+        console.error('❌ IPC Error (Statistics):', err);
+        throw err;
+      }
+    },
+    staleTime: 0,
+    retry: false,
   });
 
-  const { data: topConversations, isLoading: convLoading } = useQuery({
+  const { 
+    data: topModels, 
+    isLoading: modelsLoading,
+    refetch: refetchModels
+  } = useQuery({
+    queryKey: queryKeys.tokenAnalytics.topConsumers({ type: 'model', limit: 5, ...filters.dateRange }),
+    queryFn: async () => {
+      const res = await ipc.tokenAnalytics.getTopConsumers({ type: 'model', limit: 5, ...filters.dateRange });
+      console.log('🔥 Top Models IPC Result:', res);
+      return res;
+    },
+    staleTime: 0,
+  });
+
+  const { 
+    data: topConversations, 
+    isLoading: convLoading,
+    refetch: refetchConv
+  } = useQuery({
     queryKey: queryKeys.tokenAnalytics.topConsumers({ type: 'conversation', limit: 5, ...filters.dateRange }),
     queryFn: () => ipc.tokenAnalytics.getTopConsumers({ type: 'conversation', limit: 5, ...filters.dateRange }),
+    staleTime: 0,
   });
 
-  const { data: topSkills, isLoading: skillsLoading } = useQuery({
+  const { 
+    data: topSkills, 
+    isLoading: skillsLoading,
+    refetch: refetchSkills
+  } = useQuery({
     queryKey: queryKeys.tokenAnalytics.topConsumers({ type: 'skill', limit: 10, ...filters.dateRange }),
     queryFn: () => ipc.tokenAnalytics.getTopConsumers({ type: 'skill', limit: 10, ...filters.dateRange }),
+    staleTime: 0,
   });
 
-  const { data: topModels, isLoading: modelsLoading } = useQuery({
-    queryKey: queryKeys.tokenAnalytics.topConsumers({ type: 'model', limit: 5, ...filters.dateRange }),
-    queryFn: () => ipc.tokenAnalytics.getTopConsumers({ type: 'model', limit: 5, ...filters.dateRange }),
-  });
-
-  const { data: costs, isLoading: costsLoading } = useQuery({
+  const { 
+    data: costs, 
+    isLoading: costsLoading,
+    refetch: refetchCosts
+  } = useQuery({
     queryKey: queryKeys.tokenAnalytics.cost(filters.dateRange),
     queryFn: () => ipc.tokenAnalytics.calculateCost(filters.dateRange),
+    staleTime: 0,
   });
+
+  const handleRefresh = async () => {
+    console.log('🔄 Manual refresh triggered');
+    try {
+      await Promise.all([
+        refetchStats(),
+        refetchConv(),
+        refetchSkills(),
+        refetchModels(),
+        refetchCosts(),
+      ]);
+      console.log('✨ All queries refetched');
+    } catch (err) {
+      console.error('❌ Refresh failed:', err);
+      alert('Erreur lors du rafraîchissement : ' + (err instanceof Error ? err.message : String(err)));
+    }
+  };
 
   const isLoading = statsLoading || convLoading || skillsLoading || modelsLoading || costsLoading;
 
@@ -226,225 +284,285 @@ export function TokenAnalyticsDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6 md:p-10 animate-in fade-in duration-500">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-        <div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => router.history.back()}
-            className="group mb-4 -ml-2 text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            Retour aux réglages
-          </Button>
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#6c55dc]/10 rounded-xl">
-              <Activity className="h-6 w-6 text-[#6c55dc]" />
-            </div>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">Token Analytics</h1>
-          </div>
-          <p className="text-sm text-muted-foreground mt-2 max-w-lg">
-            Consultez les statistiques d'utilisation des tokens, les performances des modèles et l'analyse détaillée des coûts.
-          </p>
-        </div>
+    <div className="min-h-screen bg-background relative overflow-hidden animate-in fade-in duration-500">
+      {/* Premium Background Elements */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#6c55dc]/5 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-500/5 blur-[120px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#1f2937_1px,transparent_1px)] [background-size:40px_40px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20" />
+      </div>
 
-        <div className="flex flex-wrap items-center gap-3 bg-muted/30 p-1.5 rounded-xl border border-border/40 self-start">
-          {(['week', 'month', 'quarter'] as const).map((range) => (
-            <button
-              key={range}
-              onClick={() => handleDateRangeChange(range)}
-              className={cn(
-                "px-4 py-1.5 text-xs font-semibold rounded-lg transition-all",
-                activeRange === range
-                  ? "bg-background text-[#6c55dc] shadow-sm border border-border/40"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
+      <div className="relative z-10 p-6 md:p-10">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+          <div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => router.navigate({ to: '/settings' })}
+              className="group mb-4 -ml-2 text-muted-foreground hover:text-foreground transition-all hover:bg-muted/50"
             >
-              {range === 'week' ? '7 Jours' : range === 'month' ? '30 Jours' : '90 Jours'}
-            </button>
-          ))}
-        </div>
-      </div>
+              <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
+              Retour aux réglages
+            </Button>
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-[#6c55dc] to-[#9b7eff] rounded-2xl shadow-lg shadow-[#6c55dc]/20">
+                <Activity className="h-7 w-7 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight text-foreground bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+                  Token Analytics
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1 max-w-lg">
+                  Analyse détaillée de la consommation d'IA et optimisation des coûts.
+                </p>
+              </div>
+            </div>
+          </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <StatCard
-          title="Total Tokens"
-          value={statistics?.totalTokens?.toLocaleString() || '0'}
-          icon={<Zap className="h-5 w-5" />}
-          color="blue"
-          trend="+12% vs last period"
-        />
-        <StatCard
-          title="Total Requêtes"
-          value={statistics?.requestCount?.toLocaleString() || '0'}
-          icon={<MessageSquare className="h-5 w-5" />}
-          color="purple"
-        />
-        <StatCard
-          title="Moyenne / Req"
-          value={statistics?.averageTokensPerRequest?.toFixed(0) || '0'}
-          icon={<TrendingUp className="h-5 w-5" />}
-          color="green"
-        />
-        <StatCard
-          title="Coût Estimé"
-          value={`$${costs?.totalCost?.toFixed(2) || '0.00'}`}
-          icon={<DollarSign className="h-5 w-5" />}
-          color="yellow"
-        />
-      </div>
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+            <div className="flex items-center gap-2 bg-muted/30 p-1.5 rounded-2xl border border-border/40 backdrop-blur-sm">
+              {(['week', 'month', 'quarter'] as const).map((range) => (
+                <button
+                  key={range}
+                  onClick={() => handleDateRangeChange(range)}
+                  className={cn(
+                    "px-5 py-2 text-xs font-bold rounded-xl transition-all duration-300",
+                    activeRange === range
+                      ? "bg-background text-[#6c55dc] shadow-md border border-border/40 scale-105"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background/40"
+                  )}
+                >
+                  {range === 'week' ? '7 Jours' : range === 'month' ? '30 Jours' : '90 Jours'}
+                </button>
+              ))}
+            </div>
 
-      {/* Main Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <ChartCard title="Top 5 Conversations">
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={barChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-              <XAxis 
-                dataKey="name" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: 'currentColor', fontSize: 10, opacity: 0.6 }}
-              />
-              <YAxis 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: 'currentColor', fontSize: 10, opacity: 0.6 }}
-              />
-              <Tooltip 
-                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-              />
-              <Bar dataKey="tokens" fill={COLORS.primary} radius={[4, 4, 0, 0]} name="Tokens" barSize={30} />
-              <Bar dataKey="requests" fill={COLORS.secondary} name="Requêtes" barSize={30} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard title="Distribution par Modèle">
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={pieChartData}
-                innerRadius={70}
-                outerRadius={100}
-                paddingAngle={5}
-                dataKey="value"
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRefresh}
+                className="rounded-xl border-border/50 hover:bg-muted/50 font-bold text-xs h-10 px-4"
               >
-                {pieChartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS.chart[index % COLORS.chart.length]} />
-                ))}
-              </Pie>
-              <Tooltip 
-                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-              />
-              <Legend verticalAlign="bottom" height={36}/>
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
-
-      {/* Costs Chart */}
-      <div className="grid grid-cols-1 gap-8 mb-8">
-        <ChartCard title="Coûts par Modèle">
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={costsByModelData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-              <XAxis 
-                dataKey="name" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: 'currentColor', fontSize: 10, opacity: 0.6 }}
-              />
-              <YAxis 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: 'currentColor', fontSize: 10, opacity: 0.6 }}
-                tickFormatter={(val) => `$${val}`}
-              />
-              <Tooltip 
-                formatter={(val: any) => [`$${Number(val || 0).toFixed(4)}`, '']}
-                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-              />
-              <Legend />
-              <Bar dataKey="inputCost" stackId="a" fill={COLORS.success} name="Entrée" radius={[0, 0, 0, 0]} />
-              <Bar dataKey="outputCost" stackId="a" fill={COLORS.primary} name="Sortie" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
-
-      {/* Lists Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <TableCard title="Détail des Conversations">
-          <table className="w-full text-sm text-left">
-            <thead className="text-[11px] uppercase tracking-wider text-muted-foreground bg-muted/20">
-              <tr>
-                <th className="px-6 py-3 font-bold">Nom</th>
-                <th className="px-6 py-3 font-bold text-right">Tokens</th>
-                <th className="px-6 py-3 font-bold text-right">Requêtes</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/30">
-              {topConversations?.map((conv) => (
-                <tr key={conv.name} className="hover:bg-muted/10 transition-colors">
-                  <td className="px-6 py-4 font-medium max-w-[200px] truncate">{conv.name}</td>
-                  <td className="px-6 py-4 text-right font-mono">{conv.totalTokens.toLocaleString()}</td>
-                  <td className="px-6 py-4 text-right">{conv.requestCount}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </TableCard>
-
-        <TableCard title="Détail des Coûts par Modèle">
-          <table className="w-full text-sm text-left">
-            <thead className="text-[11px] uppercase tracking-wider text-muted-foreground bg-muted/20">
-              <tr>
-                <th className="px-6 py-3 font-bold">Modèle</th>
-                <th className="px-6 py-3 font-bold text-right">Total Tokens</th>
-                <th className="px-6 py-3 font-bold text-right">Coût ($)</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/30">
-              {costsByModelData.map((m) => (
-                <tr key={m.name} className="hover:bg-muted/10 transition-colors">
-                  <td className="px-6 py-4 font-medium">{m.name}</td>
-                  <td className="px-6 py-4 text-right font-mono">
-                    {(m.inputTokens + m.outputTokens).toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 text-right font-bold text-[#6c55dc]">
-                    ${m.totalCost.toFixed(4)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </TableCard>
-      </div>
-
-      {/* Actions */}
-      <div className="mt-12 flex items-center justify-between p-6 bg-[#6c55dc]/5 rounded-2xl border border-[#6c55dc]/10">
-        <div>
-          <h3 className="font-bold text-foreground">Exporter les données</h3>
-          <p className="text-sm text-muted-foreground">Téléchargez l'historique complet pour votre propre analyse.</p>
+                <Activity className="mr-2 h-4 w-4 text-[#6c55dc]" />
+                Rafraîchir
+              </Button>
+              <Button 
+                variant="outline"
+                size="sm"
+                onClick={handleExport}
+                className="rounded-xl border-border/50 hover:bg-muted/50 font-bold text-xs h-10 px-4"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Exporter
+              </Button>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <select 
-            value={exportFormat} 
-            onChange={(e) => setExportFormat(e.target.value as any)}
-            className="bg-background border border-border/50 rounded-lg px-3 py-1.5 text-xs font-medium focus:ring-1 focus:ring-[#6c55dc] outline-none"
-          >
-            <option value="csv">CSV</option>
-            <option value="json">JSON</option>
-          </select>
-          <Button onClick={handleExport} size="sm" className="bg-[#6c55dc] hover:bg-[#6c55dc]/90">
-            <Download className="mr-2 h-4 w-4" />
-            Exporter
-          </Button>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <StatCard
+            title="Total Tokens"
+            value={statistics?.totalTokens?.toLocaleString() || '0'}
+            icon={<Zap className="h-5 w-5" />}
+            color="blue"
+            trend="+12% vs last period"
+          />
+          <StatCard
+            title="Total Requêtes"
+            value={statistics?.requestCount?.toLocaleString() || '0'}
+            icon={<MessageSquare className="h-5 w-5" />}
+            color="purple"
+          />
+          <StatCard
+            title="Moyenne / Req"
+            value={statistics?.averageTokensPerRequest?.toFixed(0) || '0'}
+            icon={<TrendingUp className="h-5 w-5" />}
+            color="green"
+          />
+          <StatCard
+            title="Coût Estimé"
+            value={`$${costs?.totalCost?.toFixed(2) || '0.00'}`}
+            icon={<DollarSign className="h-5 w-5" />}
+            color="yellow"
+          />
         </div>
+
+        {/* Empty State / Main Content */}
+        {!statistics?.totalTokens ? (
+          <div className="flex flex-col items-center justify-center py-20 bg-card/30 backdrop-blur-sm rounded-3xl border border-dashed border-border/60">
+            <div className="p-4 bg-muted/20 rounded-full mb-4">
+              <BarChart3 className="h-10 w-10 text-muted-foreground/40" />
+            </div>
+            <h3 className="text-lg font-semibold text-foreground/70">Aucune donnée disponible</h3>
+            <p className="text-sm text-muted-foreground mt-2">Commencez à utiliser l'assistant pour voir vos statistiques.</p>
+          </div>
+        ) : (
+          <>
+            {/* Main Charts Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              <ChartCard title="Top 5 Conversations">
+                <ResponsiveContainer width="100%" height={320}>
+                  <BarChart data={barChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                    <XAxis 
+                      dataKey="name" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fill: 'currentColor', fontSize: 10, opacity: 0.6 }}
+                    />
+                    <YAxis 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fill: 'currentColor', fontSize: 10, opacity: 0.6 }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)' }}
+                      cursor={{ fill: 'rgba(108, 85, 220, 0.05)' }}
+                    />
+                    <Bar dataKey="tokens" fill={COLORS.primary} radius={[6, 6, 0, 0]} name="Tokens" barSize={32} />
+                    <Bar dataKey="requests" fill={COLORS.secondary} name="Requêtes" barSize={32} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
+
+              <ChartCard title="Distribution par Modèle">
+                <ResponsiveContainer width="100%" height={320}>
+                  <PieChart>
+                    <Pie
+                      data={pieChartData}
+                      innerRadius={80}
+                      outerRadius={110}
+                      paddingAngle={8}
+                      dataKey="value"
+                      stroke="none"
+                    >
+                      {pieChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS.chart[index % COLORS.chart.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}
+                    />
+                    <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartCard>
+            </div>
+
+            {/* Costs Chart */}
+            <div className="grid grid-cols-1 gap-8 mb-8">
+              <ChartCard title="Coûts par Modèle (USD)">
+                <ResponsiveContainer width="100%" height={380}>
+                  <BarChart data={costsByModelData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                    <XAxis 
+                      dataKey="name" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fill: 'currentColor', fontSize: 10, opacity: 0.6 }}
+                    />
+                    <YAxis 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fill: 'currentColor', fontSize: 10, opacity: 0.6 }}
+                      tickFormatter={(val) => `$${val}`}
+                    />
+                    <Tooltip 
+                      formatter={(val: any) => [`$${Number(val || 0).toFixed(4)}`, '']}
+                      contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}
+                    />
+                    <Legend iconType="circle" />
+                    <Bar dataKey="inputCost" stackId="a" fill={COLORS.success} name="Entrée" barSize={40} />
+                    <Bar dataKey="outputCost" stackId="a" fill={COLORS.primary} name="Sortie" radius={[6, 6, 0, 0]} barSize={40} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
+            </div>
+
+            {/* Lists Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <TableCard title="Détail des Conversations">
+                <table className="w-full text-sm text-left">
+                  <thead className="text-[11px] uppercase tracking-wider text-muted-foreground bg-muted/20">
+                    <tr>
+                      <th className="px-6 py-4 font-bold">Nom</th>
+                      <th className="px-6 py-4 font-bold text-right">Tokens</th>
+                      <th className="px-6 py-4 font-bold text-right">Requêtes</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/30">
+                    {topConversations?.map((conv) => (
+                      <tr key={conv.name} className="hover:bg-[#6c55dc]/5 transition-colors group">
+                        <td className="px-6 py-5 font-medium max-w-[240px] truncate group-hover:text-[#6c55dc] transition-colors">{conv.name}</td>
+                        <td className="px-6 py-5 text-right font-mono text-xs">{conv.totalTokens.toLocaleString()}</td>
+                        <td className="px-6 py-5 text-right font-medium">{conv.requestCount}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </TableCard>
+
+              <TableCard title="Détail des Coûts par Modèle">
+                <table className="w-full text-sm text-left">
+                  <thead className="text-[11px] uppercase tracking-wider text-muted-foreground bg-muted/20">
+                    <tr>
+                      <th className="px-6 py-4 font-bold">Modèle</th>
+                      <th className="px-6 py-4 font-bold text-right">Usage (Tokens)</th>
+                      <th className="px-6 py-4 font-bold text-right">Coût Estimé</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/30">
+                    {costsByModelData.map((m) => (
+                      <tr key={m.name} className="hover:bg-[#6c55dc]/5 transition-colors group">
+                        <td className="px-6 py-5 font-medium group-hover:text-[#6c55dc] transition-colors">{m.name}</td>
+                        <td className="px-6 py-5 text-right font-mono text-xs">
+                          {(m.inputTokens + m.outputTokens).toLocaleString()}
+                        </td>
+                        <td className="px-6 py-5 text-right font-bold text-[#6c55dc]">
+                          ${m.totalCost.toFixed(4)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </TableCard>
+            </div>
+
+            {/* Actions */}
+            <div className="mt-12 flex items-center justify-between p-8 bg-gradient-to-r from-[#6c55dc]/5 to-purple-500/5 rounded-3xl border border-[#6c55dc]/10 shadow-inner">
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-background rounded-xl shadow-sm border border-border/50">
+                  <Download className="h-5 w-5 text-[#6c55dc]" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-foreground">Exporter les données</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">Téléchargez l'historique complet en format CSV ou JSON.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <select 
+                  value={exportFormat} 
+                  onChange={(e) => setExportFormat(e.target.value as any)}
+                  className="bg-background border border-border/50 rounded-xl px-4 py-2 text-xs font-bold focus:ring-2 focus:ring-[#6c55dc]/20 outline-none shadow-sm cursor-pointer hover:border-[#6c55dc]/30 transition-all"
+                >
+                  <option value="csv">CSV Format</option>
+                  <option value="json">JSON Format</option>
+                </select>
+                <Button 
+                  onClick={handleExport} 
+                  size="default" 
+                  className="bg-gradient-to-r from-[#6c55dc] to-[#7c3aed] hover:from-[#7c3aed] hover:to-[#6c55dc] text-white shadow-lg shadow-[#6c55dc]/20 rounded-xl font-bold px-6 py-2 transition-all duration-300 hover:scale-105"
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Exporter
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

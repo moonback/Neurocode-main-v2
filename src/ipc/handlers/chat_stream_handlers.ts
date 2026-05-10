@@ -65,6 +65,7 @@ import { mcpServers } from "../../db/schema";
 import { requireMcpToolConsent } from "../utils/mcp_consent";
 
 import { handleLocalAgentStream } from "../../pro/main/ipc/handlers/local_agent/local_agent_handler";
+import { trackTokenUsage } from "../../token-optimization/integration";
 
 import { safeSend } from "../utils/safe_sender";
 import { cleanFullResponse } from "../utils/cleanFullResponse";
@@ -1103,6 +1104,20 @@ This conversation includes one or more image attachments. When the user uploads 
                 logger.log(
                   `Total tokens used (aggregated for message ${placeholderAssistantMessage.id}): ${maxTokensUsed}`,
                 );
+
+                // Track in analytics system
+                void trackTokenUsage(
+                  String(req.chatId),
+                  totalTokens,
+                  dyadRequestId,
+                  {
+                    inputTokens: response.usage?.inputTokens,
+                    outputTokens: response.usage?.outputTokens,
+                    modelType: settings.selectedModel.name,
+                  }
+                ).catch((err) => {
+                  logger.error("Failed to track token usage in analytics:", err);
+                });
               } else {
                 logger.log("Total tokens used: unknown");
               }

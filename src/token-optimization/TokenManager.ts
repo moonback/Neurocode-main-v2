@@ -319,18 +319,22 @@ export class TokenManager {
       );
       
       // Insert usage record into database
+      const timestamp = usage.timestamp || Date.now();
+      // Ensure we store as milliseconds (Drizzle timestamp mode expects this for SQLite integer)
+      const msTimestamp = timestamp < 10000000000 ? timestamp * 1000 : timestamp;
+
       await db.insert(tokenAnalytics)
         .values({
           requestId: usage.requestId || requestId,
           conversationId: usage.conversationId || null,
           skillName: usage.skillName || null,
-          timestamp: new Date(usage.timestamp),
+          timestamp: new Date(msTimestamp),
           inputTokens: usage.inputTokens,
           outputTokens: usage.outputTokens,
           totalTokens: usage.totalTokens,
           modelType: usage.modelType,
-          optimizationsSaved: 0, // Will be populated by optimization engine
-          costEstimate: null, // Will be calculated if pricing is available
+          optimizationsSaved: 0,
+          costEstimate: null,
         })
         .run();
         
@@ -368,11 +372,13 @@ export class TokenManager {
       }
 
       if (filter.startTime) {
-        conditions.push(gte(tokenAnalytics.timestamp, filter.startTime));
+        const startTime = filter.startTime instanceof Date ? filter.startTime : new Date(filter.startTime);
+        conditions.push(gte(tokenAnalytics.timestamp, startTime));
       }
 
       if (filter.endTime) {
-        conditions.push(lte(tokenAnalytics.timestamp, filter.endTime));
+        const endTime = filter.endTime instanceof Date ? filter.endTime : new Date(filter.endTime);
+        conditions.push(lte(tokenAnalytics.timestamp, endTime));
       }
 
       if (filter.modelType) {
@@ -549,11 +555,13 @@ export class TokenManager {
       }
 
       if (filter.startTime) {
-        conditions.push(gte(tokenAnalytics.timestamp, filter.startTime));
+        const startTime = filter.startTime instanceof Date ? filter.startTime : new Date(filter.startTime);
+        conditions.push(gte(tokenAnalytics.timestamp, startTime));
       }
 
       if (filter.endTime) {
-        conditions.push(lte(tokenAnalytics.timestamp, filter.endTime));
+        const endTime = filter.endTime instanceof Date ? filter.endTime : new Date(filter.endTime);
+        conditions.push(lte(tokenAnalytics.timestamp, endTime));
       }
 
       if (filter.modelType) {
@@ -687,11 +695,13 @@ export class TokenManager {
       }
 
       if (filter.startTime) {
-        conditions.push(gte(tokenAnalytics.timestamp, filter.startTime));
+        const startTime = filter.startTime instanceof Date ? filter.startTime : new Date(filter.startTime);
+        conditions.push(gte(tokenAnalytics.timestamp, startTime));
       }
 
       if (filter.endTime) {
-        conditions.push(lte(tokenAnalytics.timestamp, filter.endTime));
+        const endTime = filter.endTime instanceof Date ? filter.endTime : new Date(filter.endTime);
+        conditions.push(lte(tokenAnalytics.timestamp, endTime));
       }
 
       if (filter.modelType) {
@@ -884,11 +894,13 @@ export class TokenManager {
       }
 
       if (filter.startTime) {
-        conditions.push(gte(tokenAnalytics.timestamp, filter.startTime));
+        const startTime = filter.startTime instanceof Date ? filter.startTime : new Date(filter.startTime);
+        conditions.push(gte(tokenAnalytics.timestamp, startTime));
       }
 
       if (filter.endTime) {
-        conditions.push(lte(tokenAnalytics.timestamp, filter.endTime));
+        const endTime = filter.endTime instanceof Date ? filter.endTime : new Date(filter.endTime);
+        conditions.push(lte(tokenAnalytics.timestamp, endTime));
       }
 
       if (filter.modelType) {

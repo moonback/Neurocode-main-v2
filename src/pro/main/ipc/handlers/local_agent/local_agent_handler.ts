@@ -937,6 +937,9 @@ export async function handleLocalAgentStream(
                     String(chat.id),
                     totalTokens,
                     dyadRequestId,
+                    {
+                      modelType: settings.selectedModel.name,
+                    }
                   );
                   logger.info(
                     `Tracked ${totalTokens} tokens for chat ${chat.id} (total: ${totalTokensUsed})`,

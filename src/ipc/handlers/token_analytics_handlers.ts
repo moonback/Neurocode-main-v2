@@ -23,21 +23,23 @@ export function registerTokenAnalyticsHandlers() {
 
     logger.info("📊 Filter object:", filter);
     const stats = manager.getStatistics(filter);
-    logger.info("📊 Statistics result:", stats);
+    logger.info("📊 Raw statistics from DB:", stats);
 
     // Map UsageStatistics to TokenStatistics schema
-    return {
-      totalTokens: stats.totalTokens,
-      inputTokens: stats.totalInputTokens,
-      outputTokens: stats.totalOutputTokens,
-      requestCount: stats.totalRequests,
-      averageTokensPerRequest: stats.averageTokensPerRequest,
-      peakTokensPerRequest: stats.totalTokens, // Use totalTokens as peak for now
+    const result = {
+      totalTokens: stats.totalTokens || 0,
+      inputTokens: stats.totalInputTokens || 0,
+      outputTokens: stats.totalOutputTokens || 0,
+      requestCount: stats.totalRequests || 0,
+      averageTokensPerRequest: stats.averageTokensPerRequest || 0,
+      peakTokensPerRequest: stats.totalTokens || 0,
       timeRange: {
-        start: params.startDate || Date.now() - 30 * 24 * 60 * 60 * 1000, // Default to 30 days ago
+        start: params.startDate || Date.now() - 30 * 24 * 60 * 60 * 1000,
         end: params.endDate || Date.now(),
       },
     };
+    logger.info("📊 Returning mapped result:", result);
+    return result;
   });
 
   // Get top token consumers
@@ -53,7 +55,7 @@ export function registerTokenAnalyticsHandlers() {
     logger.info("🔥 Filter object:", filter);
     const limit = params.limit || 10;
     const consumers = manager.getTopConsumers(filter, limit, params.type);
-    logger.info(`🔥 Found ${consumers.length} consumers`);
+    logger.info(`🔥 Found ${consumers.length} consumers in DB`);
 
     // Map TopConsumer[] to schema (id -> name)
     return consumers.map((consumer) => ({
@@ -123,7 +125,7 @@ export function registerTokenAnalyticsHandlers() {
 
     logger.info("📥 Filter object:", filter);
     try {
-      const data = manager.exportData(params.format, filter);
+      const data = await manager.exportData(params.format, filter);
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const filename = `token-usage-${timestamp}.${params.format}`;
 
