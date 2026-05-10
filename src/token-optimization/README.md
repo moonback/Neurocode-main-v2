@@ -25,6 +25,7 @@ The Token Optimization module helps manage and optimize token usage when interac
 The main class responsible for token budget management and usage tracking.
 
 **Key Methods:**
+
 - `allocateBudget(request: AgentRequest): Promise<TokenBudget>` - Allocates budget based on task complexity
 - `validateBudget(budget: number, model: LargeLanguageModel): Promise<ValidationResult>` - Validates budget against model limits
 - `trackUsage(usage: TokenUsage): Promise<void>` - Tracks token usage with database persistence
@@ -35,6 +36,7 @@ The main class responsible for token budget management and usage tracking.
 Coordinates context optimization through pruning, compression, and adaptive selection.
 
 **Key Methods:**
+
 - `optimize(context: Context, budget: TokenBudget): Promise<OptimizedContext>` - Optimizes context to fit budget
 - `shouldOptimize(currentTokens: number, budget: TokenBudget): boolean` - Checks if optimization is needed
 
@@ -43,6 +45,7 @@ Coordinates context optimization through pruning, compression, and adaptive sele
 Removes redundant and non-essential content from context.
 
 **Key Methods:**
+
 - `removeDuplicates(files: FileContext[]): FileContext[]` - Removes duplicate code blocks
 - `removeLogging(content: string): string` - Removes logging statements
 - `removeComments(content: string, language: string): string` - Removes non-semantic comments
@@ -53,6 +56,7 @@ Removes redundant and non-essential content from context.
 Compresses context by extracting signatures and summarizing verbose content.
 
 **Key Methods:**
+
 - `extractSignatures(content: string, language: string): string` - Extracts function/class signatures
 - `summarizeDocumentation(content: string): string` - Summarizes verbose documentation
 - `deduplicatePatterns(content: string): string` - Removes repeated patterns
@@ -63,6 +67,7 @@ Compresses context by extracting signatures and summarizing verbose content.
 Selects most relevant context based on semantic similarity.
 
 **Key Methods:**
+
 - `rankFiles(files: FileContext[], query: string): FileContext[]` - Ranks files by relevance
 - `selectConversationTurns(turns: ConversationTurn[], query: string, maxTokens: number): ConversationTurn[]` - Selects relevant turns
 
@@ -73,6 +78,7 @@ Selects most relevant context based on semantic similarity.
 Handles lazy loading of skills with metadata-only discovery.
 
 **Key Methods:**
+
 - `loadMetadata(skillName: string, scope: SkillScope): Promise<LoadResult<SkillMetadata>>` - Loads only metadata
 - `loadSkill(skillName: string, scope: SkillScope): Promise<LoadResult<Skill>>` - Loads full skill content
 - `listSkills(scope: SkillScope): Promise<SkillMetadata[]>` - Lists all available skills
@@ -82,6 +88,7 @@ Handles lazy loading of skills with metadata-only discovery.
 LRU cache for loaded skills with time-based eviction (10-minute idle timeout).
 
 **Key Methods:**
+
 - `get(key: string): T | undefined` - Retrieves cached value
 - `put(key: string, value: T, size?: number): void` - Caches value with LRU eviction
 - `has(key: string): boolean` - Checks if key exists
@@ -94,6 +101,7 @@ LRU cache for loaded skills with time-based eviction (10-minute idle timeout).
 Caches deterministic skill execution results using content-based hashing.
 
 **Key Methods:**
+
 - `get(skillName: string, inputs: SkillInput): CachedResult<T> | undefined` - Retrieves cached result
 - `put(skillName: string, inputs: SkillInput, result: T, executionTime: number): void` - Caches result
 - `invalidateSkill(skillName: string): number` - Invalidates all results for a skill
@@ -103,6 +111,7 @@ Caches deterministic skill execution results using content-based hashing.
 Optimized skill execution engine with context reuse, parallel execution, and concurrency limiting.
 
 **Key Methods:**
+
 - `executeSkill<T>(skillName: string, inputs: SkillInput, isDeterministic?: boolean): Promise<ExecutionResult<T>>` - Executes a skill
 - `executeParallel<T>(executions: Array<{...}>): Promise<Array<ExecutionResult<T>>>` - Executes multiple skills in parallel
 - `unloadSkill(skillName: string): boolean` - Unloads skill from memory
@@ -158,16 +167,24 @@ const optimizer = new ContextOptimizer();
 const tokenManager = new TokenManager();
 
 const context = {
-  files: [/* file contexts */],
-  conversationTurns: [/* conversation turns */],
-  skills: [/* skill contexts */],
+  files: [
+    /* file contexts */
+  ],
+  conversationTurns: [
+    /* conversation turns */
+  ],
+  skills: [
+    /* skill contexts */
+  ],
 };
 
 const budget = await tokenManager.allocateBudget(request);
 
 if (optimizer.shouldOptimize(estimatedTokens, budget)) {
   const optimized = await optimizer.optimize(context, budget);
-  console.log(`Reduced from ${optimized.metadata.originalTokens} to ${optimized.metadata.finalTokens} tokens`);
+  console.log(
+    `Reduced from ${optimized.metadata.originalTokens} to ${optimized.metadata.finalTokens} tokens`,
+  );
 }
 ```
 
@@ -193,7 +210,7 @@ if (metadataResult.success) {
 const result = await engine.executeSkill(
   "my-skill",
   { param: "value" },
-  true // deterministic, enable result caching
+  true, // deterministic, enable result caching
 );
 
 if (result.success) {
@@ -278,6 +295,7 @@ npm test -- src/token-optimization/SkillEngine.test.ts
 ## Requirements Satisfied
 
 ### Phase 1 Requirements
+
 - **1.1-1.6**: Context optimization (pruning, compression, selection)
 - **2.1-2.5**: Compression strategies
 - **3.1-3.7**: Token budget management
@@ -285,6 +303,7 @@ npm test -- src/token-optimization/SkillEngine.test.ts
 - **8.1-8.5**: Adaptive context selection
 
 ### Phase 2 Requirements
+
 - **4.1-4.7**: Skill loading and caching
 - **5.1-5.7**: Skill execution optimization
 - **6.1-6.6**: Dependency management (Task 11, upcoming)

@@ -1,14 +1,14 @@
 /**
  * ResultCache - Cache for deterministic skill execution results
- * 
+ *
  * Caches results from deterministic skills to avoid redundant execution.
  * Uses content-based hashing to generate cache keys from skill name and inputs.
- * 
+ *
  * Requirements: 5.6
  */
 
-import { createHash } from 'crypto';
-import { SkillCache } from './SkillCache';
+import { createHash } from "crypto";
+import { SkillCache } from "./SkillCache";
 
 export interface SkillInput {
   [key: string]: unknown;
@@ -50,9 +50,9 @@ export class ResultCache<T = unknown> {
       }, {} as SkillInput);
 
     const inputString = JSON.stringify(sortedInputs);
-    const hash = createHash('sha256')
+    const hash = createHash("sha256")
       .update(`${skillName}:${inputString}`)
-      .digest('hex');
+      .digest("hex");
 
     return `${skillName}:${hash}`;
   }
@@ -79,7 +79,7 @@ export class ResultCache<T = unknown> {
     skillName: string,
     inputs: SkillInput,
     result: T,
-    executionTime: number
+    executionTime: number,
   ): void {
     const key = this.generateCacheKey(skillName, inputs);
     const cachedResult: CachedResult<T> = {

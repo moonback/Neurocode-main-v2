@@ -369,9 +369,7 @@ describe("PreloaderPredictor", () => {
       const newConfig = predictor.getConfig();
 
       expect(newConfig.lookbackDays).toBe(60);
-      expect(newConfig.minUsageThreshold).toBe(
-        initialConfig.minUsageThreshold,
-      );
+      expect(newConfig.minUsageThreshold).toBe(initialConfig.minUsageThreshold);
       expect(newConfig.recencyWeight).toBe(initialConfig.recencyWeight);
     });
   });

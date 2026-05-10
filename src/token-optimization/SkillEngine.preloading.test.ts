@@ -4,16 +4,16 @@
  * Tests Requirements: 9.2, 9.3, 9.4, 9.5
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { SkillEngine } from './SkillEngine';
-import { SkillLoader } from './SkillLoader';
-import type { Skill } from '@/skills/types';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { SkillEngine } from "./SkillEngine";
+import { SkillLoader } from "./SkillLoader";
+import type { Skill } from "@/skills/types";
 
 // Mock SkillLoader
-vi.mock('./SkillLoader');
+vi.mock("./SkillLoader");
 
 // Mock database
-vi.mock('@/db', () => ({
+vi.mock("@/db", () => ({
   db: {
     insert: vi.fn(() => ({
       values: vi.fn(() => ({
@@ -32,14 +32,14 @@ vi.mock('@/db', () => ({
   },
 }));
 
-vi.mock('@/db/schema', () => ({
+vi.mock("@/db/schema", () => ({
   skillAnalytics: {
-    skillName: 'skillName',
-    timestamp: 'timestamp',
+    skillName: "skillName",
+    timestamp: "timestamp",
   },
 }));
 
-describe('SkillEngine - Preloading', () => {
+describe("SkillEngine - Preloading", () => {
   let engine: SkillEngine;
   let loader: SkillLoader;
 
@@ -49,15 +49,15 @@ describe('SkillEngine - Preloading', () => {
     loader = new SkillLoader();
 
     // Mock loadSkill to return success
-    vi.spyOn(loader, 'loadSkill').mockResolvedValue({
+    vi.spyOn(loader, "loadSkill").mockResolvedValue({
       success: true,
       data: {
-        name: 'test-skill',
-        content: 'test content',
+        name: "test-skill",
+        content: "test content",
       } as Skill,
       metrics: {
-        skillName: 'test-skill',
-        operation: 'loadSkill',
+        skillName: "test-skill",
+        operation: "loadSkill",
         startTime: Date.now(),
         endTime: Date.now() + 10,
         durationMs: 10,
@@ -73,8 +73,8 @@ describe('SkillEngine - Preloading', () => {
     });
   });
 
-  describe('Configuration', () => {
-    it('should initialize with preloading enabled', () => {
+  describe("Configuration", () => {
+    it("should initialize with preloading enabled", () => {
       const config = engine.getConfig();
       expect(config.enablePreloading).toBe(true);
       expect(config.preloadingIdleThreshold).toBe(1000);
@@ -82,7 +82,7 @@ describe('SkillEngine - Preloading', () => {
       expect(config.preloadingMaxPredictions).toBe(3);
     });
 
-    it('should initialize preloading stats', () => {
+    it("should initialize preloading stats", () => {
       const stats = engine.getPreloadingStats();
       expect(stats.preloadedSkills).toBe(0);
       expect(stats.preloadHits).toBe(0);
@@ -92,7 +92,7 @@ describe('SkillEngine - Preloading', () => {
       expect(stats.memoryUsage).toBe(0);
     });
 
-    it('should allow disabling preloading', () => {
+    it("should allow disabling preloading", () => {
       const engineNoPreload = new SkillEngine(loader, {
         enablePreloading: false,
       });
@@ -104,22 +104,22 @@ describe('SkillEngine - Preloading', () => {
     });
   });
 
-  describe('Preload Statistics Tracking', () => {
-    it('should track preload misses when skill is not preloaded', async () => {
+  describe("Preload Statistics Tracking", () => {
+    it("should track preload misses when skill is not preloaded", async () => {
       const statsBefore = engine.getPreloadingStats();
 
-      await engine.executeSkill('new-skill', { test: 'input' });
+      await engine.executeSkill("new-skill", { test: "input" });
 
       const statsAfter = engine.getPreloadingStats();
       expect(statsAfter.preloadMisses).toBe(statsBefore.preloadMisses + 1);
     });
 
-    it('should calculate preload hit rate', async () => {
+    it("should calculate preload hit rate", async () => {
       // Execute a skill (miss)
-      await engine.executeSkill('skill-1', { test: 'input' });
+      await engine.executeSkill("skill-1", { test: "input" });
 
       // Manually mark as preloaded for testing
-      await engine.executeSkill('skill-1', { test: 'input' });
+      await engine.executeSkill("skill-1", { test: "input" });
 
       const stats = engine.getPreloadingStats();
       expect(stats.preloadHitRate).toBeGreaterThanOrEqual(0);
@@ -127,24 +127,24 @@ describe('SkillEngine - Preloading', () => {
     });
   });
 
-  describe('Memory Management', () => {
-    it('should track memory usage', () => {
+  describe("Memory Management", () => {
+    it("should track memory usage", () => {
       const stats = engine.getPreloadingStats();
       expect(stats.memoryUsage).toBe(0);
     });
 
-    it('should update memory usage when unloading skills', async () => {
-      await engine.executeSkill('skill-1', { test: 'input' });
+    it("should update memory usage when unloading skills", async () => {
+      await engine.executeSkill("skill-1", { test: "input" });
 
-      engine.unloadSkill('skill-1');
+      engine.unloadSkill("skill-1");
 
       const stats = engine.getPreloadingStats();
       expect(stats.memoryUsage).toBe(0);
     });
 
-    it('should clear memory usage when unloading all skills', async () => {
-      await engine.executeSkill('skill-1', { test: 'input' });
-      await engine.executeSkill('skill-2', { test: 'input' });
+    it("should clear memory usage when unloading all skills", async () => {
+      await engine.executeSkill("skill-1", { test: "input" });
+      await engine.executeSkill("skill-2", { test: "input" });
 
       engine.unloadAllSkills();
 
@@ -153,8 +153,8 @@ describe('SkillEngine - Preloading', () => {
     });
   });
 
-  describe('Prediction Integration', () => {
-    it('should provide prediction accuracy metrics', () => {
+  describe("Prediction Integration", () => {
+    it("should provide prediction accuracy metrics", () => {
       const accuracy = engine.getPredictionAccuracy();
 
       expect(accuracy).toBeDefined();
@@ -166,25 +166,25 @@ describe('SkillEngine - Preloading', () => {
       expect(accuracy.accuracy).toBeLessThanOrEqual(1);
     });
 
-    it('should track skill usage for prediction', async () => {
-      await engine.executeSkill('skill-1', { test: 'input' });
-      await engine.executeSkill('skill-2', { test: 'input' });
+    it("should track skill usage for prediction", async () => {
+      await engine.executeSkill("skill-1", { test: "input" });
+      await engine.executeSkill("skill-2", { test: "input" });
 
       const accuracy = engine.getPredictionAccuracy();
       expect(accuracy).toBeDefined();
     });
   });
 
-  describe('Cleanup', () => {
-    it('should stop idle detection on destroy', () => {
-      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+  describe("Cleanup", () => {
+    it("should stop idle detection on destroy", () => {
+      const clearTimeoutSpy = vi.spyOn(global, "clearTimeout");
 
       engine.destroy();
 
       expect(clearTimeoutSpy).toHaveBeenCalled();
     });
 
-    it('should be safe to call destroy multiple times', () => {
+    it("should be safe to call destroy multiple times", () => {
       engine.destroy();
       engine.destroy();
 
@@ -193,27 +193,27 @@ describe('SkillEngine - Preloading', () => {
     });
   });
 
-  describe('Skill Execution with Preloading', () => {
-    it('should execute skills successfully', async () => {
-      const result = await engine.executeSkill('test-skill', { test: 'input' });
+  describe("Skill Execution with Preloading", () => {
+    it("should execute skills successfully", async () => {
+      const result = await engine.executeSkill("test-skill", { test: "input" });
 
       expect(result.success).toBe(true);
       expect(result.fromCache).toBe(false);
     });
 
-    it('should track execution context', async () => {
-      await engine.executeSkill('test-skill', { test: 'input' });
+    it("should track execution context", async () => {
+      await engine.executeSkill("test-skill", { test: "input" });
 
       const activeExecutions = engine.getActiveExecutions();
       // Execution should be complete, so no active executions
       expect(activeExecutions.length).toBe(0);
     });
 
-    it('should handle parallel execution', async () => {
+    it("should handle parallel execution", async () => {
       const executions = [
-        { skillName: 'skill-1', inputs: { test: 'input1' } },
-        { skillName: 'skill-2', inputs: { test: 'input2' } },
-        { skillName: 'skill-3', inputs: { test: 'input3' } },
+        { skillName: "skill-1", inputs: { test: "input1" } },
+        { skillName: "skill-2", inputs: { test: "input2" } },
+        { skillName: "skill-3", inputs: { test: "input3" } },
       ];
 
       const results = await engine.executeParallel(executions);
@@ -223,8 +223,8 @@ describe('SkillEngine - Preloading', () => {
     });
   });
 
-  describe('Configuration Updates', () => {
-    it('should allow updating configuration', () => {
+  describe("Configuration Updates", () => {
+    it("should allow updating configuration", () => {
       engine.updateConfig({
         preloadingMemoryLimit: 10,
         preloadingMaxPredictions: 5,
@@ -235,7 +235,7 @@ describe('SkillEngine - Preloading', () => {
       expect(config.preloadingMaxPredictions).toBe(5);
     });
 
-    it('should preserve other config values when updating', () => {
+    it("should preserve other config values when updating", () => {
       const originalThreshold = engine.getConfig().preloadingIdleThreshold;
 
       engine.updateConfig({
@@ -247,46 +247,46 @@ describe('SkillEngine - Preloading', () => {
     });
   });
 
-  describe('Error Handling', () => {
-    it('should handle skill loading failures gracefully', async () => {
-      vi.spyOn(loader, 'loadSkill').mockResolvedValueOnce({
+  describe("Error Handling", () => {
+    it("should handle skill loading failures gracefully", async () => {
+      vi.spyOn(loader, "loadSkill").mockResolvedValueOnce({
         success: false,
-        error: 'Load failed',
+        error: "Load failed",
         metrics: {
-          skillName: 'failing-skill',
-          operation: 'loadSkill',
+          skillName: "failing-skill",
+          operation: "loadSkill",
           startTime: Date.now(),
           endTime: Date.now(),
           durationMs: 0,
           success: false,
-          error: 'Load failed',
+          error: "Load failed",
         },
       });
 
-      const result = await engine.executeSkill('failing-skill', {
-        test: 'input',
+      const result = await engine.executeSkill("failing-skill", {
+        test: "input",
       });
 
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
     });
 
-    it('should track failed executions', async () => {
-      vi.spyOn(loader, 'loadSkill').mockResolvedValueOnce({
+    it("should track failed executions", async () => {
+      vi.spyOn(loader, "loadSkill").mockResolvedValueOnce({
         success: false,
-        error: 'Load failed',
+        error: "Load failed",
         metrics: {
-          skillName: 'failing-skill',
-          operation: 'loadSkill',
+          skillName: "failing-skill",
+          operation: "loadSkill",
           startTime: Date.now(),
           endTime: Date.now(),
           durationMs: 0,
           success: false,
-          error: 'Load failed',
+          error: "Load failed",
         },
       });
 
-      await engine.executeSkill('failing-skill', { test: 'input' });
+      await engine.executeSkill("failing-skill", { test: "input" });
 
       // Should still track the miss
       const stats = engine.getPreloadingStats();

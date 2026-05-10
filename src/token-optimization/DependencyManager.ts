@@ -245,7 +245,7 @@ export class DependencyManager {
     try {
       // Clear existing graph before validation
       this.clear();
-      
+
       // Build graph to discover dependencies
       await this.buildGraph(skillName, scope);
 

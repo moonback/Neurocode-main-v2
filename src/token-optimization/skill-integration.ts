@@ -25,7 +25,7 @@ let preloaderPredictor: PreloaderPredictor | null = null;
 
 /**
  * Initialize the optimized skill system
- * 
+ *
  * @param config - Optional configuration for the skill engine
  */
 export function initializeOptimizedSkillSystem(config?: {
@@ -37,14 +37,16 @@ export function initializeOptimizedSkillSystem(config?: {
 }): void {
   // Read settings to get user preferences
   const settings = readSettings();
-  
+
   // Use settings if no config provided
   const effectiveConfig = {
     cacheSize: config?.cacheSize ?? settings.skillCacheSize ?? 50,
     maxConcurrency: config?.maxConcurrency ?? 5,
     performanceWarningThreshold: config?.performanceWarningThreshold ?? 5000,
-    enableResultCache: config?.enableResultCache ?? (settings.enableSkillCaching !== false),
-    enablePreloading: config?.enablePreloading ?? (settings.enableSkillPreloading !== false),
+    enableResultCache:
+      config?.enableResultCache ?? settings.enableSkillCaching !== false,
+    enablePreloading:
+      config?.enablePreloading ?? settings.enableSkillPreloading !== false,
   };
 
   if (!skillLoader) {
@@ -54,7 +56,9 @@ export function initializeOptimizedSkillSystem(config?: {
 
   if (!skillCache) {
     skillCache = new SkillCache<Skill>(effectiveConfig.cacheSize);
-    logger.info(`SkillCache initialized with size ${effectiveConfig.cacheSize}`);
+    logger.info(
+      `SkillCache initialized with size ${effectiveConfig.cacheSize}`,
+    );
   }
 
   if (!resultCache) {
@@ -128,7 +132,7 @@ export function getPreloaderPredictor(): PreloaderPredictor | null {
 
 /**
  * Load a skill with caching
- * 
+ *
  * @param skillName - Name of the skill to load
  * @param scope - Scope of the skill (user or workspace)
  * @returns The loaded skill or null if not found
@@ -163,7 +167,7 @@ export async function loadSkillOptimized(
 
 /**
  * Execute a skill with caching and performance optimization
- * 
+ *
  * @param skillName - Name of the skill to execute
  * @param scope - Scope of the skill (user or workspace)
  * @param context - Execution context for the skill
@@ -195,7 +199,7 @@ export async function executeSkillOptimized(
 
 /**
  * Preload skills that are likely to be used next
- * 
+ *
  * @param currentContext - Current execution context
  */
 export async function preloadPredictedSkills(
@@ -269,7 +273,7 @@ export function clearSkillCaches(): void {
 
 /**
  * Unload a skill from memory
- * 
+ *
  * @param skillName - Name of the skill to unload
  */
 export function unloadSkill(skillName: string): void {

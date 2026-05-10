@@ -555,11 +555,7 @@ export class TokenManager {
         conditions.length > 0 ? and(...conditions) : undefined;
 
       // Get all matching records
-      const records = db
-        .select()
-        .from(tokenAnalytics)
-        .where(whereClause)
-        .all();
+      const records = db.select().from(tokenAnalytics).where(whereClause).all();
 
       if (format === "csv") {
         return this.exportToCSV(records);

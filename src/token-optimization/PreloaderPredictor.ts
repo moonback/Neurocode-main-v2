@@ -178,16 +178,18 @@ export class PreloaderPredictor {
       // Calculate scores for each pattern
       const usagePatterns: UsagePattern[] = patterns.map((pattern) => {
         const totalUsages = Number(pattern.totalUsages);
-        
+
         // Estimate recent usages based on total and recency
         const daysSinceLastUse = pattern.lastUsedAt
-          ? (now.getTime() - new Date(pattern.lastUsedAt).getTime()) / (24 * 60 * 60 * 1000)
+          ? (now.getTime() - new Date(pattern.lastUsedAt).getTime()) /
+            (24 * 60 * 60 * 1000)
           : this.config.lookbackDays;
-        
+
         // If used recently, assume higher recent usage
-        const recentUsages = daysSinceLastUse < RECENT_DAYS
-          ? Math.ceil(totalUsages * 0.3) // Assume 30% of usage is recent
-          : 0;
+        const recentUsages =
+          daysSinceLastUse < RECENT_DAYS
+            ? Math.ceil(totalUsages * 0.3) // Assume 30% of usage is recent
+            : 0;
 
         const averageUsagePerDay = totalUsages / this.config.lookbackDays;
 
@@ -412,12 +414,12 @@ export class PreloaderPredictor {
     }
 
     if (pattern.recentUsages > 3) {
-      reasons.push(`used ${pattern.recentUsages} times in last ${RECENT_DAYS} days`);
+      reasons.push(
+        `used ${pattern.recentUsages} times in last ${RECENT_DAYS} days`,
+      );
     }
 
-    return reasons.length > 0
-      ? reasons.join(", ")
-      : "based on usage patterns";
+    return reasons.length > 0 ? reasons.join(", ") : "based on usage patterns";
   }
 
   /**

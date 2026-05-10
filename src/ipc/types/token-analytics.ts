@@ -48,9 +48,7 @@ export const GetTopConsumersParamsSchema = z.object({
   endDate: z.number().optional(),
 });
 
-export type GetTopConsumersParams = z.infer<
-  typeof GetTopConsumersParamsSchema
->;
+export type GetTopConsumersParams = z.infer<typeof GetTopConsumersParamsSchema>;
 
 export const GetTopConsumersResultSchema = z.array(TopConsumerSchema);
 
@@ -86,18 +84,14 @@ export const ExportUsageDataParamsSchema = z.object({
   endDate: z.number().optional(),
 });
 
-export type ExportUsageDataParams = z.infer<
-  typeof ExportUsageDataParamsSchema
->;
+export type ExportUsageDataParams = z.infer<typeof ExportUsageDataParamsSchema>;
 
 export const ExportUsageDataResultSchema = z.object({
   data: z.string(),
   filename: z.string(),
 });
 
-export type ExportUsageDataResult = z.infer<
-  typeof ExportUsageDataResultSchema
->;
+export type ExportUsageDataResult = z.infer<typeof ExportUsageDataResultSchema>;
 
 export const UsageOverTimeDataPointSchema = z.object({
   timestamp: z.number(),

@@ -1,17 +1,17 @@
 /**
  * SkillEngine - Optimized skill execution engine
- * 
+ *
  * Provides optimized skill execution with context reuse, parallel execution,
  * concurrency limiting, performance warnings, detailed error reporting, and
  * background preloading with prediction.
- * 
+ *
  * Requirements: 4.7, 5.1, 5.2, 5.3, 5.4, 5.5, 9.2, 9.3, 9.4, 9.5
  */
 
-import { SkillLoader } from './SkillLoader';
-import { ResultCache, type SkillInput } from './ResultCache';
-import { PreloaderPredictor, type UsageEvent } from './PreloaderPredictor';
-import type { Skill } from '@/skills/types';
+import { SkillLoader } from "./SkillLoader";
+import { ResultCache, type SkillInput } from "./ResultCache";
+import { PreloaderPredictor, type UsageEvent } from "./PreloaderPredictor";
+import type { Skill } from "@/skills/types";
 
 export interface ExecutionContext {
   id: string;
@@ -19,7 +19,7 @@ export interface ExecutionContext {
   inputs: SkillInput;
   startTime: number;
   endTime?: number;
-  status: 'pending' | 'running' | 'completed' | 'failed';
+  status: "pending" | "running" | "completed" | "failed";
   result?: unknown;
   error?: Error;
 }
@@ -80,15 +80,12 @@ export class SkillEngine {
   private idleTimer: NodeJS.Timeout | null;
   private preloadingStats: PreloadingStats;
 
-  constructor(
-    loader: SkillLoader,
-    config: Partial<SkillEngineConfig> = {}
-  ) {
+  constructor(loader: SkillLoader, config: Partial<SkillEngineConfig> = {}) {
     this.loader = loader;
     this.config = { ...DEFAULT_CONFIG, ...config };
     this.resultCache = new ResultCache(
       this.config.resultCacheSize,
-      this.config.resultCacheTimeout
+      this.config.resultCacheTimeout,
     );
     this.predictor = new PreloaderPredictor();
     this.activeExecutions = new Map();
@@ -123,7 +120,7 @@ export class SkillEngine {
   async executeSkill<T = unknown>(
     skillName: string,
     inputs: SkillInput,
-    isDeterministic: boolean = false
+    isDeterministic: boolean = false,
   ): Promise<ExecutionResult<T>> {
     // Update activity time for idle detection
     this.updateActivity();
@@ -134,7 +131,7 @@ export class SkillEngine {
       skillName,
       inputs,
       startTime: Date.now(),
-      status: 'pending',
+      status: "pending",
     };
 
     this.activeExecutions.set(contextId, context);
@@ -160,7 +157,7 @@ export class SkillEngine {
       if (this.config.enableResultCache && isDeterministic) {
         const cached = this.resultCache.get(skillName, inputs);
         if (cached) {
-          context.status = 'completed';
+          context.status = "completed";
           context.result = cached.result;
           context.endTime = Date.now();
 
@@ -180,7 +177,7 @@ export class SkillEngine {
       // Wait for concurrency slot
       await this.acquireConcurrencySlot();
 
-      context.status = 'running';
+      context.status = "running";
 
       // Load skill content (with caching via SkillLoader)
       const skillContent = await this.loadSkillContent(skillName);
@@ -190,18 +187,18 @@ export class SkillEngine {
       const result = await this.executeSkillContent<T>(
         skillName,
         skillContent,
-        inputs
+        inputs,
       );
       const executionTime = Date.now() - startExecution;
 
       // Performance warning
       if (executionTime > this.config.performanceWarningThreshold) {
         console.warn(
-          `[SkillEngine] Performance warning: Skill "${skillName}" took ${executionTime}ms to execute (threshold: ${this.config.performanceWarningThreshold}ms)`
+          `[SkillEngine] Performance warning: Skill "${skillName}" took ${executionTime}ms to execute (threshold: ${this.config.performanceWarningThreshold}ms)`,
         );
       }
 
-      context.status = 'completed';
+      context.status = "completed";
       context.result = result;
       context.endTime = Date.now();
 
@@ -221,7 +218,7 @@ export class SkillEngine {
         context,
       };
     } catch (error) {
-      context.status = 'failed';
+      context.status = "failed";
       context.error = error as Error;
       context.endTime = Date.now();
 
@@ -253,7 +250,7 @@ export class SkillEngine {
       skillName: string;
       inputs: SkillInput;
       isDeterministic?: boolean;
-    }>
+    }>,
   ): Promise<Array<ExecutionResult<T>>> {
     // Update activity time for idle detection
     this.updateActivity();
@@ -262,8 +259,8 @@ export class SkillEngine {
       this.executeSkill<T>(
         exec.skillName,
         exec.inputs,
-        exec.isDeterministic ?? false
-      )
+        exec.isDeterministic ?? false,
+      ),
     );
 
     return Promise.all(promises);
@@ -289,14 +286,14 @@ export class SkillEngine {
       ) {
         // System is idle, trigger preloading
         this.performBackgroundPreloading().catch((error) => {
-          console.error('[SkillEngine] Background preloading failed:', error);
+          console.error("[SkillEngine] Background preloading failed:", error);
         });
       }
 
       // Schedule next check
       this.idleTimer = setTimeout(
         checkIdle,
-        this.config.preloadingIdleThreshold
+        this.config.preloadingIdleThreshold,
       );
     };
 
@@ -332,7 +329,7 @@ export class SkillEngine {
     // Limit to configured max predictions
     const topPredictions = predictions.slice(
       0,
-      this.config.preloadingMaxPredictions
+      this.config.preloadingMaxPredictions,
     );
 
     // Preload skills in priority order
@@ -354,7 +351,7 @@ export class SkillEngine {
       } catch (error) {
         console.error(
           `[SkillEngine] Failed to preload skill "${prediction.skillName}":`,
-          error
+          error,
         );
       }
     }
@@ -370,7 +367,7 @@ export class SkillEngine {
    */
   private async preloadSkill(skillName: string): Promise<void> {
     try {
-      const result = await this.loader.loadSkill(skillName, 'user');
+      const result = await this.loader.loadSkill(skillName, "user");
       if (result.success) {
         this.loadedSkills.set(skillName, result.data);
         this.preloadedSkills.add(skillName);
@@ -389,10 +386,7 @@ export class SkillEngine {
     const preloadedArray = Array.from(this.preloadedSkills);
 
     // Calculate how many to evict (evict 20% to make room)
-    const evictCount = Math.max(
-      1,
-      Math.floor(preloadedArray.length * 0.2)
-    );
+    const evictCount = Math.max(1, Math.floor(preloadedArray.length * 0.2));
 
     // Evict oldest preloaded skills
     for (let i = 0; i < evictCount && i < preloadedArray.length; i++) {
@@ -433,7 +427,7 @@ export class SkillEngine {
     }
 
     // Load from SkillLoader
-    const result = await this.loader.loadSkill(skillName, 'user');
+    const result = await this.loader.loadSkill(skillName, "user");
     if (!result.success) {
       throw new Error(`Failed to load skill "${skillName}": ${result.error}`);
     }
@@ -454,7 +448,7 @@ export class SkillEngine {
   private async executeSkillContent<T>(
     skillName: string,
     skill: Skill,
-    inputs: SkillInput
+    inputs: SkillInput,
   ): Promise<T> {
     // This is a placeholder implementation
     // In a real system, this would:
@@ -613,7 +607,7 @@ export class SkillEngine {
     ) {
       this.resultCache = new ResultCache(
         this.config.resultCacheSize,
-        this.config.resultCacheTimeout
+        this.config.resultCacheTimeout,
       );
     }
   }

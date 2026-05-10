@@ -277,9 +277,7 @@ describe("TokenManager - Dynamic Context Window Management", () => {
       };
 
       const currentContextTokens = 10_000;
-      const availableContent: ContentItem[] = [
-        { id: "large", tokens: 50_000 },
-      ];
+      const availableContent: ContentItem[] = [{ id: "large", tokens: 50_000 }];
 
       const included = await tokenManager.adaptiveInclude(
         model,
@@ -646,10 +644,7 @@ describe("TokenManager - Dynamic Context Window Management", () => {
       };
 
       const contextWindow = await tokenManager.detectContextWindow(model);
-      await tokenManager.reserveResponseTokens(
-        model,
-        "very-long",
-      );
+      await tokenManager.reserveResponseTokens(model, "very-long");
 
       const currentContextTokens = Math.floor(contextWindow * 0.8);
       const requiredTokens = Math.floor(contextWindow * 0.5);

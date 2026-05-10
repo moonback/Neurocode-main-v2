@@ -52,7 +52,7 @@ export function getContextOptimizer(): ContextOptimizer {
 
 /**
  * Allocate token budget for an agent request
- * 
+ *
  * @param conversationId - The conversation ID
  * @param model - The model (string name or LargeLanguageModel object)
  * @param taskComplexity - The task complexity level
@@ -66,12 +66,10 @@ export async function allocateTokenBudget(
   requestId?: string,
 ) {
   const manager = getTokenManager();
-  
+
   // Convert string model name to LargeLanguageModel if needed
   const modelObj: LargeLanguageModel =
-    typeof model === "string"
-      ? { name: model, provider: "unknown" }
-      : model;
+    typeof model === "string" ? { name: model, provider: "unknown" } : model;
 
   return manager.allocateBudget({
     conversationId,
@@ -83,7 +81,7 @@ export async function allocateTokenBudget(
 
 /**
  * Track token usage for a conversation
- * 
+ *
  * @param conversationId - The conversation ID
  * @param tokensUsed - Number of tokens used
  * @param requestId - Optional request ID
@@ -108,7 +106,7 @@ export async function trackTokenUsage(
 
 /**
  * Get token usage statistics for a conversation
- * 
+ *
  * @param conversationId - The conversation ID
  * @returns Usage statistics
  */
@@ -119,7 +117,7 @@ export async function getConversationStats(conversationId: string) {
 
 /**
  * Get top token consumers
- * 
+ *
  * @param limit - Maximum number of consumers to return
  * @returns Top consumers
  */
@@ -129,7 +127,7 @@ export async function getTopConsumers(limit = 10) {
   const conversations = manager.getTopConsumers({}, limit, "conversation");
   const skills = manager.getTopConsumers({}, limit, "skill");
   const models = manager.getTopConsumers({}, limit, "model");
-  
+
   return {
     conversations,
     skills,
@@ -139,7 +137,7 @@ export async function getTopConsumers(limit = 10) {
 
 /**
  * Calculate cost for token usage
- * 
+ *
  * @param conversationId - Optional conversation ID to filter by
  * @returns Cost breakdown
  */
@@ -151,7 +149,7 @@ export async function calculateCost(conversationId?: string) {
 
 /**
  * Export token usage data
- * 
+ *
  * @param format - Export format ('csv' or 'json')
  * @param conversationId - Optional conversation ID to filter by
  * @returns Exported data as string

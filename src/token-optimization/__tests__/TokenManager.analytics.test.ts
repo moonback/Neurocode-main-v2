@@ -73,7 +73,8 @@ describe("TokenManager - Analytics", () => {
     it("should return top consumers across all types", () => {
       // Mock database responses
       const mockGet = vi.fn().mockReturnValue({ totalTokens: 12000 });
-      const mockAll = vi.fn()
+      const mockAll = vi
+        .fn()
         .mockReturnValueOnce([
           { id: "conv-2", totalTokens: 5250, requestCount: 2 },
           { id: "conv-1", totalTokens: 4500, requestCount: 2 },
@@ -84,7 +85,11 @@ describe("TokenManager - Analytics", () => {
         ])
         .mockReturnValueOnce([
           { id: "gpt-4o", totalTokens: 5250, requestCount: 2 },
-          { id: "claude-3-5-sonnet-20241022", totalTokens: 4500, requestCount: 2 },
+          {
+            id: "claude-3-5-sonnet-20241022",
+            totalTokens: 4500,
+            requestCount: 2,
+          },
         ]);
 
       vi.mocked(db.select).mockReturnValue({
@@ -110,7 +115,7 @@ describe("TokenManager - Analytics", () => {
       // Should be sorted by total tokens descending
       for (let i = 1; i < topConsumers.length; i++) {
         expect(topConsumers[i - 1].totalTokens).toBeGreaterThanOrEqual(
-          topConsumers[i].totalTokens
+          topConsumers[i].totalTokens,
         );
       }
 
@@ -185,7 +190,11 @@ describe("TokenManager - Analytics", () => {
       const mockGet = vi.fn().mockReturnValue({ totalTokens: 12000 });
       const mockAll = vi.fn().mockReturnValue([
         { id: "gpt-4o", totalTokens: 5250, requestCount: 2 },
-        { id: "claude-3-5-sonnet-20241022", totalTokens: 4500, requestCount: 2 },
+        {
+          id: "claude-3-5-sonnet-20241022",
+          totalTokens: 4500,
+          requestCount: 2,
+        },
       ]);
 
       vi.mocked(db.select).mockReturnValue({
@@ -213,7 +222,8 @@ describe("TokenManager - Analytics", () => {
 
     it("should respect limit parameter", () => {
       const mockGet = vi.fn().mockReturnValue({ totalTokens: 12000 });
-      const mockAll = vi.fn()
+      const mockAll = vi
+        .fn()
         .mockReturnValueOnce([
           { id: "conv-1", totalTokens: 5000, requestCount: 1 },
           { id: "conv-2", totalTokens: 4000, requestCount: 1 },
@@ -312,7 +322,7 @@ describe("TokenManager - Analytics", () => {
 
       // Find claude-3-5-sonnet cost
       const claudeCost = costBreakdown.find(
-        (c) => c.modelType === "claude-3-5-sonnet-20241022"
+        (c) => c.modelType === "claude-3-5-sonnet-20241022",
       );
       expect(claudeCost).toBeDefined();
 
@@ -373,7 +383,7 @@ describe("TokenManager - Analytics", () => {
       const costBreakdown = tokenManager.calculateCost({}, customPricing);
 
       const claudeCost = costBreakdown.find(
-        (c) => c.modelType === "claude-3-5-sonnet-20241022"
+        (c) => c.modelType === "claude-3-5-sonnet-20241022",
       );
 
       if (claudeCost) {
@@ -414,7 +424,7 @@ describe("TokenManager - Analytics", () => {
 
       for (let i = 1; i < costBreakdown.length; i++) {
         expect(costBreakdown[i - 1].totalCost).toBeGreaterThanOrEqual(
-          costBreakdown[i].totalCost
+          costBreakdown[i].totalCost,
         );
       }
     });

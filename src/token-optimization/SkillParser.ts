@@ -11,7 +11,11 @@
  * Requirements: 12.1, 12.2, 12.3, 12.4, 12.5, 12.6
  */
 
-import type { ParsedSkill, ValidationResult, ValidationError } from '@/skills/types';
+import type {
+  ParsedSkill,
+  ValidationResult,
+  ValidationError,
+} from "@/skills/types";
 
 // =============================================================================
 // Type Definitions
@@ -57,7 +61,7 @@ export interface FormatOptions {
 // Constants
 // =============================================================================
 
-const FRONTMATTER_DELIMITER = '---';
+const FRONTMATTER_DELIMITER = "---";
 const SKILL_NAME_PATTERN = /^[a-z0-9-]+(:[a-z0-9-]+)?$/;
 
 // =============================================================================
@@ -80,24 +84,24 @@ export class SkillParser {
         return {
           success: false,
           error: {
-            message: 'Skill file is empty',
+            message: "Skill file is empty",
             line: 1,
-            code: 'EMPTY_FILE',
+            code: "EMPTY_FILE",
           },
         };
       }
 
       // Split content into lines for error reporting
-      const lines = content.split('\n');
+      const lines = content.split("\n");
 
       // Check for frontmatter
       if (!lines[0]?.trim().startsWith(FRONTMATTER_DELIMITER)) {
         return {
           success: false,
           error: {
-            message: 'Skill file must start with frontmatter delimiter (---)',
+            message: "Skill file must start with frontmatter delimiter (---)",
             line: 1,
-            code: 'MISSING_FRONTMATTER_START',
+            code: "MISSING_FRONTMATTER_START",
           },
         };
       }
@@ -115,9 +119,9 @@ export class SkillParser {
         return {
           success: false,
           error: {
-            message: 'Frontmatter is not properly closed with ---',
+            message: "Frontmatter is not properly closed with ---",
             line: lines.length,
-            code: 'MISSING_FRONTMATTER_END',
+            code: "MISSING_FRONTMATTER_END",
           },
         };
       }
@@ -137,15 +141,15 @@ export class SkillParser {
 
       // Extract content after frontmatter
       const contentLines = lines.slice(frontmatterEndLine + 1);
-      const skillContent = contentLines.join('\n').trim();
+      const skillContent = contentLines.join("\n").trim();
 
       if (!skillContent) {
         return {
           success: false,
           error: {
-            message: 'Skill content is empty',
+            message: "Skill content is empty",
             line: frontmatterEndLine + 1,
-            code: 'EMPTY_CONTENT',
+            code: "EMPTY_CONTENT",
           },
         };
       }
@@ -162,8 +166,9 @@ export class SkillParser {
       return {
         success: false,
         error: {
-          message: error instanceof Error ? error.message : 'Unknown parsing error',
-          code: 'PARSE_ERROR',
+          message:
+            error instanceof Error ? error.message : "Unknown parsing error",
+          code: "PARSE_ERROR",
         },
       };
     }
@@ -185,14 +190,14 @@ export class SkillParser {
       if (!line || line.trim().length === 0) continue;
 
       // Parse key: value format
-      const colonIndex = line.indexOf(':');
+      const colonIndex = line.indexOf(":");
       if (colonIndex === -1) {
         return {
           success: false,
           error: {
             message: `Invalid frontmatter format: expected "key: value" but got "${line}"`,
             line: i + 2, // +2 because frontmatter starts at line 2 (after first ---)
-            code: 'INVALID_FRONTMATTER_FORMAT',
+            code: "INVALID_FRONTMATTER_FORMAT",
           },
         };
       }
@@ -206,17 +211,17 @@ export class SkillParser {
           error: {
             message: `Frontmatter field "${key}" has no value`,
             line: i + 2,
-            code: 'MISSING_FRONTMATTER_VALUE',
+            code: "MISSING_FRONTMATTER_VALUE",
           },
         };
       }
 
       // Remove quotes if present
-      const cleanValue = value.replace(/^["']|["']$/g, '');
+      const cleanValue = value.replace(/^["']|["']$/g, "");
 
-      if (key === 'name') {
+      if (key === "name") {
         frontmatter.name = cleanValue;
-      } else if (key === 'description') {
+      } else if (key === "description") {
         frontmatter.description = cleanValue;
       }
       // Ignore unknown fields for forward compatibility
@@ -227,9 +232,9 @@ export class SkillParser {
       return {
         success: false,
         error: {
-          message: 'Frontmatter is missing required field: name',
+          message: "Frontmatter is missing required field: name",
           line: 2,
-          code: 'MISSING_REQUIRED_FIELD',
+          code: "MISSING_REQUIRED_FIELD",
         },
       };
     }
@@ -238,9 +243,9 @@ export class SkillParser {
       return {
         success: false,
         error: {
-          message: 'Frontmatter is missing required field: description',
+          message: "Frontmatter is missing required field: description",
           line: 2,
-          code: 'MISSING_REQUIRED_FIELD',
+          code: "MISSING_REQUIRED_FIELD",
         },
       };
     }
@@ -267,7 +272,7 @@ export class SkillParser {
       `name: ${skill.name}`,
       `description: ${skill.description}`,
       FRONTMATTER_DELIMITER,
-    ].join('\n');
+    ].join("\n");
 
     // Combine frontmatter and content
     const formatted = `${frontmatter}\n\n${skill.content}\n`;
@@ -289,7 +294,7 @@ export class SkillParser {
     // Validate name format
     if (!SKILL_NAME_PATTERN.test(skill.name)) {
       errors.push({
-        code: 'INVALID_NAME_FORMAT',
+        code: "INVALID_NAME_FORMAT",
         message: `Skill name "${skill.name}" must match pattern: ${SKILL_NAME_PATTERN.source}`,
       });
     }
@@ -297,7 +302,7 @@ export class SkillParser {
     // Validate name length
     if (skill.name.length > 50) {
       errors.push({
-        code: 'NAME_TOO_LONG',
+        code: "NAME_TOO_LONG",
         message: `Skill name "${skill.name}" exceeds maximum length of 50 characters`,
       });
     }
@@ -305,14 +310,14 @@ export class SkillParser {
     // Validate description
     if (!skill.description || skill.description.trim().length === 0) {
       errors.push({
-        code: 'EMPTY_DESCRIPTION',
-        message: 'Skill description cannot be empty',
+        code: "EMPTY_DESCRIPTION",
+        message: "Skill description cannot be empty",
       });
     }
 
     if (skill.description && skill.description.length > 200) {
       errors.push({
-        code: 'DESCRIPTION_TOO_LONG',
+        code: "DESCRIPTION_TOO_LONG",
         message: `Skill description exceeds maximum length of 200 characters (current: ${skill.description.length})`,
       });
     }
@@ -320,15 +325,15 @@ export class SkillParser {
     // Validate content
     if (!skill.content || skill.content.trim().length === 0) {
       errors.push({
-        code: 'EMPTY_CONTENT',
-        message: 'Skill content cannot be empty',
+        code: "EMPTY_CONTENT",
+        message: "Skill content cannot be empty",
       });
     }
 
     if (skill.content && skill.content.length < 10) {
       errors.push({
-        code: 'CONTENT_TOO_SHORT',
-        message: 'Skill content is too short (minimum 10 characters)',
+        code: "CONTENT_TOO_SHORT",
+        message: "Skill content is too short (minimum 10 characters)",
       });
     }
 
@@ -353,8 +358,8 @@ export class SkillParser {
     // Basic file validation
     if (!content || content.trim().length === 0) {
       errors.push({
-        code: 'EMPTY_FILE',
-        message: 'Skill file is empty',
+        code: "EMPTY_FILE",
+        message: "Skill file is empty",
         line: 1,
       });
       return { valid: false, errors, warnings: [] };
@@ -421,15 +426,19 @@ export class SkillParser {
    * Requirements: 12.2
    */
   formatError(error: ParseError, content: string): string {
-    const lines = content.split('\n');
+    const lines = content.split("\n");
     let message = `Error: ${error.message}\n`;
 
-    if (error.line !== undefined && error.line > 0 && error.line <= lines.length) {
+    if (
+      error.line !== undefined &&
+      error.line > 0 &&
+      error.line <= lines.length
+    ) {
       const line = lines[error.line - 1];
       message += `  at line ${error.line}: ${line}\n`;
 
       if (error.column !== undefined) {
-        const pointer = ' '.repeat(error.column + 2) + '^';
+        const pointer = " ".repeat(error.column + 2) + "^";
         message += `${pointer}\n`;
       }
     }

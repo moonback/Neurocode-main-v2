@@ -7,7 +7,7 @@
  * Requirements: 10.1, 10.2, 10.5
  */
 
-import type { Skill } from '@/skills/types';
+import type { Skill } from "@/skills/types";
 
 export interface TokenEstimate {
   skillName: string;
@@ -17,11 +17,11 @@ export interface TokenEstimate {
     examples: number;
     metadata: number;
   };
-  accuracy: 'approximate'; // Using 4-char-per-token heuristic
+  accuracy: "approximate"; // Using 4-char-per-token heuristic
 }
 
 export interface TokenWarning {
-  severity: 'info' | 'warning' | 'error';
+  severity: "info" | "warning" | "error";
   message: string;
   currentTokens: number;
   recommendedLimit: number;
@@ -35,7 +35,7 @@ export interface RedundancyReport {
 }
 
 export interface RedundancyItem {
-  type: 'repeated_phrase' | 'duplicate_example' | 'verbose_instruction';
+  type: "repeated_phrase" | "duplicate_example" | "verbose_instruction";
   location: string;
   content: string;
   occurrences: number;
@@ -45,11 +45,11 @@ export interface RedundancyItem {
 
 export interface OptimizationSuggestion {
   type:
-    | 'remove_redundancy'
-    | 'simplify_instructions'
-    | 'reduce_examples'
-    | 'compress_metadata';
-  priority: 'high' | 'medium' | 'low';
+    | "remove_redundancy"
+    | "simplify_instructions"
+    | "reduce_examples"
+    | "compress_metadata";
+  priority: "high" | "medium" | "low";
   description: string;
   estimatedSavings: number; // tokens
   example?: string;
@@ -61,7 +61,7 @@ export interface AnalysisReport {
   warnings: TokenWarning[];
   redundancyReport: RedundancyReport;
   suggestions: OptimizationSuggestion[];
-  overallScore: 'excellent' | 'good' | 'needs_improvement' | 'poor';
+  overallScore: "excellent" | "good" | "needs_improvement" | "poor";
 }
 
 // Token limits based on best practices
@@ -83,10 +83,10 @@ export class SkillAnalyzer {
    * Requirements: 10.1
    */
   estimateTokens(skill: Skill): TokenEstimate {
-    const skillName = skill.name || 'unknown';
+    const skillName = skill.name || "unknown";
 
     // Extract skill content sections
-    const instructions = skill.content || '';
+    const instructions = skill.content || "";
     const examples = this.extractExamples(instructions);
     const metadata = JSON.stringify({
       name: skill.name,
@@ -109,7 +109,7 @@ export class SkillAnalyzer {
         examples: examplesTokens,
         metadata: metadataTokens,
       },
-      accuracy: 'approximate',
+      accuracy: "approximate",
     };
   }
 
@@ -126,7 +126,7 @@ export class SkillAnalyzer {
 
     if (estimate.estimatedTokens >= TOKEN_LIMITS.CRITICAL) {
       warnings.push({
-        severity: 'error',
+        severity: "error",
         message: `Skill exceeds critical token limit. Consider splitting into multiple skills or removing unnecessary content.`,
         currentTokens: estimate.estimatedTokens,
         recommendedLimit: TOKEN_LIMITS.RECOMMENDED,
@@ -134,7 +134,7 @@ export class SkillAnalyzer {
       });
     } else if (estimate.estimatedTokens >= TOKEN_LIMITS.WARNING) {
       warnings.push({
-        severity: 'warning',
+        severity: "warning",
         message: `Skill is approaching token limit. Consider optimizing content to reduce token usage.`,
         currentTokens: estimate.estimatedTokens,
         recommendedLimit: TOKEN_LIMITS.RECOMMENDED,
@@ -142,7 +142,7 @@ export class SkillAnalyzer {
       });
     } else if (estimate.estimatedTokens >= TOKEN_LIMITS.RECOMMENDED) {
       warnings.push({
-        severity: 'info',
+        severity: "info",
         message: `Skill is above recommended token limit but within acceptable range.`,
         currentTokens: estimate.estimatedTokens,
         recommendedLimit: TOKEN_LIMITS.RECOMMENDED,
@@ -160,7 +160,7 @@ export class SkillAnalyzer {
    * Requirements: 10.5
    */
   detectRedundancy(skill: Skill): RedundancyReport {
-    const content = skill.content || '';
+    const content = skill.content || "";
     const redundancies: RedundancyItem[] = [];
 
     // Detect repeated phrases (3+ words repeated multiple times)
@@ -168,12 +168,12 @@ export class SkillAnalyzer {
     for (const phrase of repeatedPhrases) {
       if (phrase.occurrences >= REDUNDANCY_THRESHOLD) {
         redundancies.push({
-          type: 'repeated_phrase',
-          location: 'skill content',
+          type: "repeated_phrase",
+          location: "skill content",
           content: phrase.text,
           occurrences: phrase.occurrences,
           estimatedTokens: Math.ceil(
-            (phrase.text.length * phrase.occurrences) / 4
+            (phrase.text.length * phrase.occurrences) / 4,
           ),
           suggestion: `Consider using a reference or variable instead of repeating "${phrase.text}"`,
         });
@@ -191,9 +191,9 @@ export class SkillAnalyzer {
     for (const [example, count] of exampleMap.entries()) {
       if (count >= 2) {
         redundancies.push({
-          type: 'duplicate_example',
-          location: 'examples section',
-          content: example.substring(0, 100) + '...',
+          type: "duplicate_example",
+          location: "examples section",
+          content: example.substring(0, 100) + "...",
           occurrences: count,
           estimatedTokens: Math.ceil((example.length * count) / 4),
           suggestion: `Remove duplicate example or consolidate similar examples`,
@@ -205,9 +205,9 @@ export class SkillAnalyzer {
     const verboseInstructions = this.findVerboseInstructions(content);
     for (const instruction of verboseInstructions) {
       redundancies.push({
-        type: 'verbose_instruction',
-        location: 'instructions',
-        content: instruction.text.substring(0, 100) + '...',
+        type: "verbose_instruction",
+        location: "instructions",
+        content: instruction.text.substring(0, 100) + "...",
         occurrences: 1,
         estimatedTokens: Math.ceil(instruction.text.length / 4),
         suggestion: `Simplify instruction: "${instruction.text.substring(0, 50)}..." (${instruction.wordCount} words)`,
@@ -216,7 +216,7 @@ export class SkillAnalyzer {
 
     const totalRedundantTokens = redundancies.reduce(
       (sum, item) => sum + item.estimatedTokens,
-      0
+      0,
     );
 
     return {
@@ -241,8 +241,8 @@ export class SkillAnalyzer {
     // Suggest removing redundancy if found
     if (redundancyReport.hasRedundancy) {
       suggestions.push({
-        type: 'remove_redundancy',
-        priority: 'high',
+        type: "remove_redundancy",
+        priority: "high",
         description: `Remove redundant content to save approximately ${redundancyReport.totalRedundantTokens} tokens`,
         estimatedSavings: redundancyReport.totalRedundantTokens,
         example: redundancyReport.redundancies[0]?.suggestion,
@@ -251,16 +251,16 @@ export class SkillAnalyzer {
 
     // Suggest simplifying instructions if they're verbose
     const verboseCount = redundancyReport.redundancies.filter(
-      (r) => r.type === 'verbose_instruction'
+      (r) => r.type === "verbose_instruction",
     ).length;
     if (verboseCount > 0) {
       const verboseTokens = redundancyReport.redundancies
-        .filter((r) => r.type === 'verbose_instruction')
+        .filter((r) => r.type === "verbose_instruction")
         .reduce((sum, r) => sum + r.estimatedTokens, 0);
 
       suggestions.push({
-        type: 'simplify_instructions',
-        priority: 'medium',
+        type: "simplify_instructions",
+        priority: "medium",
         description: `Simplify ${verboseCount} verbose instruction(s) to reduce token usage`,
         estimatedSavings: Math.floor(verboseTokens * 0.3), // Assume 30% reduction
       });
@@ -270,8 +270,8 @@ export class SkillAnalyzer {
     const exampleTokens = estimate.breakdown.examples;
     if (exampleTokens > 500) {
       suggestions.push({
-        type: 'reduce_examples',
-        priority: 'medium',
+        type: "reduce_examples",
+        priority: "medium",
         description: `Consider reducing the number of examples or making them more concise`,
         estimatedSavings: Math.floor(exampleTokens * 0.2), // Assume 20% reduction
       });
@@ -281,8 +281,8 @@ export class SkillAnalyzer {
     const metadataTokens = estimate.breakdown.metadata;
     if (metadataTokens > 100) {
       suggestions.push({
-        type: 'compress_metadata',
-        priority: 'low',
+        type: "compress_metadata",
+        priority: "low",
         description: `Metadata is unusually large. Consider removing unnecessary fields.`,
         estimatedSavings: Math.floor(metadataTokens * 0.5), // Assume 50% reduction
       });
@@ -312,25 +312,25 @@ export class SkillAnalyzer {
     const suggestions = this.generateSuggestions(skill);
 
     // Calculate overall score
-    let overallScore: AnalysisReport['overallScore'];
+    let overallScore: AnalysisReport["overallScore"];
     if (
       tokenEstimate.estimatedTokens <= TOKEN_LIMITS.RECOMMENDED &&
       !redundancyReport.hasRedundancy
     ) {
-      overallScore = 'excellent';
+      overallScore = "excellent";
     } else if (
       tokenEstimate.estimatedTokens <= TOKEN_LIMITS.WARNING &&
       redundancyReport.totalRedundantTokens < 100
     ) {
-      overallScore = 'good';
+      overallScore = "good";
     } else if (tokenEstimate.estimatedTokens <= TOKEN_LIMITS.CRITICAL) {
-      overallScore = 'needs_improvement';
+      overallScore = "needs_improvement";
     } else {
-      overallScore = 'poor';
+      overallScore = "poor";
     }
 
     return {
-      skillName: skill.name || 'unknown',
+      skillName: skill.name || "unknown",
       tokenEstimate,
       warnings,
       redundancyReport,
@@ -354,11 +354,11 @@ export class SkillAnalyzer {
       /Example:[\s\S]*?(?=\n\n|$)/gi,
     ];
 
-    let examples = '';
+    let examples = "";
     for (const marker of exampleMarkers) {
       const matches = content.match(marker);
       if (matches) {
-        examples += matches.join('\n');
+        examples += matches.join("\n");
       }
     }
 
@@ -392,7 +392,7 @@ export class SkillAnalyzer {
    * Find repeated phrases in content
    */
   private findRepeatedPhrases(
-    content: string
+    content: string,
   ): Array<{ text: string; occurrences: number }> {
     const phrases: Map<string, number> = new Map();
 
@@ -405,7 +405,10 @@ export class SkillAnalyzer {
       // Look for 3-5 word phrases
       for (let len = 3; len <= 5; len++) {
         for (let i = 0; i <= words.length - len; i++) {
-          const phrase = words.slice(i, i + len).join(' ').toLowerCase();
+          const phrase = words
+            .slice(i, i + len)
+            .join(" ")
+            .toLowerCase();
 
           // Skip if too short or contains only common words
           if (phrase.length < 15 || this.isCommonPhrase(phrase)) {
@@ -435,7 +438,7 @@ export class SkillAnalyzer {
    * Find verbose instructions (sentences with >30 words)
    */
   private findVerboseInstructions(
-    content: string
+    content: string,
   ): Array<{ text: string; wordCount: number }> {
     const verbose: Array<{ text: string; wordCount: number }> = [];
 
@@ -465,8 +468,8 @@ export class SkillAnalyzer {
   private normalizeText(text: string): string {
     return text
       .toLowerCase()
-      .replace(/\s+/g, ' ')
-      .replace(/[^\w\s]/g, '')
+      .replace(/\s+/g, " ")
+      .replace(/[^\w\s]/g, "")
       .trim();
   }
 
@@ -475,47 +478,47 @@ export class SkillAnalyzer {
    */
   private isCommonPhrase(phrase: string): boolean {
     const commonWords = new Set([
-      'the',
-      'a',
-      'an',
-      'and',
-      'or',
-      'but',
-      'in',
-      'on',
-      'at',
-      'to',
-      'for',
-      'of',
-      'with',
-      'by',
-      'from',
-      'as',
-      'is',
-      'was',
-      'are',
-      'were',
-      'be',
-      'been',
-      'being',
-      'have',
-      'has',
-      'had',
-      'do',
-      'does',
-      'did',
-      'will',
-      'would',
-      'should',
-      'could',
-      'may',
-      'might',
-      'must',
-      'can',
-      'this',
-      'that',
-      'these',
-      'those',
+      "the",
+      "a",
+      "an",
+      "and",
+      "or",
+      "but",
+      "in",
+      "on",
+      "at",
+      "to",
+      "for",
+      "of",
+      "with",
+      "by",
+      "from",
+      "as",
+      "is",
+      "was",
+      "are",
+      "were",
+      "be",
+      "been",
+      "being",
+      "have",
+      "has",
+      "had",
+      "do",
+      "does",
+      "did",
+      "will",
+      "would",
+      "should",
+      "could",
+      "may",
+      "might",
+      "must",
+      "can",
+      "this",
+      "that",
+      "these",
+      "those",
     ]);
 
     const words = phrase.split(/\s+/);

@@ -1,10 +1,10 @@
 /**
  * SkillCache - LRU cache for loaded skills with time-based eviction
- * 
+ *
  * Implements an LRU (Least Recently Used) cache for skill content to avoid
  * repeated file I/O operations. Includes time-based eviction (10-minute idle
  * timeout) and cache hit/miss tracking for performance monitoring.
- * 
+ *
  * Requirements: 4.3, 4.4, 5.7
  */
 
@@ -48,10 +48,10 @@ export class SkillCache<T = string> {
    */
   constructor(maxSize: number = 100, idleTimeoutMinutes: number = 10) {
     if (maxSize <= 0) {
-      throw new Error('maxSize must be positive');
+      throw new Error("maxSize must be positive");
     }
     if (idleTimeoutMinutes <= 0) {
-      throw new Error('idleTimeoutMinutes must be positive');
+      throw new Error("idleTimeoutMinutes must be positive");
     }
 
     this.cache = new Map();
@@ -106,7 +106,7 @@ export class SkillCache<T = string> {
    */
   put(key: string, value: T, size: number = 1): void {
     if (size <= 0) {
-      throw new Error('size must be positive');
+      throw new Error("size must be positive");
     }
 
     const now = Date.now();

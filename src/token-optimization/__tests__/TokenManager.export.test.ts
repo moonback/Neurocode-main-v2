@@ -65,7 +65,7 @@ describe("TokenManager - Export", () => {
           outputTokens: 1000,
           totalTokens: 3000,
           optimizationsSaved: 200,
-          costEstimate: 0.10,
+          costEstimate: 0.1,
           timestamp: 1234567900,
         },
       ];
@@ -83,7 +83,7 @@ describe("TokenManager - Export", () => {
 
       // Should have header
       expect(csv).toContain(
-        "requestId,conversationId,skillName,modelType,inputTokens,outputTokens,totalTokens,optimizationsSaved,costEstimate,timestamp"
+        "requestId,conversationId,skillName,modelType,inputTokens,outputTokens,totalTokens,optimizationsSaved,costEstimate,timestamp",
       );
 
       // Should have data rows
@@ -112,7 +112,7 @@ describe("TokenManager - Export", () => {
 
       // Should have header only
       expect(csv).toBe(
-        "requestId,conversationId,skillName,modelType,inputTokens,outputTokens,totalTokens,optimizationsSaved,costEstimate,timestamp\n"
+        "requestId,conversationId,skillName,modelType,inputTokens,outputTokens,totalTokens,optimizationsSaved,costEstimate,timestamp\n",
       );
     });
 
@@ -237,7 +237,9 @@ describe("TokenManager - Export", () => {
       const csv = await tokenManager.exportData("csv");
 
       // Should handle null/undefined as empty string or 0
-      expect(csv).toContain("req-1,,,claude-3-5-sonnet-20241022,1000,500,1500,0,0,1234567890");
+      expect(csv).toContain(
+        "req-1,,,claude-3-5-sonnet-20241022,1000,500,1500,0,0,1234567890",
+      );
     });
 
     it("should filter by conversation", async () => {
@@ -296,7 +298,7 @@ describe("TokenManager - Export", () => {
           outputTokens: 1000,
           totalTokens: 3000,
           optimizationsSaved: 200,
-          costEstimate: 0.10,
+          costEstimate: 0.1,
           timestamp: 1234567900,
         },
       ];
@@ -419,7 +421,7 @@ describe("TokenManager - Export", () => {
       });
 
       await expect(tokenManager.exportData("csv")).rejects.toThrow(
-        "Failed to export data: Database error"
+        "Failed to export data: Database error",
       );
     });
 
@@ -429,7 +431,7 @@ describe("TokenManager - Export", () => {
       });
 
       await expect(tokenManager.exportData("csv")).rejects.toThrow(
-        "Failed to export data: Unknown error"
+        "Failed to export data: Unknown error",
       );
     });
   });

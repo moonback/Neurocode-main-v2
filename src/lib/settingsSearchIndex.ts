@@ -249,8 +249,7 @@ export const SETTINGS_SEARCH_INDEX: SearchableSettingItem[] = [
   {
     id: SETTING_IDS.enableSkillCaching,
     label: "Skill Caching",
-    description:
-      "Cache loaded skills in memory for faster execution",
+    description: "Cache loaded skills in memory for faster execution",
     keywords: [
       "skill",
       "cache",
@@ -283,31 +282,16 @@ export const SETTINGS_SEARCH_INDEX: SearchableSettingItem[] = [
   {
     id: SETTING_IDS.skillCacheSize,
     label: "Skill Cache Size",
-    description:
-      "Maximum number of skills to keep in cache (default: 50)",
-    keywords: [
-      "skill",
-      "cache",
-      "size",
-      "limit",
-      "memory",
-      "configuration",
-    ],
+    description: "Maximum number of skills to keep in cache (default: 50)",
+    keywords: ["skill", "cache", "size", "limit", "memory", "configuration"],
     sectionId: SECTION_IDS.ai,
     sectionLabel: "AI",
   },
   {
     id: SETTING_IDS.skillPreloadingMemoryLimit,
     label: "Skill Preloading Memory Limit",
-    description:
-      "Maximum number of skills to preload in memory (default: 10)",
-    keywords: [
-      "skill",
-      "preload",
-      "memory",
-      "limit",
-      "configuration",
-    ],
+    description: "Maximum number of skills to preload in memory (default: 10)",
+    keywords: ["skill", "preload", "memory", "limit", "configuration"],
     sectionId: SECTION_IDS.ai,
     sectionLabel: "AI",
   },

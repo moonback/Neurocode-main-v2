@@ -51,17 +51,9 @@ export {
   type LoadResult,
 } from "./SkillLoader";
 
-export {
-  SkillCache,
-  type CacheStats,
-  type CacheInfo,
-} from "./SkillCache";
+export { SkillCache, type CacheStats, type CacheInfo } from "./SkillCache";
 
-export {
-  ResultCache,
-  type SkillInput,
-  type CachedResult,
-} from "./ResultCache";
+export { ResultCache, type SkillInput, type CachedResult } from "./ResultCache";
 
 export {
   SkillEngine,

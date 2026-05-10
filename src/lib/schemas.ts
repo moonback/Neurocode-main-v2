@@ -385,7 +385,7 @@ const BaseUserSettingsFields = {
   enableContextCompaction: z.boolean().optional(),
   skipNotificationBanner: z.boolean().optional(),
   enableSelectAppFromHomeChatInput: z.boolean().optional(),
-  
+
   // Token Optimization Settings
   enableTokenOptimization: z.boolean().optional(),
   enableSkillCaching: z.boolean().optional(),
