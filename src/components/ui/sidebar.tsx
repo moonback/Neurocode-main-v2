@@ -12,6 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { IconSize, ThemeVariant } from "@/lib/sidebar-preferences";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -20,10 +21,30 @@ const SIDEBAR_WIDTH_ICON = "4.5rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
 type SidebarContextProps = {
+  // Existing properties (backward compatible)
   state: "expanded" | "collapsed";
   open: boolean;
   setOpen: (open: boolean) => void;
   toggleSidebar: () => void;
+
+  // New properties
+  width: number;
+  setWidth: (width: number) => void;
+  iconSize: IconSize;
+  setIconSize: (size: IconSize) => void;
+  theme: ThemeVariant;
+  setTheme: (theme: ThemeVariant) => void;
+  isResizing: boolean;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  recentItems: string[];
+  addRecentItem: (itemId: string) => void;
+  pinnedItems: string[];
+  togglePinItem: (itemId: string) => void;
+  itemOrder: string[];
+  reorderItems: (newOrder: string[]) => void;
+  expandedGroups: Set<string>;
+  toggleGroup: (groupId: string) => void;
 };
 
 const SidebarContext = React.createContext<SidebarContextProps | null>(null);
@@ -74,6 +95,57 @@ function SidebarProvider({
     setOpen((open) => !open);
   }, [setOpen]);
 
+  // New state properties with default values
+  const [width, setWidth] = React.useState<number>(304); // 19rem = 304px
+  const [iconSize, setIconSize] = React.useState<IconSize>("medium");
+  const [theme, setTheme] = React.useState<ThemeVariant>("modern");
+  const [isResizing, _setIsResizing] = React.useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = React.useState<string>("");
+  const [recentItems, setRecentItems] = React.useState<string[]>([]);
+  const [pinnedItems, setPinnedItems] = React.useState<string[]>([]);
+  const [itemOrder, setItemOrder] = React.useState<string[]>([]);
+  const [expandedGroups, setExpandedGroups] = React.useState<Set<string>>(
+    new Set(),
+  );
+
+  // Helper to add a recent item
+  const addRecentItem = React.useCallback((itemId: string) => {
+    setRecentItems((prev) => {
+      const filtered = prev.filter((id) => id !== itemId);
+      const updated = [itemId, ...filtered].slice(0, 5);
+      return updated;
+    });
+  }, []);
+
+  // Helper to toggle pin item
+  const togglePinItem = React.useCallback((itemId: string) => {
+    setPinnedItems((prev) => {
+      if (prev.includes(itemId)) {
+        return prev.filter((id) => id !== itemId);
+      } else {
+        return [...prev, itemId];
+      }
+    });
+  }, []);
+
+  // Helper to reorder items
+  const reorderItems = React.useCallback((newOrder: string[]) => {
+    setItemOrder(newOrder);
+  }, []);
+
+  // Helper to toggle group expansion
+  const toggleGroup = React.useCallback((groupId: string) => {
+    setExpandedGroups((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(groupId)) {
+        newSet.delete(groupId);
+      } else {
+        newSet.add(groupId);
+      }
+      return newSet;
+    });
+  }, []);
+
   // Auto-collapse on small screens
   React.useEffect(() => {
     const mql = window.matchMedia("(max-width: 480px)");
@@ -111,12 +183,54 @@ function SidebarProvider({
 
   const contextValue = React.useMemo<SidebarContextProps>(
     () => ({
+      // Existing properties (backward compatible)
       state,
       open,
       setOpen,
       toggleSidebar,
+
+      // New properties
+      width,
+      setWidth,
+      iconSize,
+      setIconSize,
+      theme,
+      setTheme,
+      isResizing,
+      searchQuery,
+      setSearchQuery,
+      recentItems,
+      addRecentItem,
+      pinnedItems,
+      togglePinItem,
+      itemOrder,
+      reorderItems,
+      expandedGroups,
+      toggleGroup,
     }),
-    [state, open, setOpen, toggleSidebar],
+    [
+      state,
+      open,
+      setOpen,
+      toggleSidebar,
+      width,
+      setWidth,
+      iconSize,
+      setIconSize,
+      theme,
+      setTheme,
+      isResizing,
+      searchQuery,
+      setSearchQuery,
+      recentItems,
+      addRecentItem,
+      pinnedItems,
+      togglePinItem,
+      itemOrder,
+      reorderItems,
+      expandedGroups,
+      toggleGroup,
+    ],
   );
 
   return (
@@ -184,10 +298,11 @@ function Sidebar({
       data-slot="sidebar"
     >
       {/* This is what handles the sidebar gap */}
+      {/* Smooth animation system: width transitions with 200ms ease-in-out (Requirement 1.1, 1.2) */}
       <div
         data-slot="sidebar-gap"
         className={cn(
-          "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear",
+          "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-in-out",
           "group-data-[collapsible=offcanvas]:w-0",
           "group-data-[side=right]:rotate-180",
           variant === "floating" || variant === "inset"
@@ -198,7 +313,9 @@ function Sidebar({
       <div
         data-slot="sidebar-container"
         className={cn(
-          "fixed inset-y-0 z-10 flex h-svh w-(--sidebar-width) transition-[left,right,width,transform] duration-200 ease-linear",
+          // Smooth animation system: width and transform transitions with 200ms ease-in-out (Requirement 1.1, 1.2, 11.6)
+          // Using CSS transforms for performance (Requirement 11.6)
+          "fixed inset-y-0 z-10 flex h-svh w-(--sidebar-width) transition-[left,right,width,transform] duration-200 ease-in-out",
           side === "left"
             ? "left-0 translate-x-0 group-data-[collapsible=offcanvas]:translate-x-[-100%]"
             : "right-0 translate-x-0 group-data-[collapsible=offcanvas]:translate-x-[100%]",
@@ -267,7 +384,8 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
       onClick={toggleSidebar}
       title="Toggle Sidebar"
       className={cn(
-        "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] sm:flex",
+        // Smooth animation system: transition-all with 200ms ease-in-out for resize handle (Requirement 1.1, 1.2)
+        "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all duration-200 ease-in-out group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] sm:flex",
         "in-data-[side=left][data-state=collapsed]_&]:cursor-e-resize in-data-[side=right][data-state=collapsed]_&]:cursor-w-resize",
         "hover:group-data-[collapsible=offcanvas]:bg-sidebar group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full",
         "[[data-side=left][data-collapsible=offcanvas]_&]:-right-2",
@@ -308,11 +426,19 @@ function SidebarInput({
 }
 
 function SidebarHeader({ className, ...props }: React.ComponentProps<"div">) {
+  const { state } = useSidebar();
+
   return (
     <div
       data-slot="sidebar-header"
       data-sidebar="header"
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn(
+        "flex flex-col gap-2 p-2",
+        // Gradient background for expanded mode (Requirement 3.4)
+        state === "expanded" &&
+          "bg-gradient-to-b from-sidebar-accent/10 to-transparent",
+        className,
+      )}
       {...props}
     />
   );
@@ -380,7 +506,7 @@ function SidebarGroupLabel<T extends React.ElementType = "div">({
       data-slot="sidebar-group-label"
       data-sidebar="group-label"
       className={cn(
-        "text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        "text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 ease-in-out focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
         "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
         className,
       )}
@@ -449,23 +575,29 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
 }
 
 const sidebarMenuButtonVariants = cva(
-  // (Only the sidebarMenuButtonVariants constant is updated; the rest of the code remains unchanged)
-  // Updated base classes:
-  // • Changed flex direction to column and centered items.
-  // • Enforced a fixed width (w-20) for consistent space.
-  // • Removed text-left and gap changes to ensure the text label appears below the icon.
-  "peer/menu-button flex flex-col items-center gap-1 w-16 overflow-hidden p-2 text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground [&>svg]:size-4 [&>svg]:shrink-0 [&>span]:mt-1",
+  // Base classes with smooth animation system:
+  // • Transition for transform and background-color (150ms ease-in-out for hover states per Requirement 1.3)
+  // • hover:scale-105 for scale transform on hover (150ms per Requirement 1.3)
+  // • Icon transitions: transform with 200ms ease-in-out for rotation/bounce (Requirement 1.4)
+  // • Using CSS transforms for performance (Requirement 11.6)
+  // • Enhanced visual feedback (Requirement 3.1, 3.2, 3.3, 3.5):
+  //   - Left border accent on active state
+  //   - Hover background with 0.9 opacity
+  //   - Medium font weight on active state
+  //   - 2px focus ring with accent color
+  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-[transform,background-color,border-color] duration-150 ease-in-out hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground hover:scale-105 focus-visible:ring-2 focus-visible:ring-sidebar-ring active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 border-l-2 border-transparent data-[active=true]:border-l-2 data-[active=true]:border-sidebar-accent data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:transition-transform [&>svg]:duration-200 [&>svg]:ease-in-out hover:[&>svg]:rotate-12",
   {
     variants: {
       variant: {
-        default: "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        default:
+          "hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground",
         outline:
-          "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
+          "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
       },
       size: {
         default: "h-8 text-sm",
         sm: "h-7 text-xs",
-        lg: "h-12 text-sm",
+        lg: "h-12 text-sm group-data-[collapsible=icon]:!p-0",
       },
     },
     defaultVariants: {
@@ -701,3 +833,6 @@ export {
   SidebarTrigger,
   useSidebar,
 };
+
+// Export new types
+export type { SidebarContextProps };

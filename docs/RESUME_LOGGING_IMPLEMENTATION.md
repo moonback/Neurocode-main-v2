@@ -11,11 +11,13 @@ Des logs détaillés ont été ajoutés au système d'optimisation des tokens po
 **Fichier**: `src/token-optimization/TokenManager.ts`
 
 **Modifications**:
+
 - ✅ Méthode `trackUsage()` rendue **asynchrone** (`async/await`)
 - ✅ Ajout de logs détaillés avant et après l'insertion en base de données
 - ✅ Ajout de logs d'erreur avec détails complets en cas d'échec
 
 **Logs ajoutés**:
+
 ```typescript
 // Avant l'insertion
 💾 TokenManager.trackUsage: Saving X tokens to database for conversation Y
@@ -33,10 +35,12 @@ Error details: [detailed error]
 **Fichier**: `src/token-optimization/integration.ts`
 
 **Modifications**:
+
 - ✅ Fonction `trackTokenUsage()` déjà asynchrone
 - ✅ Logs détaillés avant et après le tracking
 
 **Logs existants** (déjà présents):
+
 ```typescript
 // Avant le tracking
 📊 Tracking token usage: X tokens for conversation Y (request: Z)
@@ -50,6 +54,7 @@ Error details: [detailed error]
 **Fichier**: `src/pro/main/ipc/handlers/local_agent/local_agent_handler.ts`
 
 **Logs existants** (déjà présents):
+
 ```typescript
 // Au démarrage de la requête
 🚀 Token Optimization System: ACTIVATING...
@@ -90,6 +95,7 @@ npm test -- src/token-optimization
 ```
 
 **Résultats**:
+
 - ✅ **415 tests passés** sur 416
 - ❌ **1 test échoué** (test de performance flaky, non critique)
 - ✅ **0 erreurs TypeScript**
@@ -138,11 +144,13 @@ Si tout fonctionne correctement, vous devriez voir :
 ### Problème : Aucun log n'apparaît
 
 **Causes possibles**:
+
 1. Vous n'êtes pas en mode Agent Local (mode Chat simple ne track pas)
 2. L'application n'a pas été recompilée (`npm run build`)
 3. La console est filtrée
 
 **Solutions**:
+
 1. Vérifier que vous utilisez bien le mode Agent Local
 2. Recompiler : `npm run build`
 3. Vérifier les filtres de la console
@@ -150,10 +158,12 @@ Si tout fonctionne correctement, vous devriez voir :
 ### Problème : Logs apparaissent mais dashboard vide
 
 **Causes possibles**:
+
 1. Erreur lors de l'insertion en base de données
 2. Dashboard non rafraîchi
 
 **Solutions**:
+
 1. Vérifier les logs d'erreur (❌)
 2. Rafraîchir le dashboard (F5)
 3. Vérifier la base de données directement
@@ -161,10 +171,12 @@ Si tout fonctionne correctement, vous devriez voir :
 ### Problème : Erreur "Failed to track token usage"
 
 **Causes possibles**:
+
 1. Problème de base de données
 2. Problème de migration de schéma
 
 **Solutions**:
+
 1. Vérifier les logs d'erreur complets
 2. Vérifier que la table `token_analytics` existe
 3. Vérifier les migrations de base de données

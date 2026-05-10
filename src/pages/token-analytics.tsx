@@ -1,4 +1,4 @@
-import { TokenAnalyticsDashboard } from '@/components/TokenAnalyticsDashboard';
+import { TokenAnalyticsDashboard } from "@/components/TokenAnalyticsDashboard";
 
 export function TokenAnalyticsPage() {
   return (

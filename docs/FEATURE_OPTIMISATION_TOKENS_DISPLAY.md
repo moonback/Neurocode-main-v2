@@ -7,6 +7,7 @@ Afficher les tokens économisés grâce au système d'optimisation directement d
 ## 📸 Résultat Visuel
 
 ### Avant
+
 ```
 ┌─────────────────────────────────────────┐
 │ Détail de l'utilisation des tokens      │
@@ -22,6 +23,7 @@ Afficher les tokens économisés grâce au système d'optimisation directement d
 ```
 
 ### Après ✨
+
 ```
 ┌─────────────────────────────────────────┐
 │ Détail de l'utilisation des tokens      │
@@ -40,12 +42,14 @@ Afficher les tokens économisés grâce au système d'optimisation directement d
 ## ✅ Caractéristiques
 
 ### Visuel
+
 - **Icône** : ⚡ (Zap) - Symbolise l'optimisation et la performance
 - **Couleur** : Cyan (`text-cyan-500`) - Se distingue visuellement
 - **Format** : `-4,426` - Nombre négatif pour indiquer une économie
 - **Police** : Medium weight pour mettre en valeur
 
 ### Comportement
+
 - ✅ **Affichage conditionnel** : N'apparaît que si des tokens sont économisés
 - ✅ **Mise à jour en temps réel** : Se met à jour lors de la saisie
 - ✅ **Formatage des nombres** : Séparateurs de milliers (ex: 4,426)
@@ -56,6 +60,7 @@ Afficher les tokens économisés grâce au système d'optimisation directement d
 ### Modifications Apportées
 
 #### 1. Type Definition (`src/ipc/types/chat.ts`)
+
 ```typescript
 export const TokenCountResultSchema = z.object({
   // ... autres champs
@@ -64,10 +69,11 @@ export const TokenCountResultSchema = z.object({
 ```
 
 #### 2. Handler IPC (`src/ipc/handlers/token_count_handlers.ts`)
+
 ```typescript
 // Calculate optimization tokens saved
 const optimizationTokensSaved = Math.floor(
-  (codebaseTokens + messageHistoryTokens) * 0.1
+  (codebaseTokens + messageHistoryTokens) * 0.1,
 );
 
 return {
@@ -77,6 +83,7 @@ return {
 ```
 
 #### 3. Composant UI (`src/components/chat/TokenBar.tsx`)
+
 ```tsx
 // Import de l'icône
 import { Zap } from "lucide-react";
@@ -85,25 +92,29 @@ import { Zap } from "lucide-react";
 const { optimizationTokensSaved = 0 } = result;
 
 // Affichage conditionnel
-{optimizationTokensSaved > 0 && (
-  <>
-    <Zap size={12} className="text-cyan-500" />
-    <span>Optimisation tokens</span>
-    <span className="text-cyan-500 font-medium">
-      -{optimizationTokensSaved.toLocaleString()}
-    </span>
-  </>
-)}
+{
+  optimizationTokensSaved > 0 && (
+    <>
+      <Zap size={12} className="text-cyan-500" />
+      <span>Optimisation tokens</span>
+      <span className="text-cyan-500 font-medium">
+        -{optimizationTokensSaved.toLocaleString()}
+      </span>
+    </>
+  );
+}
 ```
 
 ## 📊 Calcul des Économies
 
 ### Formule Actuelle (Estimation)
+
 ```
 Tokens économisés = (Base de code + Historique) × 10%
 ```
 
 ### Exemple
+
 ```
 Base de code:        44,145 tokens
 Historique:             111 tokens
@@ -113,27 +124,32 @@ Sous-total:         44,256 tokens
 ```
 
 ### Optimisations Représentées
+
 - **Compression** : Réduction de la taille des données
-- **Pruning** : Suppression des informations redondantes  
+- **Pruning** : Suppression des informations redondantes
 - **Sélection contextuelle** : Inclusion intelligente du contenu pertinent
 
 ## 🚀 Évolutions Futures
 
 ### Phase 1 : Calcul Réel (Actuel)
+
 - ✅ Estimation fixe de 10%
 - ✅ Affichage dans le tooltip
 
 ### Phase 2 : Métriques Réelles
+
 - ⏳ Intégration avec `TokenManager.getStatistics()`
 - ⏳ Tracking des économies réelles par conversation
 - ⏳ Calcul basé sur les métriques du système d'optimisation
 
 ### Phase 3 : Détails Avancés
+
 - ⏳ Breakdown par type d'optimisation (compression, pruning, etc.)
 - ⏳ Graphique d'évolution des économies
 - ⏳ Intégration au dashboard analytics
 
 ### Phase 4 : Personnalisation
+
 - ⏳ Paramètres d'optimisation ajustables
 - ⏳ Suggestions d'optimisation
 - ⏳ Comparaison avant/après
@@ -141,12 +157,14 @@ Sous-total:         44,256 tokens
 ## 📈 Bénéfices
 
 ### Pour l'Utilisateur
+
 1. **Transparence** : Voit clairement les économies réalisées
 2. **Confiance** : Preuve que le système fonctionne
 3. **Motivation** : Encouragement à utiliser les optimisations
 4. **Feedback** : Information en temps réel
 
 ### Pour le Développement
+
 1. **Visibilité** : Mise en avant du système d'optimisation
 2. **Validation** : Preuve de concept visible
 3. **Itération** : Base pour améliorer les algorithmes
@@ -155,23 +173,25 @@ Sous-total:         44,256 tokens
 ## 🧪 Tests
 
 ### Test Manuel
+
 1. Ouvrir une conversation avec une base de code
 2. Survoler la barre de tokens
 3. Vérifier la présence de la ligne "Optimisation tokens"
 4. Vérifier le format et la couleur
 
 ### Test Automatisé (À Ajouter)
+
 ```typescript
-describe('TokenBar - Optimization Display', () => {
-  it('should show optimization tokens when savings exist', () => {
+describe("TokenBar - Optimization Display", () => {
+  it("should show optimization tokens when savings exist", () => {
     // Test implementation
   });
-  
-  it('should hide optimization tokens when no savings', () => {
+
+  it("should hide optimization tokens when no savings", () => {
     // Test implementation
   });
-  
-  it('should format optimization tokens correctly', () => {
+
+  it("should format optimization tokens correctly", () => {
     // Test implementation
   });
 });
@@ -192,6 +212,7 @@ describe('TokenBar - Optimization Display', () => {
 ## 📝 Notes Techniques
 
 ### Compatibilité
+
 - ✅ TypeScript 5.x
 - ✅ React 18.x
 - ✅ Zod 3.x
@@ -199,11 +220,13 @@ describe('TokenBar - Optimization Display', () => {
 - ✅ Tailwind CSS 3.x
 
 ### Performance
+
 - ⚡ Calcul léger (simple multiplication)
 - ⚡ Pas d'impact sur le temps de réponse
 - ⚡ Mise en cache via React Query
 
 ### Accessibilité
+
 - ♿ Icône avec texte descriptif
 - ♿ Contraste de couleur suffisant (cyan-500)
 - ♿ Formatage des nombres lisible

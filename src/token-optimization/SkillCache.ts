@@ -122,9 +122,13 @@ export class SkillCache<T = string> {
     // If key already exists, remove it first
     if (this.cache.has(key)) {
       this.cache.delete(key);
-      console.log(`🔄 SkillCache.put: Updating existing cache entry for "${key}"`);
+      console.log(
+        `🔄 SkillCache.put: Updating existing cache entry for "${key}"`,
+      );
     } else {
-      console.log(`💾 SkillCache.put: Adding new cache entry for "${key}" (size: ${size} bytes)`);
+      console.log(
+        `💾 SkillCache.put: Adding new cache entry for "${key}" (size: ${size} bytes)`,
+      );
     }
 
     // If cache is at max size, evict least recently used (first entry)
@@ -146,7 +150,7 @@ export class SkillCache<T = string> {
       lastAccessed: now,
       createdAt: now,
     });
-    
+
     console.log(
       `✅ SkillCache.put: Successfully cached "${key}" (cache size: ${this.cache.size}/${this.maxSize})`,
     );

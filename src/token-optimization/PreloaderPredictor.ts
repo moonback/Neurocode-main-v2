@@ -246,13 +246,13 @@ export class PreloaderPredictor {
       console.log(
         `🔮 PreloaderPredictor.predictSkills: Analyzing patterns to predict skills${currentContext ? ` (context: "${currentContext.substring(0, 50)}...")` : ""}`,
       );
-      
+
       const patterns = this.analyzePatterns();
-      
+
       console.log(
         `📊 PreloaderPredictor.predictSkills: Found ${patterns.length} usage patterns to analyze`,
       );
-      
+
       const predictions: SkillPrediction[] = [];
 
       for (const pattern of patterns) {
@@ -310,20 +310,23 @@ export class PreloaderPredictor {
       const finalPredictions = predictions
         .sort((a, b) => b.priority - a.priority)
         .slice(0, MAX_PREDICTIONS);
-        
+
       console.log(
         `✅ PreloaderPredictor.predictSkills: Generated ${finalPredictions.length} predictions:`,
       );
-      
+
       for (const pred of finalPredictions) {
         console.log(
           `   - "${pred.skillName}" (priority: ${pred.priority}, probability: ${(pred.probability * 100).toFixed(1)}%, confidence: ${(pred.confidence * 100).toFixed(1)}%)`,
         );
       }
-      
+
       return finalPredictions;
     } catch (error) {
-      console.error("❌ PreloaderPredictor.predictSkills: Failed to predict skills:", error);
+      console.error(
+        "❌ PreloaderPredictor.predictSkills: Failed to predict skills:",
+        error,
+      );
       return [];
     }
   }

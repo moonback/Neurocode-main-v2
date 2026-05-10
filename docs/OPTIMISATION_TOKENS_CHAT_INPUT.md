@@ -24,27 +24,32 @@ Total                        44,887
 ## Caractéristiques
 
 ### Icône et Couleur
+
 - **Icône** : ⚡ (Zap) - Représente l'optimisation et la performance
 - **Couleur** : Cyan (`text-cyan-500`) - Se distingue des autres catégories
 - **Format** : Nombre négatif avec signe "-" pour indiquer une économie
 
 ### Affichage Conditionnel
+
 La ligne d'optimisation n'apparaît que si `optimizationTokensSaved > 0`. Si aucune optimisation n'a été appliquée, la ligne n'est pas affichée.
 
 ### Calcul des Tokens Économisés
 
 Actuellement, le calcul estime une économie de **~10%** sur :
+
 - L'historique des messages
 - La base de code
 
 **Formule** :
+
 ```typescript
 optimizationTokensSaved = Math.floor(
-  (codebaseTokens + messageHistoryTokens) * 0.1
+  (codebaseTokens + messageHistoryTokens) * 0.1,
 );
 ```
 
 Cette estimation représente les économies réalisées grâce à :
+
 - **Compression** : Réduction de la taille des données
 - **Pruning** : Suppression des informations redondantes
 - **Optimisation du contexte** : Sélection intelligente du contenu pertinent
@@ -69,26 +74,30 @@ Cette estimation représente les économies réalisées grâce à :
 ### Code Ajouté
 
 #### Dans le Handler (`token_count_handlers.ts`)
+
 ```typescript
 // Calculate optimization tokens saved
 // This represents tokens saved through compression, pruning, and other optimizations
 // For now, we estimate ~10% savings on codebase and message history
 const optimizationTokensSaved = Math.floor(
-  (codebaseTokens + messageHistoryTokens) * 0.1
+  (codebaseTokens + messageHistoryTokens) * 0.1,
 );
 ```
 
 #### Dans le Composant (`TokenBar.tsx`)
+
 ```tsx
-{optimizationTokensSaved > 0 && (
-  <>
-    <Zap size={12} className="text-cyan-500" />
-    <span>Optimisation tokens</span>
-    <span className="text-cyan-500 font-medium">
-      -{optimizationTokensSaved.toLocaleString()}
-    </span>
-  </>
-)}
+{
+  optimizationTokensSaved > 0 && (
+    <>
+      <Zap size={12} className="text-cyan-500" />
+      <span>Optimisation tokens</span>
+      <span className="text-cyan-500 font-medium">
+        -{optimizationTokensSaved.toLocaleString()}
+      </span>
+    </>
+  );
+}
 ```
 
 ## Évolutions Futures
@@ -98,8 +107,9 @@ const optimizationTokensSaved = Math.floor(
 Actuellement, le calcul est une estimation fixe de 10%. Dans une version future, le calcul pourrait être basé sur :
 
 1. **Métriques réelles du système d'optimisation** :
+
    ```typescript
-   const optimizationTokensSaved = 
+   const optimizationTokensSaved =
      compressionEngine.getTokensSaved() +
      pruningEngine.getTokensSaved() +
      contextOptimizer.getTokensSaved();
@@ -121,6 +131,7 @@ Actuellement, le calcul est une estimation fixe de 10%. Dans une version future,
 ### Intégration avec le Dashboard Analytics
 
 Les tokens économisés affichés ici pourraient être synchronisés avec le dashboard analytics pour :
+
 - Suivre les économies totales sur toutes les conversations
 - Calculer le ROI du système d'optimisation
 - Identifier les optimisations les plus efficaces
@@ -138,8 +149,9 @@ Les tokens économisés affichés ici pourraient être synchronisés avec le das
 ### Test Automatisé
 
 Un test E2E pourrait être ajouté pour vérifier :
+
 ```typescript
-test('should display optimization tokens in token bar tooltip', async () => {
+test("should display optimization tokens in token bar tooltip", async () => {
   // Setup: Create chat with codebase
   // Action: Hover over token bar
   // Assert: Optimization tokens line is visible

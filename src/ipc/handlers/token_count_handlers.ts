@@ -173,7 +173,7 @@ export function registerTokenCountHandlers() {
       // This represents tokens saved through compression, pruning, and other optimizations
       // For now, we estimate ~10% savings on codebase and message history
       const optimizationTokensSaved = Math.floor(
-        (codebaseTokens + messageHistoryTokens) * 0.1
+        (codebaseTokens + messageHistoryTokens) * 0.1,
       );
 
       // Find the last assistant message since totalTokens is only set on assistant messages

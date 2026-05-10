@@ -613,7 +613,9 @@ export async function handleLocalAgentStream(
     // Initialize token optimization system
     logger.info("🚀 Token Optimization System: ACTIVATING...");
     initializeTokenOptimization();
-    logger.info("✅ Token Optimization System: ACTIVE and ready to track usage");
+    logger.info(
+      "✅ Token Optimization System: ACTIVE and ready to track usage",
+    );
 
     // Allocate token budget for this request
     // Determine task complexity based on message history and tools

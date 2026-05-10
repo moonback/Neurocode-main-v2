@@ -1,6 +1,6 @@
 /**
  * Diagnostic script to check token_analytics table data
- * 
+ *
  * Run with: npx tsx scripts/check-token-analytics-db.ts
  */
 
@@ -13,7 +13,7 @@ async function checkDatabase() {
   try {
     // Get all records
     const allRecords = db.select().from(tokenAnalytics).all();
-    
+
     console.log(`📊 Total records in database: ${allRecords.length}\n`);
 
     if (allRecords.length > 0) {
@@ -34,7 +34,7 @@ async function checkDatabase() {
       // Test the same query that getStatistics uses
       console.log("\n\n🧪 Testing getStatistics query...");
       const { sql } = await import("drizzle-orm");
-      
+
       const stats = db
         .select({
           totalRequests: sql<number>`COUNT(*)`,
@@ -50,15 +50,15 @@ async function checkDatabase() {
       console.log(`  - Total Input Tokens: ${stats?.totalInputTokens}`);
       console.log(`  - Total Output Tokens: ${stats?.totalOutputTokens}`);
       console.log(`  - Total Tokens: ${stats?.totalTokens}`);
-
     } else {
       console.log("❌ No records found in token_analytics table");
       console.log("\nPossible reasons:");
       console.log("  1. Token tracking hasn't been triggered yet");
       console.log("  2. Database file is in a different location");
-      console.log("  3. Data is being written to a different database instance");
+      console.log(
+        "  3. Data is being written to a different database instance",
+      );
     }
-
   } catch (error) {
     console.error("❌ Error checking database:", error);
     console.error("\nError details:", error);

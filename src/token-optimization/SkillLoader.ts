@@ -322,7 +322,7 @@ export class SkillLoader {
       console.log(
         `✅ SkillLoader.loadSkill: Successfully loaded skill "${skillName}" (${(endTime - startTime).toFixed(2)}ms)`,
       );
-      
+
       return {
         success: true,
         data: skill,

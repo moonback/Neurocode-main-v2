@@ -151,7 +151,7 @@ Cette page centralise toute la documentation relative au système d'optimisation
 
 ### 🧪 Tests
 
-**[src/token-optimization/**tests**/](../src/token-optimization/__tests__/)**
+**[src/token-optimization/**tests**/](../src/token-optimization/**tests**/)**
 
 - 18 fichiers de tests
 - 415 tests unitaires

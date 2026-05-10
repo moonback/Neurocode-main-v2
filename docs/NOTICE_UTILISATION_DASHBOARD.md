@@ -52,21 +52,25 @@ Les données sont collectées automatiquement lorsque :
 Quatre cartes affichent les métriques clés :
 
 #### 📊 Total Tokens
+
 - **Description** : Nombre total de tokens consommés
 - **Calcul** : Somme de tous les tokens (entrée + sortie)
 - **Utilité** : Vue d'ensemble de votre consommation globale
 
 #### 📈 Requêtes
+
 - **Description** : Nombre total de requêtes effectuées
 - **Calcul** : Compte de toutes les interactions avec l'IA
 - **Utilité** : Mesure de l'activité
 
 #### 📊 Moyenne/Requête
+
 - **Description** : Nombre moyen de tokens par requête
 - **Calcul** : Total tokens ÷ Nombre de requêtes
 - **Utilité** : Identifier les requêtes coûteuses
 
 #### 💰 Coût Total
+
 - **Description** : Coût estimé en USD
 - **Calcul** : Basé sur les tarifs des modèles utilisés
 - **Utilité** : Suivi budgétaire
@@ -91,16 +95,19 @@ Quatre boutons pour filtrer les données par période :
 #### 🔥 Top 5 Conversations (Graphique à Barres)
 
 **Affiche** :
+
 - Les 5 conversations qui consomment le plus de tokens
 - Nombre de tokens par conversation (barres bleues)
 - Nombre de requêtes par conversation (barres violettes)
 
 **Utilisation** :
+
 - Identifiez les conversations coûteuses
 - Optimisez les conversations fréquentes
 - Comparez l'activité entre conversations
 
 **Interactivité** :
+
 - Survolez les barres pour voir les valeurs exactes
 - Les noms de conversations sont tronqués à 20 caractères
 
@@ -109,16 +116,19 @@ Quatre boutons pour filtrer les données par période :
 #### 🤖 Distribution par Modèle (Graphique Circulaire)
 
 **Affiche** :
+
 - Répartition des tokens par modèle d'IA
 - Pourcentage de consommation par modèle
 - Couleurs distinctes pour chaque modèle
 
 **Utilisation** :
+
 - Identifiez les modèles les plus utilisés
 - Comparez les coûts entre modèles
 - Optimisez le choix de modèle
 
 **Interactivité** :
+
 - Les labels affichent le nom et le pourcentage
 - Survolez pour voir le nombre exact de tokens
 
@@ -127,11 +137,13 @@ Quatre boutons pour filtrer les données par période :
 #### 💰 Coûts par Modèle (Graphique à Barres Empilées)
 
 **Affiche** :
+
 - Coût d'entrée (vert) : Tokens envoyés au modèle
 - Coût de sortie (orange) : Tokens générés par le modèle
 - Total empilé pour chaque modèle
 
 **Utilisation** :
+
 - Comparez les coûts réels entre modèles
 - Identifiez les modèles les plus chers
 - Planifiez votre budget
@@ -151,17 +163,20 @@ Quatre boutons pour filtrer les données par période :
 #### ⚡ Top 10 Skills (Liste Déroulante)
 
 **Affiche** :
+
 - Les 10 skills les plus utilisés
 - Nombre de tokens par skill
 - Nombre d'utilisations
 - Pourcentage de la consommation totale
 
 **Utilisation** :
+
 - Identifiez les skills coûteux
 - Optimisez les skills fréquemment utilisés
 - Détectez les skills inefficaces
 
 **Format** :
+
 ```
 #1 /examples:code-review
    45 utilisations
@@ -175,6 +190,7 @@ Quatre boutons pour filtrer les données par période :
 #### 📋 Détail des Conversations
 
 **Colonnes** :
+
 - **#** : Rang par consommation
 - **Conversation** : ID de la conversation
 - **Tokens** : Nombre total de tokens
@@ -182,6 +198,7 @@ Quatre boutons pour filtrer les données par période :
 - **Requêtes** : Nombre de requêtes
 
 **Fonctionnalités** :
+
 - Tri par consommation décroissante
 - Survol pour mettre en évidence
 - Affiche jusqu'à 10 conversations
@@ -191,6 +208,7 @@ Quatre boutons pour filtrer les données par période :
 #### 💵 Détail des Coûts par Modèle
 
 **Colonnes** :
+
 - **Modèle** : Nom du modèle
 - **Tokens Entrée** : Tokens envoyés
 - **Coût Entrée** : Coût des tokens d'entrée
@@ -199,6 +217,7 @@ Quatre boutons pour filtrer les données par période :
 - **Total** : Coût total (en gras)
 
 **Fonctionnalités** :
+
 - Tri par coût total décroissant
 - Formatage monétaire automatique
 - Affiche tous les modèles utilisés
@@ -210,11 +229,13 @@ Quatre boutons pour filtrer les données par période :
 ### Formats Disponibles
 
 #### CSV (Recommandé pour Excel)
+
 - Compatible avec Excel, Google Sheets, Numbers
 - Facile à analyser avec des outils externes
 - Format tabulaire standard
 
 #### JSON (Recommandé pour Développeurs)
+
 - Format structuré pour traitement programmatique
 - Compatible avec tous les langages de programmation
 - Idéal pour l'intégration dans d'autres outils
@@ -236,6 +257,7 @@ req-1234567891,conv-abc123,,claude-3-5-sonnet,3000,1500,4500,1705334500000
 ```
 
 **Colonnes** :
+
 - `requestId` : Identifiant unique de la requête
 - `conversationId` : ID de la conversation
 - `skillName` : Nom du skill utilisé (vide si aucun)
@@ -254,6 +276,7 @@ req-1234567891,conv-abc123,,claude-3-5-sonnet,3000,1500,4500,1705334500000
 **Objectif** : Réduire les dépenses mensuelles
 
 **Étapes** :
+
 1. Consultez la carte **Coût Total**
 2. Identifiez les modèles les plus chers dans **Coûts par Modèle**
 3. Vérifiez les **Top Conversations** pour trouver les plus coûteuses
@@ -271,6 +294,7 @@ req-1234567891,conv-abc123,,claude-3-5-sonnet,3000,1500,4500,1705334500000
 **Objectif** : Identifier les goulots d'étranglement
 
 **Étapes** :
+
 1. Consultez **Moyenne/Requête**
 2. Comparez avec les **Top Conversations**
 3. Identifiez les conversations avec une moyenne élevée
@@ -288,6 +312,7 @@ req-1234567891,conv-abc123,,claude-3-5-sonnet,3000,1500,4500,1705334500000
 **Objectif** : Comprendre les patterns d'utilisation
 
 **Étapes** :
+
 1. Sélectionnez une période (ex: 30 jours)
 2. Consultez **Distribution par Modèle**
 3. Analysez les **Top Skills**
@@ -306,6 +331,7 @@ req-1234567891,conv-abc123,,claude-3-5-sonnet,3000,1500,4500,1705334500000
 **Objectif** : Améliorer l'efficacité des skills
 
 **Étapes** :
+
 1. Consultez **Top 10 Skills**
 2. Identifiez les skills avec un ratio tokens/utilisation élevé
 3. Analysez le contenu des skills coûteux
@@ -323,24 +349,25 @@ req-1234567891,conv-abc123,,claude-3-5-sonnet,3000,1500,4500,1705334500000
 ### Problème : Dashboard Vide
 
 **Symptômes** :
+
 - Toutes les cartes affichent "0"
 - Aucun graphique ne s'affiche
 - Message "Chargement des analytics..." qui persiste
 
 **Causes possibles** :
+
 1. ✅ **Optimisation non activée**
    - Solution : Activez "Enable Token Optimization" dans les paramètres
-   
 2. ✅ **Aucune donnée collectée**
    - Solution : Utilisez l'application en mode Agent Local pour générer des données
-   
 3. ✅ **Base de données vide**
    - Solution : Attendez d'avoir au moins une conversation avec l'IA
 
 **Vérification** :
+
 ```javascript
 // Dans la console développeur (F12)
-const { ipc } = await import('@/ipc/types');
+const { ipc } = await import("@/ipc/types");
 const stats = await ipc.tokenAnalytics.getStatistics({});
 console.log(stats);
 // Si totalRequests = 0, aucune donnée n'est collectée
@@ -351,16 +378,16 @@ console.log(stats);
 ### Problème : Données Incorrectes
 
 **Symptômes** :
+
 - Les chiffres semblent trop élevés ou trop bas
 - Les coûts ne correspondent pas aux attentes
 
 **Causes possibles** :
+
 1. ✅ **Période de filtre incorrecte**
    - Solution : Vérifiez la période sélectionnée (7j, 30j, 90j, 1an)
-   
 2. ✅ **Tarifs de modèle obsolètes**
    - Solution : Les tarifs sont codés en dur, vérifiez les tarifs actuels des fournisseurs
-   
 3. ✅ **Estimation input/output**
    - Solution : Les ratios 70/30 sont des estimations, les vrais ratios peuvent varier
 
@@ -369,16 +396,16 @@ console.log(stats);
 ### Problème : Export Échoue
 
 **Symptômes** :
+
 - Le bouton "Exporter" ne fait rien
 - Erreur dans la console
 
 **Causes possibles** :
+
 1. ✅ **Bloqueur de téléchargements**
    - Solution : Autorisez les téléchargements dans votre navigateur
-   
 2. ✅ **Données trop volumineuses**
    - Solution : Réduisez la période de filtre
-   
 3. ✅ **Erreur de permission**
    - Solution : Vérifiez les permissions d'écriture dans le dossier de téléchargement
 
@@ -387,16 +414,16 @@ console.log(stats);
 ### Problème : Graphiques ne s'affichent pas
 
 **Symptômes** :
+
 - Les cartes s'affichent mais pas les graphiques
 - Espaces vides à la place des graphiques
 
 **Causes possibles** :
+
 1. ✅ **Recharts non installé**
    - Solution : `npm install recharts`
-   
 2. ✅ **Erreur JavaScript**
    - Solution : Ouvrez la console (F12) et vérifiez les erreurs
-   
 3. ✅ **Données insuffisantes**
    - Solution : Générez plus de données en utilisant l'application
 
@@ -451,13 +478,13 @@ console.log(stats);
 
 ### Métriques Cibles
 
-| Métrique | Objectif | Excellent |
-|----------|----------|-----------|
-| Réduction de tokens | 30-50% | >50% |
-| Temps de chargement skills | -60% | -80% |
-| Taux de cache hit | 70-85% | >85% |
-| Précision de prédiction | 60-75% | >75% |
-| Économies mensuelles | 30-40% | >40% |
+| Métrique                   | Objectif | Excellent |
+| -------------------------- | -------- | --------- |
+| Réduction de tokens        | 30-50%   | >50%      |
+| Temps de chargement skills | -60%     | -80%      |
+| Taux de cache hit          | 70-85%   | >85%      |
+| Précision de prédiction    | 60-75%   | >75%      |
+| Économies mensuelles       | 30-40%   | >40%      |
 
 ### Suivi des Objectifs
 
@@ -473,6 +500,7 @@ console.log(stats);
 ### Version 1.0.0 (Actuelle)
 
 **Fonctionnalités** :
+
 - ✅ Dashboard complet avec graphiques interactifs
 - ✅ Export CSV et JSON
 - ✅ Filtres par période
@@ -480,6 +508,7 @@ console.log(stats);
 - ✅ Top consommateurs (conversations, skills, modèles)
 
 **Améliorations Prévues** :
+
 - 🔄 Graphiques de tendances temporelles
 - 🔄 Alertes automatiques sur seuils
 - 🔄 Comparaison entre périodes
