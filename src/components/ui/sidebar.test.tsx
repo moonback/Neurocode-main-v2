@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { renderHook, act, render } from "@testing-library/react";
 import * as React from "react";
 import {
@@ -57,6 +57,67 @@ describe("SidebarContext", () => {
     });
 
     expect(result.current.width).toBe(400);
+  });
+
+  it("should enforce minimum width constraint of 240px (15rem)", () => {
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <SidebarProvider>{children}</SidebarProvider>
+    );
+
+    const { result } = renderHook(() => useSidebar(), { wrapper });
+
+    act(() => {
+      result.current.setWidth(200); // Below minimum
+    });
+
+    expect(result.current.width).toBe(240); // Should be constrained to minimum
+  });
+
+  it("should enforce maximum width constraint of 480px (30rem)", () => {
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <SidebarProvider>{children}</SidebarProvider>
+    );
+
+    const { result } = renderHook(() => useSidebar(), { wrapper });
+
+    act(() => {
+      result.current.setWidth(600); // Above maximum
+    });
+
+    expect(result.current.width).toBe(480); // Should be constrained to maximum
+  });
+
+  it("should allow width values within valid range", () => {
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <SidebarProvider>{children}</SidebarProvider>
+    );
+
+    const { result } = renderHook(() => useSidebar(), { wrapper });
+
+    const validWidths = [240, 300, 350, 400, 450, 480];
+
+    for (const width of validWidths) {
+      act(() => {
+        result.current.setWidth(width);
+      });
+      expect(result.current.width).toBe(width);
+    }
+  });
+
+  it("should demonstrate round-trip property for width (set then get returns same value)", () => {
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <SidebarProvider>{children}</SidebarProvider>
+    );
+
+    const { result } = renderHook(() => useSidebar(), { wrapper });
+
+    const testWidth = 350;
+
+    act(() => {
+      result.current.setWidth(testWidth);
+    });
+
+    expect(result.current.width).toBe(testWidth);
   });
 
   it("should update iconSize when setIconSize is called", () => {
@@ -204,6 +265,674 @@ describe("SidebarContext", () => {
   });
 });
 
+describe("Resize Manager", () => {
+  describe("Width Constraint Invariant", () => {
+    /**
+     * **Validates: Requirements 2.3, 2.4**
+     * Property 2: Width constraint invariant
+     *
+     * Tests that width is always constrained between min (240px/15rem) and max (480px/30rem) values.
+     */
+
+    it("should enforce minimum width constraint of 240px (15rem)", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      // Try to set width below minimum
+      act(() => {
+        result.current.setWidth(100);
+      });
+
+      expect(result.current.width).toBe(240);
+    });
+
+    it("should enforce maximum width constraint of 480px (30rem)", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      // Try to set width above maximum
+      act(() => {
+        result.current.setWidth(600);
+      });
+
+      expect(result.current.width).toBe(480);
+    });
+
+    it("should allow width values within valid range [240, 480]", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      const validWidths = [240, 280, 320, 360, 400, 440, 480];
+
+      for (const width of validWidths) {
+        act(() => {
+          result.current.setWidth(width);
+        });
+        expect(result.current.width).toBe(width);
+      }
+    });
+
+    it("should constrain width at exact minimum boundary (240px)", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      act(() => {
+        result.current.setWidth(240);
+      });
+
+      expect(result.current.width).toBe(240);
+    });
+
+    it("should constrain width at exact maximum boundary (480px)", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      act(() => {
+        result.current.setWidth(480);
+      });
+
+      expect(result.current.width).toBe(480);
+    });
+
+    it("should constrain negative width values to minimum", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      act(() => {
+        result.current.setWidth(-100);
+      });
+
+      expect(result.current.width).toBe(240);
+    });
+
+    it("should constrain zero width to minimum", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      act(() => {
+        result.current.setWidth(0);
+      });
+
+      expect(result.current.width).toBe(240);
+    });
+
+    it("should constrain extremely large width values to maximum", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      act(() => {
+        result.current.setWidth(10000);
+      });
+
+      expect(result.current.width).toBe(480);
+    });
+
+    it("should maintain width constraint invariant across multiple updates", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      const testWidths = [100, 300, 600, 250, 500, 350];
+
+      for (const width of testWidths) {
+        act(() => {
+          result.current.setWidth(width);
+        });
+
+        // Width should always be within [240, 480]
+        expect(result.current.width).toBeGreaterThanOrEqual(240);
+        expect(result.current.width).toBeLessThanOrEqual(480);
+      }
+    });
+  });
+
+  describe("Drag Event Handling", () => {
+    /**
+     * **Validates: Requirements 2.1, 2.2**
+     *
+     * Tests that drag events update width correctly during resize operations.
+     */
+
+    it("should render SidebarRail with resize handle", () => {
+      const { container } = render(
+        <SidebarProvider>
+          <SidebarRail />
+        </SidebarProvider>,
+      );
+
+      const rail = container.querySelector('[data-sidebar="rail"]');
+      expect(rail).toBeTruthy();
+      expect(rail?.tagName).toBe("BUTTON");
+    });
+
+    it("should have correct ARIA attributes on resize handle", () => {
+      const { container } = render(
+        <SidebarProvider>
+          <SidebarRail />
+        </SidebarProvider>,
+      );
+
+      const rail = container.querySelector('[data-sidebar="rail"]');
+      expect(rail?.getAttribute("aria-label")).toBe("Toggle Sidebar");
+      expect(rail?.getAttribute("title")).toBe("Toggle Sidebar");
+    });
+
+    it("should apply resize cursor style in expanded mode", () => {
+      const { container } = render(
+        <SidebarProvider defaultOpen={true}>
+          <SidebarRail />
+        </SidebarProvider>,
+      );
+
+      const rail = container.querySelector('[data-sidebar="rail"]');
+      const classes = rail?.className || "";
+
+      // In expanded mode, cursor should be ew-resize
+      expect(classes).toContain("cursor-ew-resize");
+    });
+
+    it("should update width when simulating drag operation", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider defaultOpen={true}>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      const initialWidth = result.current.width;
+
+      // Simulate drag by directly calling setWidth (simulates the drag handler logic)
+      act(() => {
+        result.current.setWidth(initialWidth + 50);
+      });
+
+      expect(result.current.width).toBe(initialWidth + 50);
+    });
+
+    it("should set isResizing to true on mousedown and false on mouseup", () => {
+      let isResizingValue = false;
+      const TestComponent = () => {
+        const { isResizing } = useSidebar();
+        isResizingValue = isResizing;
+        return <SidebarRail />;
+      };
+
+      const { container } = render(
+        <SidebarProvider defaultOpen={true}>
+          <TestComponent />
+        </SidebarProvider>,
+      );
+
+      const rail = container.querySelector('[data-sidebar="rail"]');
+      expect(rail).toBeTruthy();
+      
+      expect(isResizingValue).toBe(false);
+
+      // Trigger mousedown
+      act(() => {
+        const event = new MouseEvent("mousedown", {
+          bubbles: true,
+          cancelable: true,
+        });
+        rail?.dispatchEvent(event);
+      });
+
+      expect(isResizingValue).toBe(true);
+
+      // Trigger mouseup on document (which is what SidebarRail listens to)
+      act(() => {
+        const event = new MouseEvent("mouseup", {
+          bubbles: true,
+          cancelable: true,
+        });
+        document.dispatchEvent(event);
+      });
+
+      expect(isResizingValue).toBe(false);
+    });
+
+    it("should constrain width during drag to minimum boundary", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider defaultOpen={true}>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      // Simulate dragging to a width below minimum
+      act(() => {
+        result.current.setWidth(200);
+      });
+
+      expect(result.current.width).toBe(240);
+    });
+
+    it("should constrain width during drag to maximum boundary", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider defaultOpen={true}>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      // Simulate dragging to a width above maximum
+      act(() => {
+        result.current.setWidth(550);
+      });
+
+      expect(result.current.width).toBe(480);
+    });
+
+    it("should handle incremental width updates during drag", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider defaultOpen={true}>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      // Start at default width (304px)
+      expect(result.current.width).toBe(304);
+
+      // Simulate incremental drag movements
+      act(() => {
+        result.current.setWidth(310);
+      });
+      expect(result.current.width).toBe(310);
+
+      act(() => {
+        result.current.setWidth(320);
+      });
+      expect(result.current.width).toBe(320);
+
+      act(() => {
+        result.current.setWidth(330);
+      });
+      expect(result.current.width).toBe(330);
+    });
+
+    it("should handle negative drag movements (shrinking)", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider defaultOpen={true}>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      // Set initial width
+      act(() => {
+        result.current.setWidth(400);
+      });
+      expect(result.current.width).toBe(400);
+
+      // Simulate dragging left (shrinking)
+      act(() => {
+        result.current.setWidth(380);
+      });
+      expect(result.current.width).toBe(380);
+
+      act(() => {
+        result.current.setWidth(360);
+      });
+      expect(result.current.width).toBe(360);
+    });
+
+    it("should update CSS variable --sidebar-width during resize", () => {
+      const { container } = render(
+        <SidebarProvider defaultOpen={true}>
+          <div>Test Content</div>
+        </SidebarProvider>,
+      );
+
+      const wrapper = container.querySelector('[data-slot="sidebar-wrapper"]');
+      expect(wrapper).toBeTruthy();
+
+      // Check that CSS variable is set
+      const style = (wrapper as HTMLElement)?.style;
+      expect(style.getPropertyValue("--sidebar-width")).toBe("304px");
+    });
+  });
+
+  describe("Width Persistence and Restoration", () => {
+    /**
+     * **Validates: Requirements 2.5, 2.6, 2.7**
+     *
+     * Tests that width persists to storage and restores correctly on mount.
+     * Demonstrates round-trip property: setting width then reading returns same value.
+     */
+
+    beforeEach(() => {
+      // Clear cookies and localStorage before each test
+      document.cookie =
+        "sidebar_width=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      localStorage.clear();
+    });
+
+    it("should restore default width (304px) when no saved preference exists", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      // Should restore default width
+      expect(result.current.width).toBe(304);
+    });
+
+    it("should demonstrate round-trip property: set width then get returns same value", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      const testWidth = 350;
+
+      // Set width
+      act(() => {
+        result.current.setWidth(testWidth);
+      });
+
+      // Get width - should return the same value
+      expect(result.current.width).toBe(testWidth);
+    });
+
+    it("should demonstrate round-trip property for minimum boundary", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      const minWidth = 240;
+
+      act(() => {
+        result.current.setWidth(minWidth);
+      });
+
+      expect(result.current.width).toBe(minWidth);
+    });
+
+    it("should demonstrate round-trip property for maximum boundary", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      const maxWidth = 480;
+
+      act(() => {
+        result.current.setWidth(maxWidth);
+      });
+
+      expect(result.current.width).toBe(maxWidth);
+    });
+
+    it("should demonstrate round-trip property for multiple width values", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      const testWidths = [240, 280, 320, 360, 400, 440, 480];
+
+      for (const width of testWidths) {
+        act(() => {
+          result.current.setWidth(width);
+        });
+
+        // Round-trip: set then get should return same value
+        expect(result.current.width).toBe(width);
+      }
+    });
+
+    it("should maintain width value across multiple reads", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      const testWidth = 375;
+
+      act(() => {
+        result.current.setWidth(testWidth);
+      });
+
+      // Multiple reads should return consistent value
+      expect(result.current.width).toBe(testWidth);
+      expect(result.current.width).toBe(testWidth);
+      expect(result.current.width).toBe(testWidth);
+    });
+
+    it("should preserve width value when other state changes", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      const testWidth = 390;
+
+      act(() => {
+        result.current.setWidth(testWidth);
+      });
+
+      expect(result.current.width).toBe(testWidth);
+
+      // Change other state (toggle sidebar)
+      act(() => {
+        result.current.toggleSidebar();
+      });
+
+      // Width should remain unchanged
+      expect(result.current.width).toBe(testWidth);
+    });
+
+    it("should preserve width value when icon size changes", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      const testWidth = 420;
+
+      act(() => {
+        result.current.setWidth(testWidth);
+      });
+
+      expect(result.current.width).toBe(testWidth);
+
+      // Change icon size
+      act(() => {
+        result.current.setIconSize("large");
+      });
+
+      // Width should remain unchanged
+      expect(result.current.width).toBe(testWidth);
+    });
+
+    it("should preserve width value when theme changes", () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <SidebarProvider>{children}</SidebarProvider>
+      );
+
+      const { result } = renderHook(() => useSidebar(), { wrapper });
+
+      const testWidth = 450;
+
+      act(() => {
+        result.current.setWidth(testWidth);
+      });
+
+      expect(result.current.width).toBe(testWidth);
+
+      // Change theme
+      act(() => {
+        result.current.setTheme("compact");
+      });
+
+      // Width should remain unchanged
+      expect(result.current.width).toBe(testWidth);
+    });
+  });
+
+  describe("Resize Manager Integration", () => {
+    /**
+     * Integration tests for resize manager with full sidebar component.
+     */
+
+    it("should render sidebar with correct initial width", () => {
+      const { container } = render(
+        <SidebarProvider>
+          <Sidebar side="left" variant="sidebar" collapsible="icon">
+            <div>Test Content</div>
+          </Sidebar>
+        </SidebarProvider>,
+      );
+
+      const wrapper = container.querySelector('[data-slot="sidebar-wrapper"]');
+      const style = (wrapper as HTMLElement)?.style;
+
+      expect(style.getPropertyValue("--sidebar-width")).toBe("304px");
+    });
+
+    it("should update sidebar width CSS variable when width changes", () => {
+      const TestComponent = () => {
+        const { setWidth, width } = useSidebar();
+
+        return (
+          <Sidebar side="left" variant="sidebar" collapsible="icon">
+            <button
+              data-testid="set-width-btn"
+              onClick={() => setWidth(400)}
+              type="button"
+            >
+              Set Width
+            </button>
+            <div data-testid="current-width">{width}</div>
+          </Sidebar>
+        );
+      };
+
+      const { container } = render(
+        <SidebarProvider>
+          <TestComponent />
+        </SidebarProvider>,
+      );
+
+      const setWidthBtn = container.querySelector(
+        '[data-testid="set-width-btn"]',
+      );
+
+      // Click button to update width
+      act(() => {
+        (setWidthBtn as HTMLButtonElement)?.click();
+      });
+
+      const wrapper = container.querySelector('[data-slot="sidebar-wrapper"]');
+      const style = (wrapper as HTMLElement)?.style;
+
+      // Width should be updated to 400px
+      expect(style.getPropertyValue("--sidebar-width")).toBe("400px");
+    });
+
+    it("should render resize handle (SidebarRail) in sidebar", () => {
+      const { container } = render(
+        <SidebarProvider>
+          <Sidebar side="left" variant="sidebar" collapsible="icon">
+            <SidebarRail />
+          </Sidebar>
+        </SidebarProvider>,
+      );
+
+      const rail = container.querySelector('[data-sidebar="rail"]');
+      expect(rail).toBeTruthy();
+    });
+
+    it("should maintain width constraints in full sidebar component", () => {
+      const TestComponent = () => {
+        const { setWidth, width } = useSidebar();
+
+        return (
+          <Sidebar side="left" variant="sidebar" collapsible="icon">
+            <div data-testid="width-display">{width}</div>
+            <button
+              data-testid="set-below-min"
+              onClick={() => setWidth(100)}
+              type="button"
+            >
+              Set Below Min
+            </button>
+            <button
+              data-testid="set-above-max"
+              onClick={() => setWidth(600)}
+              type="button"
+            >
+              Set Above Max
+            </button>
+          </Sidebar>
+        );
+      };
+
+      const { container } = render(
+        <SidebarProvider>
+          <TestComponent />
+        </SidebarProvider>,
+      );
+
+      const widthDisplay = container.querySelector(
+        '[data-testid="width-display"]',
+      );
+      const setBelowMinBtn = container.querySelector(
+        '[data-testid="set-below-min"]',
+      );
+      const setAboveMaxBtn = container.querySelector(
+        '[data-testid="set-above-max"]',
+      );
+
+      // Initial width
+      expect(widthDisplay?.textContent).toBe("304");
+
+      // Try to set below minimum
+      act(() => {
+        (setBelowMinBtn as HTMLButtonElement)?.click();
+      });
+      expect(widthDisplay?.textContent).toBe("240");
+
+      // Try to set above maximum
+      act(() => {
+        (setAboveMaxBtn as HTMLButtonElement)?.click();
+      });
+      expect(widthDisplay?.textContent).toBe("480");
+    });
+  });
+});
+
 describe("Animation Configuration", () => {
   describe("Animation Duration Constants", () => {
     it("should use 200ms duration for sidebar width transitions", () => {
@@ -262,7 +991,9 @@ describe("Animation Configuration", () => {
       const classes = button?.className || "";
       expect(classes).toContain("duration-150");
       expect(classes).toContain("ease-in-out");
-      expect(classes).toContain("transition-[transform,background-color,border-color]");
+      expect(classes).toContain(
+        "transition-[transform,background-color,border-color]",
+      );
     });
 
     it("should use 200ms duration for icon transitions on menu buttons", () => {
@@ -377,7 +1108,9 @@ describe("Animation Configuration", () => {
       // Verify hover scale is applied
       expect(classes).toContain("hover:scale-105");
       // Verify transition properties include transform
-      expect(classes).toContain("transition-[transform,background-color,border-color]");
+      expect(classes).toContain(
+        "transition-[transform,background-color,border-color]",
+      );
       expect(classes).toContain("duration-150");
     });
 

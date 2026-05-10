@@ -12,11 +12,19 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { IconSize, ThemeVariant } from "@/lib/sidebar-preferences";
+import {
+  type IconSize,
+  type ThemeVariant,
+  loadWidth,
+  saveWidth,
+  loadIconSize,
+  saveIconSize,
+  loadTheme,
+  saveTheme,
+} from "@/lib/sidebar-preferences";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
-const SIDEBAR_WIDTH = "19rem";
 const SIDEBAR_WIDTH_ICON = "4.5rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
@@ -35,6 +43,7 @@ type SidebarContextProps = {
   theme: ThemeVariant;
   setTheme: (theme: ThemeVariant) => void;
   isResizing: boolean;
+  setIsResizing: (isResizing: boolean) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   recentItems: string[];
@@ -96,10 +105,10 @@ function SidebarProvider({
   }, [setOpen]);
 
   // New state properties with default values
-  const [width, setWidth] = React.useState<number>(304); // 19rem = 304px
-  const [iconSize, setIconSize] = React.useState<IconSize>("medium");
-  const [theme, setTheme] = React.useState<ThemeVariant>("modern");
-  const [isResizing, _setIsResizing] = React.useState<boolean>(false);
+  const [width, _setWidth] = React.useState<number>(304); // 19rem = 304px
+  const [iconSize, _setIconSize] = React.useState<IconSize>("medium");
+  const [theme, _setTheme] = React.useState<ThemeVariant>("modern");
+  const [isResizing, setIsResizing] = React.useState<boolean>(false);
   const [searchQuery, setSearchQuery] = React.useState<string>("");
   const [recentItems, setRecentItems] = React.useState<string[]>([]);
   const [pinnedItems, setPinnedItems] = React.useState<string[]>([]);
@@ -107,6 +116,34 @@ function SidebarProvider({
   const [expandedGroups, setExpandedGroups] = React.useState<Set<string>>(
     new Set(),
   );
+
+  // Width setter with constraints (Requirement 2.3, 2.4)
+  const setWidth = React.useCallback((newWidth: number) => {
+    const MIN_WIDTH = 240; // 15rem
+    const MAX_WIDTH = 480; // 30rem
+    const constrainedWidth = Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, newWidth));
+    _setWidth(constrainedWidth);
+  }, []);
+
+  // Restore saved width from PreferenceStore on mount (Requirement 2.6)
+  React.useEffect(() => {
+    const savedWidth = loadWidth();
+    setWidth(savedWidth);
+    _setIconSize(loadIconSize());
+    _setTheme(loadTheme());
+  }, [setWidth]);
+
+  // Persist IconSize (Requirement 4.4)
+  const setIconSize = React.useCallback((size: IconSize) => {
+    _setIconSize(size);
+    saveIconSize(size);
+  }, []);
+
+  // Persist Theme (Requirement 5.5)
+  const setTheme = React.useCallback((variant: ThemeVariant) => {
+    _setTheme(variant);
+    saveTheme(variant);
+  }, []);
 
   // Helper to add a recent item
   const addRecentItem = React.useCallback((itemId: string) => {
@@ -197,6 +234,7 @@ function SidebarProvider({
       theme,
       setTheme,
       isResizing,
+      setIsResizing,
       searchQuery,
       setSearchQuery,
       recentItems,
@@ -220,6 +258,7 @@ function SidebarProvider({
       theme,
       setTheme,
       isResizing,
+      setIsResizing,
       searchQuery,
       setSearchQuery,
       recentItems,
@@ -240,7 +279,7 @@ function SidebarProvider({
           data-slot="sidebar-wrapper"
           style={
             {
-              "--sidebar-width": SIDEBAR_WIDTH,
+              "--sidebar-width": `${width}px`,
               "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
               ...style,
             } as React.CSSProperties
@@ -373,7 +412,74 @@ function SidebarTrigger({
 }
 
 function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, width, setWidth, state, setIsResizing } = useSidebar();
+  const isResizingRef = React.useRef(false);
+  const startXRef = React.useRef<number>(0);
+  const startWidthRef = React.useRef<number>(0);
+
+  // Handle mouse down to start resize (Requirement 2.1)
+  const handleMouseDown = React.useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      // Only allow resize in expanded mode
+      if (state === "collapsed") {
+        toggleSidebar();
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      isResizingRef.current = true;
+      setIsResizing(true);
+      startXRef.current = event.clientX;
+      startWidthRef.current = width;
+
+      // Prevent text selection during resize
+      document.body.style.userSelect = "none";
+      document.body.style.cursor = "ew-resize";
+    },
+    [state, toggleSidebar, width],
+  );
+
+  // Handle mouse move during resize (Requirement 2.2)
+  const handleMouseMove = React.useCallback(
+    (event: MouseEvent) => {
+      if (!isResizingRef.current) return;
+
+      const deltaX = event.clientX - startXRef.current;
+      const newWidth = startWidthRef.current + deltaX;
+
+      // Update width with constraints applied (Requirement 2.3, 2.4)
+      setWidth(newWidth);
+    },
+    [setWidth],
+  );
+
+  // Handle mouse up to end resize (Requirement 2.5)
+  const handleMouseUp = React.useCallback(() => {
+    if (!isResizingRef.current) return;
+
+    isResizingRef.current = false;
+    setIsResizing(false);
+
+    // Restore cursor and text selection
+    document.body.style.userSelect = "";
+    document.body.style.cursor = "";
+
+    // Persist width to PreferenceStore (Requirement 2.5)
+    saveWidth(width);
+  }, [width]);
+
+  // Attach global mouse event listeners
+  React.useEffect(() => {
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [handleMouseMove, handleMouseUp]);
 
   return (
     <button
@@ -381,7 +487,7 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
       data-slot="sidebar-rail"
       aria-label="Toggle Sidebar"
       tabIndex={-1}
-      onClick={toggleSidebar}
+      onMouseDown={handleMouseDown}
       title="Toggle Sidebar"
       className={cn(
         // Smooth animation system: transition-all with 200ms ease-in-out for resize handle (Requirement 1.1, 1.2)
@@ -390,6 +496,8 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
         "hover:group-data-[collapsible=offcanvas]:bg-sidebar group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full",
         "[[data-side=left][data-collapsible=offcanvas]_&]:-right-2",
         "[[data-side=right][data-collapsible=offcanvas]_&]:-left-2",
+        // Add cursor style for expanded mode resize
+        state === "expanded" && "cursor-ew-resize",
         className,
       )}
       {...props}
@@ -620,7 +728,14 @@ function SidebarMenuButton<T extends React.ElementType = "button">({
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
   } & VariantProps<typeof sidebarMenuButtonVariants>) {
   const Comp = as || "button";
-  const { state } = useSidebar();
+  const { state, iconSize: contextIconSize } = useSidebar();
+
+  const iconSizeClasses =
+    contextIconSize === "small"
+      ? "[&>svg]:size-3.5 gap-1.5"
+      : contextIconSize === "large"
+        ? "[&>svg]:size-5 gap-3"
+        : ""; // medium uses default from cva
 
   const button = (
     <Comp
@@ -628,7 +743,11 @@ function SidebarMenuButton<T extends React.ElementType = "button">({
       data-sidebar="menu-button"
       data-size={size}
       data-active={isActive}
-      className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+      className={cn(
+        sidebarMenuButtonVariants({ variant, size }),
+        iconSizeClasses,
+        className,
+      )}
       {...props}
     />
   );

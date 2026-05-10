@@ -81,7 +81,7 @@ This implementation plan breaks down the sidebar improvements feature into discr
 - [x] 5. Checkpoint - Verify core enhancements
   - Ensure all tests pass, ask the user if questions arise.
 
-- [~] 6. Implement resizable sidebar width
+- [ ] 6. Implement resizable sidebar width
   - Update SidebarRail component to handle drag events for resizing
   - Add `onMouseDown`, `onMouseMove`, `onMouseUp` handlers to SidebarRail
   - Implement width constraints: minimum 15rem (240px), maximum 30rem (480px)
