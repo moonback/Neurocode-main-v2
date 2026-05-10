@@ -247,25 +247,21 @@ This implementation plan breaks down the sidebar improvements feature into discr
   - Test that pinned items persist and restore correctly
   - _Requirements: 19.1, 15.7_
 
-- [~] 17. Implement drag-and-drop reordering infrastructure
-  - Add `itemOrder` state to SidebarProvider (array of item IDs)
-  - Create `reorderItems` function in context
-  - Add `draggable` attribute to SidebarMenuItem
-  - Implement `onDragStart`, `onDragOver`, `onDrop`, `onDragEnd` handlers
-  - Add visual indicator during drag operation (opacity, border)
-  - Update item order in state when drop occurs
-  - Persist item order to PreferenceStore
-  - Restore item order on mount
-  - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
+- [x] 17. Implement drag-and-drop reordering
+  - Integrate @dnd-kit/core and @dnd-kit/sortable
+  - Create SortableSidebarMenuItem component
+  - Wrap SidebarMenu in DndContext and SortableContext
+  - Implement handleDragEnd to update itemOrder in context
+  - Ensure reordering persists via PreferenceStore
+  - Add drag handle indicator (optional, or make whole item draggable)
+  - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
 
-- [~] 17.1 Write unit tests for drag-and-drop
-  - **Property 6: Reorder round-trip**
-  - **Validates: Requirements 8.6**
-  - Test that reordering then restoring returns to original order
-  - Test that drag events update item order correctly
-  - Test that visual indicators appear during drag
-  - Test that item order persists and restores correctly
-  - _Requirements: 19.1, 8.6_
+- [x] 17.1 Write unit tests for reordering
+  - **Property 6: Order persistence**
+  - **Validates: Requirements 16.4**
+  - Test that reordering items updates context state
+  - Test that new order is preserved after unmount/remount
+  - _Requirements: 19.1, 16.4_
 
 - [~] 18. Implement accessibility enhancements
   - Add `role="navigation"` to Sidebar component
