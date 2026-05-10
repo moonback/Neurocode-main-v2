@@ -12,8 +12,22 @@ import { ThinkingBudgetSelector } from "@/components/ThinkingBudgetSelector";
 import { useSettings } from "@/hooks/useSettings";
 import { useAppVersion } from "@/hooks/useAppVersion";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { useRouter } from "@tanstack/react-router";
+import {
+  ArrowLeft,
+  Settings2,
+  Workflow,
+  Brain,
+  Plug,
+  FlaskConical,
+  ShieldAlert,
+  Stars,
+  Wrench,
+  BarChart3,
+  Sun,
+  Moon,
+  Monitor,
+} from "lucide-react";
 import { GitHubIntegration } from "@/components/GitHubIntegration";
 import { VercelIntegration } from "@/components/VercelIntegration";
 import { SupabaseIntegration } from "@/components/SupabaseIntegration";
@@ -44,7 +58,88 @@ import { SkillsSettings } from "@/components/settings/SkillsSettings";
 import { useSetAtom } from "jotai";
 import { activeSettingsSectionAtom } from "@/atoms/viewAtoms";
 import { SECTION_IDS, SETTING_IDS } from "@/lib/settingsSearchIndex";
+import { router } from "src/router";
 
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Shared sub-components
+───────────────────────────────────────────────────────────────────────────── */
+function SectionCard({
+  id,
+  icon: Icon,
+  title,
+  accent,
+  children,
+}: {
+  id: string;
+  icon: React.ElementType;
+  title: string;
+  accent?: "red";
+  children: React.ReactNode;
+}) {
+  const isRed = accent === "red";
+  return (
+    <div
+      id={id}
+      className={`rounded-2xl border shadow-sm overflow-hidden transition-shadow hover:shadow-md ${
+        isRed
+          ? "border-red-500/25 bg-red-500/[0.03]"
+          : "border-border/50 bg-card"
+      }`}
+    >
+      {/* Section header */}
+      <div
+        className={`flex items-center gap-3 px-6 py-4 border-b ${
+          isRed
+            ? "border-red-500/15 bg-red-500/[0.06]"
+            : "border-border/30 bg-muted/20"
+        }`}
+      >
+        <div
+          className={`h-8 w-8 rounded-xl flex items-center justify-center shrink-0 ${
+            isRed
+              ? "bg-red-500/15 text-red-500"
+              : "bg-[#6c55dc]/12 text-[#6c55dc]"
+          }`}
+        >
+          <Icon className="h-4 w-4" />
+        </div>
+        <h2
+          className={`text-sm font-semibold tracking-tight ${
+            isRed ? "text-red-500" : "text-foreground"
+          }`}
+        >
+          {title}
+        </h2>
+      </div>
+
+      {/* Section body */}
+      <div className="px-6 py-5 space-y-4">{children}</div>
+    </div>
+  );
+}
+
+function SettingRow({
+  id,
+  children,
+}: {
+  id?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div id={id} className="py-0.5">
+      {children}
+    </div>
+  );
+}
+
+function Divider() {
+  return <div className="h-px bg-border/40 my-0.5" />;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Main page
+───────────────────────────────────────────────────────────────────────────── */
 export default function SettingsPage() {
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
@@ -76,246 +171,162 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen px-8 py-4">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-background">
+      {/* ── Page header ── */}
+      <div className="sticky top-0 z-10 flex items-center gap-3 px-6 py-3.5 border-b border-border/40 bg-background/90 backdrop-blur-sm">
         <Button
           onClick={() => router.history.back()}
-          variant="outline"
+          variant="ghost"
           size="sm"
-          className="flex items-center gap-2 mb-4 bg-(--background-lightest) py-5"
+          className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground -ml-1"
         >
           <ArrowLeft className="h-4 w-4" />
-          <p>Retour</p>
+          Retour
         </Button>
-        <div className="flex justify-between mb-4">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Réglages
-          </h1>
+        <div className="h-4 w-px bg-border/60" />
+        <div className="flex items-center gap-2">
+          <div className="h-6 w-6 rounded-lg bg-[#6c55dc]/12 flex items-center justify-center">
+            <Settings2 className="h-3.5 w-3.5 text-[#6c55dc]" />
+          </div>
+          <h1 className="text-sm font-semibold tracking-tight">Réglages</h1>
         </div>
+      </div>
 
-        <div className="space-y-6">
+      {/* ── Sections ── */}
+      <div className="max-w-3xl mx-auto px-6 py-7 space-y-5">
+        <SectionCard id={SECTION_IDS.general} icon={Settings2} title="Paramètres généraux">
           <GeneralSettings appVersion={appVersion} />
+        </SectionCard>
+
+        <SectionCard id={SECTION_IDS.workflow} icon={Workflow} title="Workflow">
           <WorkflowSettings />
+        </SectionCard>
+
+        <SectionCard id={SECTION_IDS.ai} icon={Brain} title="Intelligence artificielle">
           <AISettings />
+        </SectionCard>
 
-          <div
-            id={SECTION_IDS.providers}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm"
-          >
-            <ProviderSettingsGrid />
+        <SectionCard id={SECTION_IDS.providers} icon={Plug} title="Fournisseurs d'IA">
+          <ProviderSettingsGrid />
+        </SectionCard>
+
+        <SectionCard id={SECTION_IDS.integrations} icon={Plug} title="Intégrations">
+          <SettingRow id={SETTING_IDS.github}><GitHubIntegration /></SettingRow>
+          <Divider />
+          <SettingRow id={SETTING_IDS.vercel}><VercelIntegration /></SettingRow>
+          <Divider />
+          <SettingRow id={SETTING_IDS.supabase}><SupabaseIntegration /></SettingRow>
+          <Divider />
+          <SettingRow id={SETTING_IDS.neon}><NeonIntegration /></SettingRow>
+        </SectionCard>
+
+        <SectionCard id={SECTION_IDS.skills} icon={Stars} title="Skills">
+          <SettingRow id={SETTING_IDS.skills}><SkillsSettings /></SettingRow>
+        </SectionCard>
+
+        <SectionCard id={SECTION_IDS.agentPermissions} icon={ShieldAlert} title="Permissions d'agent">
+          <AgentToolsSettings />
+        </SectionCard>
+
+        <SectionCard id={SECTION_IDS.toolsMcp} icon={Wrench} title="Outils (MCP)">
+          <ToolsMcpSettings />
+        </SectionCard>
+
+        <SectionCard id={SECTION_IDS.telemetry} icon={BarChart3} title="Télémétrie">
+          <SettingRow id={SETTING_IDS.telemetry}>
+            <TelemetrySwitch />
+            <p className="text-sm text-muted-foreground mt-1">
+              Enregistre des données d'utilisation anonymes pour améliorer le produit.
+            </p>
+          </SettingRow>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
+            <span className="font-medium">ID de télémétrie :</span>
+            <code className="font-mono text-xs bg-background border border-border/60 px-2 py-0.5 rounded">
+              {settings ? settings.telemetryUserId : "n/a"}
+            </code>
           </div>
+        </SectionCard>
 
-          <div className="space-y-6">
-            <div
-              id={SECTION_IDS.telemetry}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
-            >
-              <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                Télémetrie
-              </h2>
-              <div id={SETTING_IDS.telemetry} className="space-y-2">
-                <TelemetrySwitch />
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Ceci enregistre des données d'utilisation anonymes pour
-                  améliorer le produit.
-                </div>
-              </div>
-
-              <div className="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400">
-                <span className="mr-2 font-medium">ID de Télémétrie:</span>
-                <span className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-gray-800 dark:text-gray-200 font-mono">
-                  {settings ? settings.telemetryUserId : "n/a"}
-                </span>
-              </div>
+        <SectionCard id={SECTION_IDS.experiments} icon={FlaskConical} title="Expériments">
+          <SettingRow id={SETTING_IDS.nativeGit}>
+            <div className="flex items-center gap-3">
+              <Switch
+                id="enable-native-git"
+                aria-label="Activer Native Git"
+                checked={!!settings?.enableNativeGit}
+                onCheckedChange={(checked) => updateSettings({ enableNativeGit: checked })}
+              />
+              <Label htmlFor="enable-native-git">Activer Native Git</Label>
             </div>
-          </div>
-
-          {/* Integrations Section */}
-          <div
-            id={SECTION_IDS.integrations}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
-          >
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-              Intégrations
-            </h2>
-            <div className="space-y-4">
-              <div id={SETTING_IDS.github}>
-                <GitHubIntegration />
-              </div>
-              <div id={SETTING_IDS.vercel}>
-                <VercelIntegration />
-              </div>
-              <div id={SETTING_IDS.supabase}>
-                <SupabaseIntegration />
-              </div>
-              <div id={SETTING_IDS.neon}>
-                <NeonIntegration />
-              </div>
+            <p className="text-sm text-muted-foreground mt-1">
+              Requiert aucune installation Git externe et offre une performance Git native plus rapide.
+            </p>
+          </SettingRow>
+          <Divider />
+          <SettingRow id={SETTING_IDS.enableCloudSandbox}>
+            <CloudSandboxExperimentSwitch />
+          </SettingRow>
+          <Divider />
+          <SettingRow id={SETTING_IDS.blockUnsafeNpmPackages}>
+            <BlockUnsafeNpmPackagesSwitch />
+          </SettingRow>
+          <Divider />
+          <SettingRow id={SETTING_IDS.enableMcpServersForBuildMode}>
+            <div className="flex items-center gap-3">
+              <Switch
+                id="enable-mcp-servers-for-build-mode"
+                aria-label="Activer les serveurs MCP pour le mode Build"
+                checked={!!settings?.enableMcpServersForBuildMode}
+                onCheckedChange={(checked) => updateSettings({ enableMcpServersForBuildMode: checked })}
+              />
+              <Label htmlFor="enable-mcp-servers-for-build-mode">
+                Serveurs MCP en mode Build
+              </Label>
             </div>
-          </div>
-
-          {/* Skills Section */}
-          <div
-            id={SECTION_IDS.skills}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
-          >
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-              Skills
-            </h2>
-            <div id={SETTING_IDS.skills}>
-              <SkillsSettings />
+            <p className="text-sm text-muted-foreground mt-1">
+              Permet aux serveurs MCP d'être utilisés en mode Build. Toujours actifs en mode Agent.
+            </p>
+          </SettingRow>
+          <Divider />
+          <SettingRow id={SETTING_IDS.enableSelectAppFromHomeChatInput}>
+            <div className="flex items-center gap-3">
+              <Switch
+                id="enable-select-app-from-home-chat-input"
+                aria-label="Activer la sélection d'application depuis le champ de chat d'accueil"
+                checked={!!settings?.enableSelectAppFromHomeChatInput}
+                onCheckedChange={(checked) => updateSettings({ enableSelectAppFromHomeChatInput: checked })}
+              />
+              <Label htmlFor="enable-select-app-from-home-chat-input">
+                Sélection d'app depuis le chat d'accueil
+              </Label>
             </div>
-          </div>
+            <p className="text-sm text-muted-foreground mt-1">
+              Affiche un sélecteur d'application dans le champ de chat d'accueil.
+            </p>
+          </SettingRow>
+        </SectionCard>
 
-          {/* Agent v2 Permissions */}
-
-          <div
-            id={SECTION_IDS.agentPermissions}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
-          >
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-              Permissions d'agent
-            </h2>
-            <AgentToolsSettings />
-          </div>
-
-          {/* Tools (MCP) */}
-          <div
-            id={SECTION_IDS.toolsMcp}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
-          >
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-              Tools (MCP)
-            </h2>
-            <ToolsMcpSettings />
-          </div>
-
-          {/* Experiments Section */}
-          <div
-            id={SECTION_IDS.experiments}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
-          >
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-              Expériments
-            </h2>
-            <div className="space-y-4">
-              <div id={SETTING_IDS.nativeGit} className="space-y-1 mt-4">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="enable-native-git"
-                    aria-label="Enable Native Git"
-                    checked={!!settings?.enableNativeGit}
-                    onCheckedChange={(checked) => {
-                      updateSettings({
-                        enableNativeGit: checked,
-                      });
-                    }}
-                  />
-                  <Label htmlFor="enable-native-git">Activer Native Git</Label>
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Ceci ne requiert aucune installation Git externe et offre une
-                  expérience de performance Git native plus rapide.
-                </div>
+        <SectionCard id={SECTION_IDS.dangerZone} icon={ShieldAlert} title="Zone dangereuse" accent="red">
+          <SettingRow id={SETTING_IDS.reset}>
+            <div className="flex items-center justify-between gap-6 flex-wrap">
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">Tout réinitialiser</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Supprime toutes vos applications, chats et paramètres. Action irréversible.
+                </p>
               </div>
-              <div
-                id={SETTING_IDS.enableCloudSandbox}
-                className="space-y-1 mt-4"
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => setIsResetDialogOpen(true)}
+                disabled={isResetting}
+                className="shrink-0"
               >
-                <CloudSandboxExperimentSwitch />
-              </div>
-              <div
-                id={SETTING_IDS.blockUnsafeNpmPackages}
-                className="space-y-1 mt-4"
-              >
-                <BlockUnsafeNpmPackagesSwitch />
-              </div>
-              <div
-                id={SETTING_IDS.enableMcpServersForBuildMode}
-                className="space-y-1 mt-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="enable-mcp-servers-for-build-mode"
-                    aria-label="Activer les serveurs MCP pour le mode Build"
-                    checked={!!settings?.enableMcpServersForBuildMode}
-                    onCheckedChange={(checked) => {
-                      updateSettings({
-                        enableMcpServersForBuildMode: checked,
-                      });
-                    }}
-                  />
-                  <Label htmlFor="enable-mcp-servers-for-build-mode">
-                    Activer les serveurs MCP pour le mode Build
-                  </Label>
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Permet aux serveurs MCP d'être utilisés en mode Build. Note:
-                  Les serveurs MCP sont toujours activés en mode Agent.
-                </div>
-              </div>
-              <div
-                id={SETTING_IDS.enableSelectAppFromHomeChatInput}
-                className="space-y-1 mt-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="enable-select-app-from-home-chat-input"
-                    aria-label="Activer la sélection d'application depuis le champ de chat d'accueil"
-                    checked={!!settings?.enableSelectAppFromHomeChatInput}
-                    onCheckedChange={(checked) => {
-                      updateSettings({
-                        enableSelectAppFromHomeChatInput: checked,
-                      });
-                    }}
-                  />
-                  <Label htmlFor="enable-select-app-from-home-chat-input">
-                    Activer la sélection d'application depuis le champ de chat
-                    d'accueil
-                  </Label>
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Affiche un sélecteur d'application dans le champ de chat
-                  d'accueil pour commencer un chat referencing an existing app.
-                </div>
-              </div>
+                {isResetting ? "Réinitialisation..." : "Tout réinitialiser"}
+              </Button>
             </div>
-          </div>
-
-          {/* Danger Zone */}
-          <div
-            id={SECTION_IDS.dangerZone}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-red-200 dark:border-red-800"
-          >
-            <h2 className="text-lg font-medium text-red-600 dark:text-red-400 mb-4">
-              Danger Zone
-            </h2>
-
-            <div className="space-y-4">
-              <div
-                id={SETTING_IDS.reset}
-                className="flex items-start justify-between flex-col sm:flex-row sm:items-center gap-4"
-              >
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-                    Tout réinitialiser
-                  </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Cela supprimera toutes vos applications, chats et
-                    paramètres. Cette action ne peut pas être annulée.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setIsResetDialogOpen(true)}
-                  disabled={isResetting}
-                  className="rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isResetting ? "Réinitialisation..." : "Tout réinitialiser"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+          </SettingRow>
+        </SectionCard>
       </div>
 
       <ConfirmationDialog
@@ -332,211 +343,227 @@ export default function SettingsPage() {
   );
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   GeneralSettings — inlined inside SectionCard, kept as export for legacy use
+───────────────────────────────────────────────────────────────────────────── */
 export function GeneralSettings({ appVersion }: { appVersion: string | null }) {
   const { theme, setTheme } = useTheme();
 
+  const themeOptions = [
+    { value: "system", label: "Système", icon: Monitor },
+    { value: "light", label: "Clair", icon: Sun },
+    { value: "dark", label: "Sombre", icon: Moon },
+  ] as const;
+
   return (
-    <div
-      id={SECTION_IDS.general}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
-    >
-      <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-        Paramètres généraux
-      </h2>
-
-      <div className="space-y-4 mb-4">
-        <div id={SETTING_IDS.theme} className="flex items-center gap-4">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Theme
-          </label>
-
-          <div className="relative bg-gray-100 dark:bg-gray-700 rounded-lg p-1 flex">
-            {(["system", "light", "dark"] as const).map((option) => (
-              <button
-                key={option}
-                onClick={() => setTheme(option)}
-                className={`
-                px-4 py-1.5 text-sm font-medium rounded-md
-                transition-all duration-200
-                ${
-                  theme === option
-                    ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                }
-              `}
-              >
-                {option.charAt(0).toUpperCase() + option.slice(1)}
-              </button>
-            ))}
-          </div>
+    <div className="space-y-5">
+      {/* Theme picker */}
+      <SettingRow id={SETTING_IDS.theme}>
+        <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70 mb-3 block">Thème de l'interface</label>
+        <div className="inline-flex bg-muted/40 border border-border/40 rounded-2xl p-1 gap-1 shadow-inner">
+          {themeOptions.map(({ value, label, icon: Icon }) => (
+            <button
+              key={value}
+              onClick={() => setTheme(value)}
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl transition-all duration-300 ${theme === value
+                ? "bg-background text-[#6c55dc] shadow-md border border-border/60 scale-[1.02]"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                }`}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {label}
+            </button>
+          ))}
         </div>
-      </div>
+      </SettingRow>
 
-      <div className="mt-4">
+      <Divider />
+
+      <SettingRow>
         <LanguageSelector />
-      </div>
+      </SettingRow>
 
-      <div id={SETTING_IDS.zoom} className="mt-4">
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.zoom}>
         <ZoomSelector />
-      </div>
+      </SettingRow>
 
-      <div id={SETTING_IDS.autoUpdate} className="space-y-1 mt-4">
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.autoUpdate}>
         <AutoUpdateSwitch />
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          Cela mettra automatiquement à jour l'application lorsque de nouvelles
-          versions seront disponibles.
-        </div>
-      </div>
+        <p className="text-sm text-muted-foreground mt-1">
+          Met automatiquement à jour l'application lorsque de nouvelles versions sont disponibles.
+        </p>
+      </SettingRow>
 
-      <div id={SETTING_IDS.releaseChannel} className="mt-4">
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.releaseChannel}>
         <ReleaseChannelSelector />
-      </div>
+      </SettingRow>
 
-      <div id={SETTING_IDS.runtimeMode} className="mt-4">
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.runtimeMode}>
         <RuntimeModeSelector />
-      </div>
-      <div id={SETTING_IDS.nodePath} className="mt-4">
-        <NodePathSelector />
-      </div>
-      <div id={SETTING_IDS.customAppsFolder} className="mt-4">
-        <CustomAppsFolderSelector />
-      </div>
+      </SettingRow>
 
-      <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mt-4">
-        <span className="mr-2 font-medium">App Version:</span>
-        <span className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-gray-800 dark:text-gray-200 font-mono">
-          {appVersion ? appVersion : "-"}
-        </span>
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.nodePath}>
+        <NodePathSelector />
+      </SettingRow>
+
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.customAppsFolder}>
+        <CustomAppsFolderSelector />
+      </SettingRow>
+
+      <Divider />
+
+      <div className="flex items-center justify-between gap-2 px-4 py-3 bg-[#6c55dc]/5 border border-[#6c55dc]/10 rounded-2xl">
+        <div className="flex items-center gap-2.5">
+          <div className="h-2 w-2 rounded-full bg-[#6c55dc] animate-pulse" />
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#6c55dc]/80">Version de l'application</span>
+        </div>
+        <code className="font-mono text-xs font-bold text-[#6c55dc] bg-[#6c55dc]/10 px-2.5 py-1 rounded-lg">
+          {appVersion ?? "—"}
+        </code>
       </div>
     </div>
   );
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   WorkflowSettings
+───────────────────────────────────────────────────────────────────────────── */
 export function WorkflowSettings() {
   return (
-    <div
-      id={SECTION_IDS.workflow}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
-    >
-      <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-        Paramètres du workflow
-      </h2>
-
-      <div id={SETTING_IDS.defaultChatMode} className="mt-4">
+    <div className="space-y-5">
+      <SettingRow id={SETTING_IDS.defaultChatMode}>
         <DefaultChatModeSelector />
-      </div>
+      </SettingRow>
 
-      <div id={SETTING_IDS.autoApprove} className="space-y-1 mt-4">
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.autoApprove}>
         <AutoApproveSwitch showToast={false} />
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          Cela approuvera automatiquement les changements de code et les
-          exécutera.
-        </div>
-      </div>
+        <p className="text-sm text-muted-foreground mt-1">
+          Approuve automatiquement les changements de code et les exécute.
+        </p>
+      </SettingRow>
 
-      <div id={SETTING_IDS.autoFix} className="space-y-1 mt-4">
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.autoFix}>
         <AutoFixProblemsSwitch />
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          Cela corrigera automatiquement les erreurs TypeScript.
-        </div>
-      </div>
+        <p className="text-sm text-muted-foreground mt-1">
+          Corrige automatiquement les erreurs TypeScript.
+        </p>
+      </SettingRow>
 
-      <div id={SETTING_IDS.autoExpandPreview} className="space-y-1 mt-4">
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.autoExpandPreview}>
         <AutoExpandPreviewSwitch />
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          Agrandit automatiquement le panneau d'aperçu lorsque des changements
-          de code sont effectués.
-        </div>
-      </div>
+        <p className="text-sm text-muted-foreground mt-1">
+          Agrandit automatiquement le panneau d'aperçu lorsque des changements de code sont effectués.
+        </p>
+      </SettingRow>
 
-      <div id={SETTING_IDS.chatEventNotification} className="space-y-1 mt-4">
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.chatEventNotification}>
         <ChatEventNotificationSwitch />
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          Affiche les notifications natives lorsqu'une réponse de chat est
-          terminée ou qu'un questionnaire nécessite votre saisie alors que
-          l'application n'est pas active.
-        </div>
-      </div>
+        <p className="text-sm text-muted-foreground mt-1">
+          Affiche des notifications natives lorsqu'une réponse de chat est terminée ou qu'un questionnaire nécessite votre saisie.
+        </p>
+      </SettingRow>
     </div>
   );
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   AISettings
+───────────────────────────────────────────────────────────────────────────── */
 export function AISettings() {
   return (
-    <div
-      id={SECTION_IDS.ai}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
-    >
-      <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-        Paramètres de l'IA
-      </h2>
-
-      <div id={SETTING_IDS.thinkingBudget} className="mt-4">
+    <div className="space-y-5">
+      <SettingRow id={SETTING_IDS.thinkingBudget}>
         <ThinkingBudgetSelector />
-      </div>
+      </SettingRow>
 
-      <div id={SETTING_IDS.maxChatTurns} className="mt-4">
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.maxChatTurns}>
         <MaxChatTurnsSelector />
-      </div>
+      </SettingRow>
 
-      <div id={SETTING_IDS.maxToolCallSteps} className="mt-4">
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.maxToolCallSteps}>
         <MaxToolCallStepsSelector />
-      </div>
+      </SettingRow>
 
-      <div id={SETTING_IDS.contextCompaction} className="space-y-1 mt-4">
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.contextCompaction}>
         <ContextCompactionSwitch />
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          Compact automatiquement les longues conversations pour rester dans les
-          limites de contexte. Les messages originaux sont conservés dans le
-          répertoire de données de l'application.
-        </div>
-      </div>
+        <p className="text-sm text-muted-foreground mt-1">
+          Compacte automatiquement les longues conversations pour rester dans les limites de contexte.
+        </p>
+      </SettingRow>
 
-      <div id={SETTING_IDS.enableTokenOptimization} className="space-y-1 mt-4">
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.enableTokenOptimization}>
         <TokenOptimizationSwitch />
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          Enable advanced token optimization features including context pruning,
-          compression, and adaptive selection to reduce token usage while
-          maintaining quality.
-        </div>
-        <div className="mt-2">
+        <p className="text-sm text-muted-foreground mt-1">
+          Active l'optimisation avancée des tokens : élagage du contexte, compression et sélection adaptative.
+        </p>
+        <div className="mt-3">
           <a
             href="/token-analytics"
-            className="text-sm text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-[#6c55dc] bg-[#6c55dc]/10 border border-[#6c55dc]/20 rounded-lg hover:bg-[#6c55dc]/15 transition-all shadow-sm"
           >
-            📊 View Token Analytics Dashboard
+            <BarChart3 className="h-3.5 w-3.5" />
+            Voir le tableau de bord analytique
           </a>
         </div>
-      </div>
+      </SettingRow>
 
-      <div id={SETTING_IDS.enableSkillCaching} className="space-y-1 mt-4">
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.enableSkillCaching}>
         <SkillCachingSwitch />
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          Cache loaded skills in memory for faster execution. Reduces loading
-          time for frequently used skills.
-        </div>
-      </div>
+        <p className="text-sm text-muted-foreground mt-1">
+          Met en cache les skills chargés en mémoire pour une exécution plus rapide.
+        </p>
+      </SettingRow>
 
-      <div id={SETTING_IDS.enableSkillPreloading} className="space-y-1 mt-4">
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.enableSkillPreloading}>
         <SkillPreloadingSwitch />
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          Preload frequently used skills in the background based on usage
-          patterns for instant execution.
-        </div>
-      </div>
+        <p className="text-sm text-muted-foreground mt-1">
+          Précharge les skills fréquemment utilisés en arrière-plan selon les patterns d'utilisation.
+        </p>
+      </SettingRow>
 
-      <div id={SETTING_IDS.smartContextStrategy} className="space-y-1 mt-4">
-        <div className="mb-2">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Stratégie de contexte intelligent
-          </label>
-        </div>
+      <Divider />
+
+      <SettingRow id={SETTING_IDS.smartContextStrategy}>
+        <label className="text-sm font-medium text-foreground block mb-2">
+          Stratégie de contexte intelligent
+        </label>
         <SmartContextStrategySelector />
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          Détermine avec quelle agressivité l'IA inclut les fichiers dans le
-          contexte. L'option équilibrée est recommandée pour la plupart des
-          workflows.
-        </div>
-      </div>
+        <p className="text-sm text-muted-foreground mt-1">
+          Détermine avec quelle agressivité l'IA inclut les fichiers dans le contexte. L'option équilibrée est recommandée.
+        </p>
+      </SettingRow>
     </div>
   );
 }

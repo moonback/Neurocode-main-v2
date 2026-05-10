@@ -1,6 +1,12 @@
-import { Home, Inbox, Settings, Store, BookOpen } from "lucide-react";
+import {
+  Home,
+  Inbox,
+  Settings,
+  Store,
+  BookOpen,
+} from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useSidebar } from "@/components/ui/sidebar"; // import useSidebar hook
+import { useSidebar } from "@/components/ui/sidebar";
 import { useEffect, useState, useRef } from "react";
 import { useAtom } from "jotai";
 import { dropdownOpenAtom } from "@/atoms/uiAtoms";
@@ -21,33 +27,13 @@ import { AppList } from "./AppList";
 import { SettingsList } from "./SettingsList";
 import { LibraryList } from "./LibraryList";
 
-// Menu items.
+// Menu items
 const items = [
-  {
-    title: "Apps",
-    to: "/",
-    icon: Home,
-  },
-  {
-    title: "Chat",
-    to: "/chat",
-    icon: Inbox,
-  },
-  {
-    title: "Config",
-    to: "/settings",
-    icon: Settings,
-  },
-  {
-    title: "Librairie",
-    to: "/library",
-    icon: BookOpen,
-  },
-  {
-    title: "Hub",
-    to: "/hub",
-    icon: Store,
-  },
+  { title: "Apps", label: "Apps", to: "/", icon: Home },
+  { title: "Chat", label: "Chat", to: "/chat", icon: Inbox },
+  { title: "Config", label: "Réglages", to: "/settings", icon: Settings },
+  { title: "Librairie", label: "Librairie", to: "/library", icon: BookOpen },
+  { title: "Hub", label: "Hub", to: "/hub", icon: Store },
 ];
 
 // Hover state types
@@ -60,7 +46,7 @@ type HoverState =
   | "no-hover";
 
 export function AppSidebar() {
-  const { state, toggleSidebar } = useSidebar(); // retrieve current sidebar state
+  const { state, toggleSidebar } = useSidebar();
   const [hoverState, setHoverState] = useState<HoverState>("no-hover");
   const expandedByHover = useRef(false);
   const [isDropdownOpen] = useAtom(dropdownOpenAtom);
@@ -100,15 +86,10 @@ export function AppSidebar() {
   } else if (hoverState === "start-hover:library") {
     selectedItem = "Library";
   } else if (state === "expanded") {
-    if (isAppRoute) {
-      selectedItem = "Apps";
-    } else if (isChatRoute) {
-      selectedItem = "Chat";
-    } else if (isSettingsRoute) {
-      selectedItem = "Settings";
-    } else if (isLibraryRoute) {
-      selectedItem = "Library";
-    }
+    if (isAppRoute) selectedItem = "Apps";
+    else if (isChatRoute) selectedItem = "Chat";
+    else if (isSettingsRoute) selectedItem = "Settings";
+    else if (isLibraryRoute) selectedItem = "Library";
   }
 
   return (
@@ -121,17 +102,17 @@ export function AppSidebar() {
       }}
     >
       <SidebarContent className="overflow-hidden">
-        <div className="flex mt-8">
-          {/* Left Column: Menu items */}
-          <div className="">
+        <div className="flex mt-6">
+          {/* Left Column: Icon rail */}
+          <div className="flex flex-col items-center">
             <SidebarTrigger
-              onMouseEnter={() => {
-                setHoverState("clear-hover");
-              }}
+              onMouseEnter={() => setHoverState("clear-hover")}
+              className="mb-2"
             />
             <AppIcons onHoverChange={setHoverState} />
           </div>
-          {/* Right Column: Chat List Section */}
+
+          {/* Right Column: Expanded content */}
           <div className="w-[272px]">
             <AppList show={selectedItem === "Apps"} />
             <ChatList show={selectedItem === "Chat"} />
@@ -155,12 +136,9 @@ function AppIcons({
   const pathname = routerState.location.pathname;
 
   return (
-    // When collapsed: only show the main menu
-    <SidebarGroup className="pr-0">
-      {/* <SidebarGroupLabel>Dyad</SidebarGroupLabel> */}
-
+    <SidebarGroup className="pr-0 pt-0">
       <SidebarGroupContent>
-        <SidebarMenu>
+        <SidebarMenu className="gap-1">
           {items.map((item) => {
             const isActive =
               (item.to === "/" && pathname === "/") ||
@@ -172,24 +150,38 @@ function AppIcons({
                   as={Link}
                   to={item.to}
                   size="sm"
-                  className={`font-medium w-14 flex flex-col items-center gap-1 h-14 mb-2 rounded-2xl ${
-                    isActive ? "bg-sidebar-accent" : ""
-                  }`}
-                  onMouseEnter={() => {
-                    if (item.title === "Apps") {
-                      onHoverChange("start-hover:app");
-                    } else if (item.title === "Chat") {
-                      onHoverChange("start-hover:chat");
-                    } else if (item.title === "Settings") {
-                      onHoverChange("start-hover:settings");
-                    } else if (item.title === "Library") {
-                      onHoverChange("start-hover:library");
+                  tooltip={item.label}
+                  className={`
+                    relative flex flex-col items-center justify-center
+                    w-12 h-12 rounded-xl mb-1
+                    transition-all duration-200
+                    group
+                    ${
+                      isActive
+                        ? "bg-[#6c55dc]/15 text-[#6c55dc] shadow-sm"
+                        : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
                     }
+                  `}
+                  onMouseEnter={() => {
+                    if (item.title === "Apps") onHoverChange("start-hover:app");
+                    else if (item.title === "Chat") onHoverChange("start-hover:chat");
+                    else if (item.title === "Config") onHoverChange("start-hover:settings");
+                    else if (item.title === "Librairie") onHoverChange("start-hover:library");
                   }}
                 >
-                  <div className="flex flex-col items-center gap-1">
-                    <item.icon className="h-5 w-5" />
-                    <span className={"text-xs"}>{item.title}</span>
+                  {/* Active indicator dot */}
+                  {isActive && (
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-[#6c55dc]" />
+                  )}
+                  <div className="flex flex-col items-center gap-0.5">
+                    <item.icon
+                      className={`h-5 w-5 transition-transform duration-200 group-hover:scale-110 ${
+                        isActive ? "text-[#6c55dc]" : ""
+                      }`}
+                    />
+                    <span className="text-[10px] font-medium leading-none">
+                      {item.label}
+                    </span>
                   </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>

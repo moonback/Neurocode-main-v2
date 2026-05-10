@@ -325,11 +325,11 @@ export default function AppDetailsPage() {
     >
       <Button
         onClick={() => router.history.back()}
-        variant="outline"
+        variant="ghost"
         size="sm"
-        className="absolute top-4 left-4 flex items-center gap-2 bg-(--background-lightest) py-2"
+        className="absolute top-4 left-4 flex items-center gap-1.5 text-muted-foreground hover:text-foreground z-10"
       >
-        <ArrowLeft className="h-3.5 w-3.5" />
+        <ArrowLeft className="h-4 w-4" />
         Retour
       </Button>
 
