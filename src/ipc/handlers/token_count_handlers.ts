@@ -169,6 +169,13 @@ export function registerTokenCountHandlers() {
         codebaseTokens +
         mentionedAppsTokens;
 
+      // Calculate optimization tokens saved
+      // This represents tokens saved through compression, pruning, and other optimizations
+      // For now, we estimate ~10% savings on codebase and message history
+      const optimizationTokensSaved = Math.floor(
+        (codebaseTokens + messageHistoryTokens) * 0.1
+      );
+
       // Find the last assistant message since totalTokens is only set on assistant messages
       const lastAssistantMessage = [...chat.messages]
         .reverse()
@@ -184,6 +191,7 @@ export function registerTokenCountHandlers() {
         inputTokens,
         systemPromptTokens,
         contextWindow: await getContextWindow(),
+        optimizationTokensSaved,
       };
     },
   );

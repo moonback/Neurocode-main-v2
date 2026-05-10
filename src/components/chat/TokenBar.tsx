@@ -12,6 +12,7 @@ import {
   Bot,
   AlignLeft,
   ExternalLink,
+  Zap,
 } from "lucide-react";
 import { chatInputValueAtom } from "@/atoms/chatAtoms";
 import { useAtom } from "jotai";
@@ -36,6 +37,7 @@ export function TokenBar({ chatId }: TokenBarProps) {
     systemPromptTokens,
     inputTokens,
     contextWindow,
+    optimizationTokensSaved = 0,
   } = result;
 
   const percentUsed = Math.min((totalTokens / contextWindow) * 100, 100);
@@ -114,6 +116,16 @@ export function TokenBar({ chatId }: TokenBarProps) {
                 <AlignLeft size={12} className="text-yellow-500" />
                 <span>Entrée actuelle</span>
                 <span>{inputTokens.toLocaleString()}</span>
+
+                {optimizationTokensSaved > 0 && (
+                  <>
+                    <Zap size={12} className="text-cyan-500" />
+                    <span>Optimisation tokens</span>
+                    <span className="text-cyan-500 font-medium">
+                      -{optimizationTokensSaved.toLocaleString()}
+                    </span>
+                  </>
+                )}
               </div>
               <div className="pt-1 border-t border-border">
                 <div className="flex justify-between font-medium">
