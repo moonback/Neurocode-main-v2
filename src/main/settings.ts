@@ -49,6 +49,12 @@ const DEFAULT_SETTINGS: UserSettings = {
   autoExpandPreviewPanel: true,
   enableContextCompaction: true,
   enableDyadPro: true,
+  // Token Optimization Settings - Enabled by default
+  enableTokenOptimization: true,
+  enableSkillCaching: true,
+  enableSkillPreloading: true,
+  skillCacheSize: 50,
+  skillPreloadingMemoryLimit: 10,
 };
 
 const SETTINGS_FILE = "user-settings.json";

@@ -34,6 +34,9 @@ import { ZoomSelector } from "@/components/ZoomSelector";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { DefaultChatModeSelector } from "@/components/DefaultChatModeSelector";
 import { ContextCompactionSwitch } from "@/components/ContextCompactionSwitch";
+import { TokenOptimizationSwitch } from "@/components/TokenOptimizationSwitch";
+import { SkillCachingSwitch } from "@/components/SkillCachingSwitch";
+import { SkillPreloadingSwitch } from "@/components/SkillPreloadingSwitch";
 import { SmartContextStrategySelector } from "@/components/SmartContextStrategySelector";
 import { BlockUnsafeNpmPackagesSwitch } from "@/components/BlockUnsafeNpmPackagesSwitch";
 import { CloudSandboxExperimentSwitch } from "@/components/CloudSandboxExperimentSwitch";
@@ -485,6 +488,39 @@ export function AISettings() {
           Compact automatiquement les longues conversations pour rester dans les
           limites de contexte. Les messages originaux sont conservés dans le
           répertoire de données de l'application.
+        </div>
+      </div>
+
+      <div id={SETTING_IDS.enableTokenOptimization} className="space-y-1 mt-4">
+        <TokenOptimizationSwitch />
+        <div className="text-sm text-gray-500 dark:text-gray-400">
+          Enable advanced token optimization features including context pruning,
+          compression, and adaptive selection to reduce token usage while
+          maintaining quality.
+        </div>
+        <div className="mt-2">
+          <a
+            href="/token-analytics"
+            className="text-sm text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+          >
+            📊 View Token Analytics Dashboard
+          </a>
+        </div>
+      </div>
+
+      <div id={SETTING_IDS.enableSkillCaching} className="space-y-1 mt-4">
+        <SkillCachingSwitch />
+        <div className="text-sm text-gray-500 dark:text-gray-400">
+          Cache loaded skills in memory for faster execution. Reduces loading
+          time for frequently used skills.
+        </div>
+      </div>
+
+      <div id={SETTING_IDS.enableSkillPreloading} className="space-y-1 mt-4">
+        <SkillPreloadingSwitch />
+        <div className="text-sm text-gray-500 dark:text-gray-400">
+          Preload frequently used skills in the background based on usage
+          patterns for instant execution.
         </div>
       </div>
 

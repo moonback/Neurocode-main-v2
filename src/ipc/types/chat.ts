@@ -170,6 +170,7 @@ export const TokenCountResultSchema = z.object({
   inputTokens: z.number(),
   systemPromptTokens: z.number(),
   contextWindow: z.number(),
+  optimizationTokensSaved: z.number().optional().default(0),
 });
 
 export type TokenCountResult = z.infer<typeof TokenCountResultSchema>;

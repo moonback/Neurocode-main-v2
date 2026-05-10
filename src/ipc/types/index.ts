@@ -56,6 +56,7 @@ export { mediaContracts } from "./media";
 export { imageGenerationContracts } from "./image_generation";
 export { smartContextContracts } from "./smart-context";
 export { skillContracts } from "./skills";
+export { tokenAnalyticsContracts } from "./token-analytics";
 
 // =============================================================================
 // Client Exports
@@ -91,6 +92,7 @@ export { mediaClient } from "./media";
 export { imageGenerationClient } from "./image_generation";
 export { smartContextClient } from "./smart-context";
 export { skillClient } from "./skills";
+export { tokenAnalyticsClient } from "./token-analytics";
 
 // =============================================================================
 // Type Exports
@@ -358,6 +360,20 @@ export {
   ValidationResultSchema,
 } from "./skills";
 
+// Token Analytics types
+export type {
+  GetTokenStatisticsParams,
+  TokenStatistics,
+  TopConsumer,
+  GetTopConsumersParams,
+  CostBreakdown,
+  CalculateCostParams,
+  ExportUsageDataParams,
+  ExportUsageDataResult,
+  UsageOverTimeDataPoint,
+  GetUsageOverTimeParams,
+} from "./token-analytics";
+
 // =============================================================================
 // Schema Exports (for validation in handlers/components)
 // =============================================================================
@@ -420,6 +436,7 @@ import { mediaClient } from "./media";
 import { imageGenerationClient } from "./image_generation";
 import { smartContextClient } from "./smart-context";
 import { skillClient } from "./skills";
+import { tokenAnalyticsClient } from "./token-analytics";
 
 /**
  * Unified IPC client with all domains organized by namespace.
@@ -481,6 +498,7 @@ export const ipc = {
   imageGeneration: imageGenerationClient,
   smartContext: smartContextClient,
   skills: skillClient,
+  tokenAnalytics: tokenAnalyticsClient,
 
   // Event clients for main->renderer pub/sub
   events: {

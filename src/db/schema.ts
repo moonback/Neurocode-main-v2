@@ -1,5 +1,11 @@
 import { sql } from "drizzle-orm";
-import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import {
+  index,
+  integer,
+  sqliteTable,
+  text,
+  unique,
+} from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
 import type { ModelMessage } from "ai";
 
@@ -280,4 +286,42 @@ export const customThemes = sqliteTable("custom_themes", {
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
+});
+
+// --- Token Analytics tables ---
+export const tokenAnalytics = sqliteTable(
+  "token_analytics",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    requestId: text("request_id").notNull(),
+    conversationId: text("conversation_id"),
+    skillName: text("skill_name"),
+    timestamp: integer("timestamp", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    inputTokens: integer("input_tokens").notNull(),
+    outputTokens: integer("output_tokens").notNull(),
+    totalTokens: integer("total_tokens").notNull(),
+    modelType: text("model_type").notNull(),
+    optimizationsSaved: integer("optimizations_saved").notNull().default(0),
+    costEstimate: integer("cost_estimate"), // Store as integer (cents) to avoid floating point issues
+  },
+  (table) => ({
+    conversationIdx: index("idx_token_analytics_conversation").on(
+      table.conversationId,
+    ),
+    skillIdx: index("idx_token_analytics_skill").on(table.skillName),
+    timestampIdx: index("idx_token_analytics_timestamp").on(table.timestamp),
+  }),
+);
+
+export const skillAnalytics = sqliteTable("skill_analytics", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  skillName: text("skill_name").notNull().unique(),
+  executionCount: integer("execution_count").notNull().default(0),
+  totalExecutionTime: integer("total_execution_time").notNull().default(0),
+  cacheHits: integer("cache_hits").notNull().default(0),
+  cacheMisses: integer("cache_misses").notNull().default(0),
+  errorCount: integer("error_count").notNull().default(0),
+  lastUsed: integer("last_used", { mode: "timestamp" }),
 });

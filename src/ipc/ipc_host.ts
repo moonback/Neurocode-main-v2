@@ -45,6 +45,7 @@ import { registerImageGenerationHandlers } from "./handlers/image_generation_han
 import { registerSmartContextHandlers } from "./handlers/smart_context_handlers";
 import { registerSkillHandlers } from "./handlers/skill_handlers";
 import { registerCodebaseExportHandlers } from "./handlers/codebase_export_handler";
+import { registerTokenAnalyticsHandlers } from "./handlers/token_analytics_handlers";
 
 export function registerIpcHandlers() {
   // Register all IPC handlers by category
@@ -95,4 +96,5 @@ export function registerIpcHandlers() {
   registerSmartContextHandlers();
   registerSkillHandlers();
   registerCodebaseExportHandlers();
+  registerTokenAnalyticsHandlers();
 }
