@@ -191,8 +191,8 @@ This implementation plan follows a 4-phase migration strategy to add token optim
     - **Property 17: Load-Unload-Reload Idempotence**
     - **Validates: Requirements 4.7**
 
-- [-] 11. Implement Dependency Manager
-  - [-] 11.1 Create DependencyManager class with resolution logic
+- [x] 11. Implement Dependency Manager
+  - [x] 11.1 Create DependencyManager class with resolution logic
     - Implement `resolveDependencies()` with topological sorting
     - Implement `detectCircular()` for circular dependency detection
     - Implement `getDependencyGraph()` for visualization
