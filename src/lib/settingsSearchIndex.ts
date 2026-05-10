@@ -42,6 +42,11 @@ export const SETTING_IDS = {
   enableMcpServersForBuildMode: "setting-enable-mcp-servers-for-build-mode",
   enableSelectAppFromHomeChatInput:
     "setting-enable-select-app-from-home-chat-input",
+  enableTokenOptimization: "setting-enable-token-optimization",
+  enableSkillCaching: "setting-enable-skill-caching",
+  enableSkillPreloading: "setting-enable-skill-preloading",
+  skillCacheSize: "setting-skill-cache-size",
+  skillPreloadingMemoryLimit: "setting-skill-preloading-memory-limit",
   reset: "setting-reset",
 } as const;
 
@@ -219,6 +224,89 @@ export const SETTINGS_SEARCH_INDEX: SearchableSettingItem[] = [
       "tokens",
       "window",
       "memory",
+    ],
+    sectionId: SECTION_IDS.ai,
+    sectionLabel: "AI",
+  },
+  {
+    id: SETTING_IDS.enableTokenOptimization,
+    label: "Token Optimization",
+    description:
+      "Enable advanced token optimization features including context pruning and compression",
+    keywords: [
+      "token",
+      "optimization",
+      "optimize",
+      "pruning",
+      "compression",
+      "context",
+      "performance",
+      "efficiency",
+    ],
+    sectionId: SECTION_IDS.ai,
+    sectionLabel: "AI",
+  },
+  {
+    id: SETTING_IDS.enableSkillCaching,
+    label: "Skill Caching",
+    description:
+      "Cache loaded skills in memory for faster execution",
+    keywords: [
+      "skill",
+      "cache",
+      "caching",
+      "memory",
+      "performance",
+      "speed",
+      "optimization",
+    ],
+    sectionId: SECTION_IDS.ai,
+    sectionLabel: "AI",
+  },
+  {
+    id: SETTING_IDS.enableSkillPreloading,
+    label: "Skill Preloading",
+    description:
+      "Preload frequently used skills in the background for instant execution",
+    keywords: [
+      "skill",
+      "preload",
+      "preloading",
+      "background",
+      "prediction",
+      "performance",
+      "optimization",
+    ],
+    sectionId: SECTION_IDS.ai,
+    sectionLabel: "AI",
+  },
+  {
+    id: SETTING_IDS.skillCacheSize,
+    label: "Skill Cache Size",
+    description:
+      "Maximum number of skills to keep in cache (default: 50)",
+    keywords: [
+      "skill",
+      "cache",
+      "size",
+      "limit",
+      "memory",
+      "configuration",
+    ],
+    sectionId: SECTION_IDS.ai,
+    sectionLabel: "AI",
+  },
+  {
+    id: SETTING_IDS.skillPreloadingMemoryLimit,
+    label: "Skill Preloading Memory Limit",
+    description:
+      "Maximum number of skills to preload in memory (default: 10)",
+    keywords: [
+      "skill",
+      "preload",
+      "memory",
+      "limit",
+      "configuration",
     ],
     sectionId: SECTION_IDS.ai,
     sectionLabel: "AI",

@@ -363,12 +363,12 @@ This implementation plan follows a 4-phase migration strategy to add token optim
     - Add optimization triggers at appropriate points
     - Ensure backward compatibility with existing functionality
     - _Requirements: 3.1, 3.2_
-  - [ ] 23.2 Wire SkillEngine enhancements into skill system
+  - [x] 23.2 Wire SkillEngine enhancements into skill system
     - Integrate SkillLoader, SkillCache, and DependencyManager
     - Update existing skill loading code to use new components
     - Ensure backward compatibility with existing skills
     - _Requirements: 4.1, 4.2, 4.3_
-  - [ ] 23.3 Add configuration settings for optimizations
+  - [x] 23.3 Add configuration settings for optimizations
     - Add settings for enabling/disabling optimizations
     - Add settings for cache size limits
     - Add settings for token budget defaults

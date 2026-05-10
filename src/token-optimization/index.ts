@@ -110,3 +110,21 @@ export {
   calculateCost,
   exportUsageData,
 } from "./integration";
+
+// Skill system integration
+export {
+  initializeOptimizedSkillSystem,
+  getSkillLoader,
+  getSkillCache,
+  getSkillEngine,
+  getResultCache,
+  getPreloaderPredictor,
+  loadSkillOptimized,
+  executeSkillOptimized,
+  preloadPredictedSkills,
+  getSkillCacheStats,
+  getPreloadingStats,
+  clearSkillCaches,
+  unloadSkill,
+  unloadAllSkills,
+} from "./skill-integration";
