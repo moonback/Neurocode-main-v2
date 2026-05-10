@@ -288,18 +288,22 @@ export default function AppDetailsPage() {
 
   if (!selectedApp) {
     return (
-      <div className="relative min-h-screen p-8">
+      <div className="relative min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-br from-background to-muted/30">
         <Button
           onClick={() => router.history.back()}
           variant="outline"
           size="sm"
-          className="absolute top-4 left-4 flex items-center gap-1 bg-(--background-lightest) py-5"
+          className="absolute top-4 left-4 flex items-center gap-2 bg-(--background-lightest) py-2"
         >
-          <ArrowLeft className="h-3 w-4" />
-          Back
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Retour
         </Button>
-        <div className="flex flex-col items-center justify-center h-full">
-          <h2 className="text-xl font-bold">App not found</h2>
+        <div className="flex flex-col items-center gap-3 text-center">
+          <div className="h-16 w-16 rounded-2xl bg-muted flex items-center justify-center">
+            <Folder className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <h2 className="text-xl font-semibold">Application introuvable</h2>
+          <p className="text-sm text-muted-foreground">L'application demandée n'a pas pu être localisée.</p>
         </div>
       </div>
     );
@@ -307,150 +311,174 @@ export default function AppDetailsPage() {
 
   const currentAppPath = selectedApp.resolvedPath || "";
 
+  // Derive initials for the avatar
+  const appInitials = selectedApp.name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+
   return (
     <div
-      className="relative min-h-screen p-4 w-full"
+      className="relative min-h-screen p-4 w-full bg-gradient-to-br from-background to-muted/20"
       data-testid="app-details-page"
     >
       <Button
         onClick={() => router.history.back()}
         variant="outline"
         size="sm"
-        className="absolute top-4 left-4 flex items-center gap-1 bg-(--background-lightest) py-2"
+        className="absolute top-4 left-4 flex items-center gap-2 bg-(--background-lightest) py-2"
       >
-        <ArrowLeft className="h-3 w-4" />
-        Back
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Retour
       </Button>
 
-      <div className="w-full max-w-2xl mx-auto mt-10 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm relative">
-        <div className="flex items-center mb-3">
-          <h2 className="text-2xl font-bold">{selectedApp.name}</h2>
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="ml-1 p-0.5 h-auto"
-                  onClick={() => appId && toggleFavorite(appId)}
-                  disabled={isFavoriteLoading}
-                  data-testid="favorite-button"
-                />
-              }
-            >
-              <Star
-                className={`h-4 w-4 ${
-                  selectedApp.isFavorite
-                    ? "fill-[#6c55dc] text-[#6c55dc]"
-                    : "hover:fill-[#6c55dc] hover:text-[#6c55dc]"
-                }`}
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              {selectedApp.isFavorite
-                ? "Remove from favorites"
-                : "Add to favorites"}
-            </TooltipContent>
-          </Tooltip>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="ml-1 p-0.5 h-auto"
-            onClick={handleOpenRenameDialog}
-            data-testid="app-details-rename-app-button"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
-        </div>
+      <div className="w-full max-w-2xl mx-auto mt-12 rounded-2xl border border-border/60 bg-card shadow-lg overflow-hidden relative">
 
-        {/* Overflow Menu in top right */}
-        <div className="absolute top-2 right-2">
-          <Popover>
-            <PopoverTrigger
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-7 w-7 p-0"
-              data-testid="app-details-more-options-button"
-            >
-              <MoreVertical className="h-4 w-4" />
-            </PopoverTrigger>
-            <PopoverContent className="w-40 p-2" align="end">
-              <div className="flex flex-col space-y-0.5">
-                <Button
-                  onClick={handleOpenRenameFolderDialog}
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 justify-start text-xs"
-                >
-                  Rename folder
-                </Button>
-                <Button
-                  onClick={() => setIsChangeLocationDialogOpen(true)}
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 justify-start text-xs"
-                >
-                  Move folder
-                </Button>
-                <Button
-                  onClick={handleOpenCopyDialog}
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 justify-start text-xs"
-                >
-                  Copy app
-                </Button>
-                <Button
-                  onClick={() => setIsDeleteDialogOpen(true)}
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 justify-start text-xs"
-                >
-                  Delete
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
+        {/* ── Hero Header ───────────────────────────────────────── */}
+        <div className="relative bg-gradient-to-r from-[#6c55dc]/10 via-[#6c55dc]/5 to-transparent px-6 pt-8 pb-6 border-b border-border/50">
+          {/* Overflow Menu */}
+          <div className="absolute top-3 right-3">
+            <Popover>
+              <PopoverTrigger
+                className="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8 p-0"
+                data-testid="app-details-more-options-button"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </PopoverTrigger>
+              <PopoverContent className="w-44 p-1.5" align="end">
+                <div className="flex flex-col gap-0.5">
+                  <Button
+                    onClick={handleOpenRenameFolderDialog}
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 justify-start text-xs gap-2"
+                  >
+                    Renommer le dossier
+                  </Button>
+                  <Button
+                    onClick={() => setIsChangeLocationDialogOpen(true)}
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 justify-start text-xs gap-2"
+                  >
+                    Déplacer le dossier
+                  </Button>
+                  <Button
+                    onClick={handleOpenCopyDialog}
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 justify-start text-xs gap-2"
+                  >
+                    Copier l'application
+                  </Button>
+                  <div className="my-0.5 h-px bg-border" />
+                  <Button
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 justify-start text-xs gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                  >
+                    Supprimer
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
 
-        <div className="grid grid-cols-2 gap-3 text-sm mb-4">
-          <div>
-            <span className="block text-gray-500 dark:text-gray-400 mb-0.5 text-xs">
-              Created
-            </span>
-            <span>{selectedApp.createdAt.toString()}</span>
-          </div>
-          <div>
-            <span className="block text-gray-500 dark:text-gray-400 mb-0.5 text-xs">
-              Last Updated
-            </span>
-            <span>{selectedApp.updatedAt.toString()}</span>
-          </div>
-          <div className="col-span-2">
-            <span className="block text-gray-500 dark:text-gray-400 mb-0.5 text-xs">
-              Path
-            </span>
-            <div className="flex items-center gap-1">
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="ml-[-8px] p-0.5 h-auto cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                      onClick={() => {
-                        ipc.system.showItemInFolder(currentAppPath);
-                      }}
+          <div className="flex items-center gap-4">
+            {/* App Avatar */}
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#6c55dc] to-[#9b7eff] flex items-center justify-center shadow-md shrink-0">
+              <span className="text-white font-bold text-lg tracking-tight">{appInitials}</span>
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <h2 className="text-xl font-bold truncate">{selectedApp.name}</h2>
+
+                {/* Favorite toggle */}
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-1 h-auto rounded-full"
+                        onClick={() => appId && toggleFavorite(appId)}
+                        disabled={isFavoriteLoading}
+                        data-testid="favorite-button"
+                      />
+                    }
+                  >
+                    <Star
+                      className={`h-4 w-4 transition-colors ${
+                        selectedApp.isFavorite
+                          ? "fill-[#6c55dc] text-[#6c55dc]"
+                          : "text-muted-foreground hover:fill-[#6c55dc] hover:text-[#6c55dc]"
+                      }`}
                     />
-                  }
-                >
-                  <Folder className="h-3.5 w-3.5" />
-                </TooltipTrigger>
-                <TooltipContent>Show in folder</TooltipContent>
-              </Tooltip>
-              <span className="text-sm break-all">{currentAppPath}</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {selectedApp.isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+                  </TooltipContent>
+                </Tooltip>
+
+                {/* Rename app button */}
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-1 h-auto rounded-full text-muted-foreground hover:text-foreground"
+                        onClick={handleOpenRenameDialog}
+                        data-testid="app-details-rename-app-button"
+                      />
+                    }
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </TooltipTrigger>
+                  <TooltipContent>Renommer l'application</TooltipContent>
+                </Tooltip>
+              </div>
+
+              {/* Metadata chips */}
+              <div className="flex flex-wrap gap-2 mt-2">
+                <div className="flex items-center gap-1.5 rounded-full bg-muted/70 border border-border/50 px-2.5 py-0.5 text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground/60">Créé</span>
+                  <span>{selectedApp.createdAt.toString()}</span>
+                </div>
+                <div className="flex items-center gap-1.5 rounded-full bg-muted/70 border border-border/50 px-2.5 py-0.5 text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground/60">Modifié</span>
+                  <span>{selectedApp.updatedAt.toString()}</span>
+                </div>
+              </div>
             </div>
           </div>
+
+          {/* Path row */}
+          <div className="mt-4 flex items-center gap-1.5 rounded-lg bg-muted/50 border border-border/40 px-3 py-2">
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 p-0.5 shrink-0 text-muted-foreground hover:text-foreground hover:bg-transparent"
+                    onClick={() => ipc.system.showItemInFolder(currentAppPath)}
+                  />
+                }
+              >
+                <Folder className="h-3.5 w-3.5" />
+              </TooltipTrigger>
+              <TooltipContent>Afficher dans le dossier</TooltipContent>
+            </Tooltip>
+            <span className="text-xs text-muted-foreground break-all font-mono">{currentAppPath}</span>
+          </div>
         </div>
-        <div className="mt-4 flex flex-col gap-2">
+
+        {/* ── Actions ───────────────────────────────────────────── */}
+        <div className="px-6 py-5 flex flex-col gap-3">
           <Button
             onClick={() => {
               if (!appId) {
@@ -459,68 +487,57 @@ export default function AppDetailsPage() {
               }
               navigate({ to: "/chat" });
             }}
-            className="cursor-pointer w-full py-5 flex justify-center items-center gap-2"
+            className="cursor-pointer w-full py-5 flex justify-center items-center gap-2 bg-[#6c55dc] hover:bg-[#5a46c4] text-white rounded-xl shadow-sm transition-all"
             size="lg"
           >
-            Open in Chat
             <MessageCircle className="h-4 w-4" />
+            Ouvrir dans le Chat
           </Button>
 
-          {/* Codebase Export Button */}
+          {/* Codebase Export */}
           {appId && (
-            <CodebaseExportButton appId={appId} className="w-full py-5" />
+            <CodebaseExportButton appId={appId} className="w-full py-5 rounded-xl" />
           )}
+        </div>
 
-          <div className="border border-gray-200 rounded-md p-4">
+        {/* ── Integrations ──────────────────────────────────────── */}
+        <div className="px-6 pb-6 flex flex-col gap-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Intégrations</p>
+
+          <div className="rounded-xl border border-border/60 bg-background/60 p-4">
             <GitHubConnector appId={appId} folderName={selectedApp.path} />
             {selectedApp.githubOrg && selectedApp.githubRepo && appId && (
-              <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+              <div className="pt-4 mt-3 border-t border-border/50">
                 <GithubCollaboratorManager appId={appId} />
               </div>
             )}
           </div>
-          {/* When providerFilter is set, show the selected connector only if the other provider isn't already active */}
-          {providerFilter === "supabase" &&
-            appId &&
-            !selectedApp?.neonProjectId && <SupabaseConnector appId={appId} />}
-          {providerFilter === "supabase" &&
-            appId &&
-            selectedApp?.neonProjectId && (
-              <UnavailableIntegrationCard provider="supabase" />
-            )}
-          {providerFilter === "neon" &&
-            appId &&
-            !selectedApp?.supabaseProjectId && <NeonConnector appId={appId} />}
-          {providerFilter === "neon" &&
-            appId &&
-            selectedApp?.supabaseProjectId && (
-              <UnavailableIntegrationCard provider="neon" />
-            )}
-          {/* When no providerFilter, show both with existing mutual exclusion */}
+
+          {/* Provider connectors */}
+          {providerFilter === "supabase" && appId && !selectedApp?.neonProjectId && <SupabaseConnector appId={appId} />}
+          {providerFilter === "supabase" && appId && selectedApp?.neonProjectId && (
+            <UnavailableIntegrationCard provider="supabase" />
+          )}
+          {providerFilter === "neon" && appId && !selectedApp?.supabaseProjectId && <NeonConnector appId={appId} />}
+          {providerFilter === "neon" && appId && selectedApp?.supabaseProjectId && (
+            <UnavailableIntegrationCard provider="neon" />
+          )}
+
           {!providerFilter && (
             <>
-              {appId &&
-                !selectedApp?.neonProjectId &&
-                !selectedApp?.supabaseProjectId && (
-                  <div className="flex items-start gap-2 rounded-md border border-muted bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
-                    <Info className="h-4 w-4 shrink-0 mt-0.5" />
-                    <span>{t("integrations.mutualExclusion.chooseOne")}</span>
-                  </div>
-                )}
-              {appId && !selectedApp?.neonProjectId && (
-                <SupabaseConnector appId={appId} />
+              {appId && !selectedApp?.neonProjectId && !selectedApp?.supabaseProjectId && (
+                <div className="flex items-start gap-2.5 rounded-xl border border-muted bg-muted/30 px-3.5 py-2.5 text-xs text-muted-foreground">
+                  <Info className="h-4 w-4 shrink-0 mt-0.5" />
+                  <span>{t("integrations.mutualExclusion.chooseOne")}</span>
+                </div>
               )}
-              {appId && selectedApp?.neonProjectId && (
-                <UnavailableIntegrationCard provider="supabase" />
-              )}
-              {appId && !selectedApp?.supabaseProjectId && (
-                <NeonConnector appId={appId} />
-              )}
-              {appId && selectedApp?.supabaseProjectId && (
-                <UnavailableIntegrationCard provider="neon" />
-              )}
+              {appId && !selectedApp?.neonProjectId && <SupabaseConnector appId={appId} />}
+              {appId && selectedApp?.neonProjectId && <UnavailableIntegrationCard provider="supabase" />}
+              {appId && !selectedApp?.supabaseProjectId && <NeonConnector appId={appId} />}
+              {appId && selectedApp?.supabaseProjectId && <UnavailableIntegrationCard provider="neon" />}
             </>
           )}
+
           {appId && <CapacitorControls appId={appId} />}
           <AppUpgrades appId={appId} />
         </div>
@@ -529,12 +546,12 @@ export default function AppDetailsPage() {
         <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
           <DialogContent className="max-w-sm p-4">
             <DialogHeader className="pb-2">
-              <DialogTitle>Rename App</DialogTitle>
+              <DialogTitle>Renommer l'application</DialogTitle>
             </DialogHeader>
             <Input
               value={newAppName}
               onChange={(e) => setNewAppName(e.target.value)}
-              placeholder="Enter new app name"
+              placeholder="Saisir un nouveau nom d'application"
               className="my-2"
               autoFocus
             />
@@ -545,7 +562,7 @@ export default function AppDetailsPage() {
                 disabled={isRenaming}
                 size="sm"
               >
-                Cancel
+                Annuler
               </Button>
               <Button
                 onClick={() => {
@@ -555,7 +572,7 @@ export default function AppDetailsPage() {
                 disabled={isRenaming || !newAppName.trim()}
                 size="sm"
               >
-                Continue
+                Continuer
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -568,15 +585,15 @@ export default function AppDetailsPage() {
         >
           <DialogContent className="max-w-sm p-4">
             <DialogHeader className="pb-2">
-              <DialogTitle>Rename app folder</DialogTitle>
+              <DialogTitle>Renommer le dossier</DialogTitle>
               <DialogDescription className="text-xs">
-                This will change only the folder name, not the app name.
+                Ceci modifiera uniquement le nom du dossier, pas le nom de l'application.
               </DialogDescription>
             </DialogHeader>
             <Input
               value={newFolderName}
               onChange={(e) => setNewFolderName(e.target.value)}
-              placeholder="Enter new folder name"
+              placeholder="Saisir un nouveau nom de dossier"
               className="my-2"
               autoFocus
             />
@@ -587,7 +604,7 @@ export default function AppDetailsPage() {
                 disabled={isRenamingFolder}
                 size="sm"
               >
-                Cancel
+                Annuler
               </Button>
               <Button
                 onClick={handleRenameFolderOnly}
@@ -616,10 +633,10 @@ export default function AppDetailsPage() {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Renaming...
+                    Renommage...
                   </>
                 ) : (
-                  "Rename Folder"
+                  "Renommer le dossier"
                 )}
               </Button>
             </DialogFooter>
@@ -634,10 +651,10 @@ export default function AppDetailsPage() {
           <DialogContent className="max-w-sm p-4">
             <DialogHeader className="pb-2">
               <DialogTitle className="text-base">
-                How would you like to rename "{selectedApp.name}"?
+                Comment souhaitez-vous renommer « {selectedApp.name} » ?
               </DialogTitle>
               <DialogDescription className="text-xs">
-                Choose an option:
+                Choisissez une option :
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-2 my-2">
@@ -649,13 +666,13 @@ export default function AppDetailsPage() {
               >
                 <div className="absolute top-1 right-1">
                   <span className="bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300 text-[10px]">
-                    Recommended
+                    Recommandé
                   </span>
                 </div>
                 <div className="text-left">
-                  <p className="font-medium text-xs">Rename app and folder</p>
+                  <p className="font-medium text-xs">Renommer l'application et le dossier</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Renames the folder to match the new app name.
+                    Renomme le dossier pour correspondre au nouveau nom de l'application.
                   </p>
                 </div>
               </Button>
@@ -667,9 +684,9 @@ export default function AppDetailsPage() {
                 disabled={isRenaming}
               >
                 <div className="text-left">
-                  <p className="font-medium text-xs">Rename app only</p>
+                  <p className="font-medium text-xs">Renommer l'application uniquement</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    The folder name will remain the same.
+                    Le nom du dossier restera inchangé.
                   </p>
                 </div>
               </Button>
@@ -681,7 +698,7 @@ export default function AppDetailsPage() {
                 disabled={isRenaming}
                 size="sm"
               >
-                Cancel
+                Annuler
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -692,24 +709,23 @@ export default function AppDetailsPage() {
           <Dialog open={isCopyDialogOpen} onOpenChange={setIsCopyDialogOpen}>
             <DialogContent className="max-w-md p-4">
               <DialogHeader className="pb-2">
-                <DialogTitle>Copy "{selectedApp.name}"</DialogTitle>
+                <DialogTitle>Copier « {selectedApp.name} »</DialogTitle>
                 <DialogDescription className="text-sm">
-                  <p>Create a copy of this app.</p>
+                  <p>Créer une copie de cette application.</p>
                   <p>
-                    Note: this does not copy over the Supabase project or GitHub
-                    project.
+                    Remarque : cela ne copie pas le projet Supabase ni le projet GitHub.
                   </p>
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-3 my-2">
                 <div>
-                  <Label htmlFor="newAppName">New app name</Label>
+                  <Label htmlFor="newAppName">Nouveau nom de l'application</Label>
                   <div className="relative mt-1">
                     <Input
                       id="newAppName"
                       value={newCopyAppName}
                       onChange={handleAppNameChange}
-                      placeholder="Enter new app name"
+                      placeholder="Saisir un nouveau nom d'application"
                       className="pr-8"
                       disabled={copyAppMutation.isPending}
                     />
@@ -722,8 +738,8 @@ export default function AppDetailsPage() {
 
                   {nameExists && (
                     <p className="text-xs text-yellow-600 dark:text-yellow-500 mt-1">
-                      An app with this name already exists. Please choose
-                      another name.
+                      Une application avec ce nom existe déjà. Veuillez choisir
+                      un autre nom.
                     </p>
                   )}
                 </div>
@@ -748,16 +764,16 @@ export default function AppDetailsPage() {
                       )}
                     <div className="absolute top-1 right-1">
                       <span className="bg-blue-100 text-blue-800 text-xs font-medium px-1.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300 text-[10px]">
-                        Recommended
+                        Recommandé
                       </span>
                     </div>
                     <div className="text-left">
                       <p className="font-medium text-xs">
-                        Copy app with history
+                        Copier avec l'historique
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Copies the entire app, including the Git version
-                        history.
+                        Copie l'intégralité de l'application, y compris
+                        l'historique Git.
                       </p>
                     </div>
                   </Button>
@@ -781,10 +797,10 @@ export default function AppDetailsPage() {
                       )}
                     <div className="text-left">
                       <p className="font-medium text-xs">
-                        Copy app without history
+                        Copier sans l'historique
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Useful if the current app has a Git-related issue.
+                        Utile si l'application a un problème lié à Git.
                       </p>
                     </div>
                   </Button>
@@ -797,7 +813,7 @@ export default function AppDetailsPage() {
                   disabled={copyAppMutation.isPending}
                   size="sm"
                 >
-                  Cancel
+                  Annuler
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -811,10 +827,10 @@ export default function AppDetailsPage() {
         >
           <DialogContent className="max-w-sm p-4">
             <DialogHeader className="pb-2">
-              <DialogTitle>Change App Location</DialogTitle>
+              <DialogTitle>Changer l'emplacement</DialogTitle>
               <DialogDescription className="text-xs">
-                Select a folder where this app will be stored. The app folder
-                name will remain the same.
+                Sélectionnez un dossier où cette application sera stockée. Le nom
+                du dossier restera inchangé.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="pt-2">
@@ -824,7 +840,7 @@ export default function AppDetailsPage() {
                 disabled={changeLocationMutation.isPending}
                 size="sm"
               >
-                Cancel
+                Annuler
               </Button>
               <Button
                 onClick={handleChangeLocation}
@@ -834,10 +850,10 @@ export default function AppDetailsPage() {
                 {changeLocationMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Moving...
+                    Déplacement...
                   </>
                 ) : (
-                  "Select Folder"
+                  "Choisir un dossier"
                 )}
               </Button>
             </DialogFooter>
@@ -848,10 +864,10 @@ export default function AppDetailsPage() {
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <DialogContent className="max-w-sm p-4">
             <DialogHeader className="pb-2">
-              <DialogTitle>Delete "{selectedApp.name}"?</DialogTitle>
+              <DialogTitle>Supprimer « {selectedApp.name} » ?</DialogTitle>
               <DialogDescription className="text-xs">
-                This action is irreversible. All app files and chat history will
-                be permanently deleted.
+                Cette action est irréversible. Tous les fichiers et l'historique
+                du chat seront définitivement supprimés.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="flex justify-end gap-2 pt-2">
@@ -861,7 +877,7 @@ export default function AppDetailsPage() {
                 disabled={isDeleting}
                 size="sm"
               >
-                Cancel
+                Annuler
               </Button>
               <Button
                 variant="destructive"
@@ -892,10 +908,10 @@ export default function AppDetailsPage() {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Deleting...
+                    Suppression...
                   </>
                 ) : (
-                  "Delete App"
+                  "Supprimer l'application"
                 )}
               </Button>
             </DialogFooter>
