@@ -348,6 +348,42 @@ export const queryKeys = {
     /** Single-skill key by name */
     detail: ({ name }: { name: string }) => ["skills", "detail", name] as const,
   },
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Token Analytics
+  // ─────────────────────────────────────────────────────────────────────────────
+  tokenAnalytics: {
+    /** Base key – invalidate to refetch everything token-analytics-related */
+    all: ["token-analytics"] as const,
+    /** Token usage statistics with optional filters */
+    statistics: (filter?: {
+      conversationId?: string;
+      skillName?: string;
+      modelType?: string;
+      startDate?: number;
+      endDate?: number;
+    }) => ["token-analytics", "statistics", filter] as const,
+    /** Top consumers by type */
+    topConsumers: (params: {
+      type: "conversation" | "skill" | "model";
+      limit?: number;
+      startDate?: number;
+      endDate?: number;
+    }) => ["token-analytics", "top-consumers", params] as const,
+    /** Cost breakdown */
+    cost: (filter?: {
+      conversationId?: string;
+      startDate?: number;
+      endDate?: number;
+    }) => ["token-analytics", "cost", filter] as const,
+    /** Usage over time */
+    usageOverTime: (params: {
+      conversationId?: string;
+      granularity: "hour" | "day" | "week" | "month";
+      startDate?: number;
+      endDate?: number;
+    }) => ["token-analytics", "usage-over-time", params] as const,
+  },
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -416,4 +452,7 @@ export type AppQueryKey =
   | QueryKeyOf<
       (typeof queryKeys.smartContext)[keyof typeof queryKeys.smartContext]
     >
-  | QueryKeyOf<(typeof queryKeys.skills)[keyof typeof queryKeys.skills]>;
+  | QueryKeyOf<(typeof queryKeys.skills)[keyof typeof queryKeys.skills]>
+  | QueryKeyOf<
+      (typeof queryKeys.tokenAnalytics)[keyof typeof queryKeys.tokenAnalytics]
+    >;
