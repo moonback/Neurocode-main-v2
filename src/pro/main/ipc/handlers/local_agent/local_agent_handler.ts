@@ -96,6 +96,11 @@ import {
   maybeAppendRetryReplayForRetry,
 } from "./retry_replay_utils";
 import { setChatSummaryTool } from "./tools/set_chat_summary";
+import {
+  initializeTokenOptimization,
+  allocateTokenBudget,
+  trackTokenUsage,
+} from "@/token-optimization";
 
 const logger = log.scope("local_agent_handler");
 const PLANNING_QUESTIONNAIRE_TOOL_NAME = "planning_questionnaire";
@@ -605,6 +610,32 @@ export async function handleLocalAgentStream(
     const maxOutputTokens = await getMaxTokens(settings.selectedModel);
     const temperature = await getTemperature(settings.selectedModel);
 
+    // Initialize token optimization system
+    initializeTokenOptimization();
+
+    // Allocate token budget for this request
+    // Determine task complexity based on message history and tools
+    const taskComplexity =
+      messageHistory.length > 10 || Object.keys(allTools).length > 20
+        ? "complex"
+        : messageHistory.length > 5
+          ? "medium"
+          : "simple";
+
+    const tokenBudget = await allocateTokenBudget(
+      String(chat.id),
+      settings.selectedModel,
+      taskComplexity,
+      dyadRequestId,
+    );
+
+    logger.info(
+      `Allocated token budget for chat ${chat.id}: ${tokenBudget.total} tokens (${taskComplexity} task)`,
+    );
+
+    // Track token usage at the end
+    let totalTokensUsed = 0;
+
     // Run one or more generation passes. If the model emits a chat message while
     // there are still incomplete todos, we append a reminder and do another pass.
     const maxTodoFollowUpLoops = 1;
@@ -897,6 +928,21 @@ export async function handleLocalAgentStream(
                   : 0,
               );
               if (typeof totalTokens === "number") {
+                // Track token usage in the token optimization system
+                totalTokensUsed += totalTokens;
+                try {
+                  await trackTokenUsage(
+                    String(chat.id),
+                    totalTokens,
+                    dyadRequestId,
+                  );
+                  logger.info(
+                    `Tracked ${totalTokens} tokens for chat ${chat.id} (total: ${totalTokensUsed})`,
+                  );
+                } catch (err) {
+                  logger.warn("Failed to track token usage:", err);
+                }
+
                 await db
                   .update(messages)
                   .set({ maxTokensUsed: totalTokens })

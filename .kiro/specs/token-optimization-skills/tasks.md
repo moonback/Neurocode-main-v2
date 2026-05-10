@@ -357,8 +357,8 @@ This implementation plan follows a 4-phase migration strategy to add token optim
 - [x] 22. Final checkpoint - Complete system validation
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 23. Integration and wiring
-  - [ ] 23.1 Wire TokenManager into agent request pipeline
+- [-] 23. Integration and wiring
+  - [x] 23.1 Wire TokenManager into agent request pipeline
     - Integrate TokenManager into existing agent/LLM interface
     - Add optimization triggers at appropriate points
     - Ensure backward compatibility with existing functionality

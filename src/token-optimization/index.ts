@@ -97,3 +97,16 @@ export {
   type SkillFrontmatter,
   type FormatOptions,
 } from "./SkillParser";
+
+// Integration functions
+export {
+  initializeTokenOptimization,
+  getTokenManager,
+  getContextOptimizer,
+  allocateTokenBudget,
+  trackTokenUsage,
+  getConversationStats,
+  getTopConsumers,
+  calculateCost,
+  exportUsageData,
+} from "./integration";
