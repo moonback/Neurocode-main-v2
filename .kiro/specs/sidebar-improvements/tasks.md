@@ -324,13 +324,13 @@ This implementation plan breaks down the sidebar improvements feature into discr
   - Write E2E test for navigation item clicks
   - _Requirements: 20.1, 20.2, 20.3, 20.4_
 
-- [ ] 23. Write E2E tests for new features
+- [~] 23. Write E2E tests for new features
   - Write E2E test for search filtering
   - Write E2E test for preference persistence across page reloads
   - Write E2E test for keyboard navigation (Tab, Arrow keys, Enter)
   - _Requirements: 20.5, 20.6, 20.7_
 
-- [ ] 24. Create Storybook documentation
+- [~] 24. Create Storybook documentation
   - Create Storybook story for default sidebar configuration
   - Create Storybook story for each theme variant (minimal, modern, compact)
   - Create Storybook story for each icon size (small, medium, large)
@@ -339,7 +339,7 @@ This implementation plan breaks down the sidebar improvements feature into discr
   - Add interactive controls for all customization options
   - _Requirements: 18.2, 18.3, 18.4, 18.5, 18.6_
 
-- [ ] 25. Add JSDoc comments and TypeScript documentation
+- [~] 25. Add JSDoc comments and TypeScript documentation
   - Add JSDoc comments to all exported components (Sidebar, SidebarProvider, etc.)
   - Add JSDoc comments to all exported functions (useSidebar, etc.)
   - Add JSDoc comments to all TypeScript interfaces and types
@@ -348,7 +348,7 @@ This implementation plan breaks down the sidebar improvements feature into discr
   - Verify autocomplete suggestions work in IDEs
   - _Requirements: 18.1, 17.5, 17.6, 17.7_
 
-- [ ] 26. Create README documentation
+- [~] 26. Create README documentation
   - Create README.md file with overview of sidebar features
   - Document all customization options (width, icon size, themes)
   - Provide usage examples for common scenarios
@@ -358,7 +358,7 @@ This implementation plan breaks down the sidebar improvements feature into discr
   - Document API reference for all exported components and hooks
   - _Requirements: 18.7_
 
-- [ ] 27. Final checkpoint - Complete verification
+- [~] 27. Final checkpoint - Complete verification
   - Run all unit tests and verify 80% coverage target is met
   - Run all E2E tests and verify they pass
   - Run `npm run fmt` to format code
