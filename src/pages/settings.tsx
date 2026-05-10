@@ -498,6 +498,14 @@ export function AISettings() {
           compression, and adaptive selection to reduce token usage while
           maintaining quality.
         </div>
+        <div className="mt-2">
+          <a
+            href="/token-analytics"
+            className="text-sm text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+          >
+            📊 View Token Analytics Dashboard
+          </a>
+        </div>
       </div>
 
       <div id={SETTING_IDS.enableSkillCaching} className="space-y-1 mt-4">
