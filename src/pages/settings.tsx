@@ -12,7 +12,7 @@ import { ThinkingBudgetSelector } from "@/components/ThinkingBudgetSelector";
 import { useSettings } from "@/hooks/useSettings";
 import { useAppVersion } from "@/hooks/useAppVersion";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "@tanstack/react-router";
+import { useRouter, Link } from "@tanstack/react-router";
 import {
   ArrowLeft,
   Settings2,
@@ -58,7 +58,7 @@ import { SkillsSettings } from "@/components/settings/SkillsSettings";
 import { useSetAtom } from "jotai";
 import { activeSettingsSectionAtom } from "@/atoms/viewAtoms";
 import { SECTION_IDS, SETTING_IDS } from "@/lib/settingsSearchIndex";
-import { router } from "src/router";
+
 
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -490,6 +490,7 @@ export function WorkflowSettings() {
    AISettings
 ───────────────────────────────────────────────────────────────────────────── */
 export function AISettings() {
+  const router = useRouter();
   return (
     <div className="space-y-5">
       <SettingRow id={SETTING_IDS.thinkingBudget}>
@@ -525,13 +526,15 @@ export function AISettings() {
           Active l'optimisation avancée des tokens : élagage du contexte, compression et sélection adaptative.
         </p>
         <div className="mt-3">
-          <a
-            href="/token-analytics"
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-[#6c55dc] bg-[#6c55dc]/10 border border-[#6c55dc]/20 rounded-lg hover:bg-[#6c55dc]/15 transition-all shadow-sm"
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.navigate({ to: "/token-analytics" })}
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-[#6c55dc] bg-[#6c55dc]/10 border border-[#6c55dc]/20 rounded-lg hover:bg-[#6c55dc]/15 transition-all shadow-sm h-auto"
           >
             <BarChart3 className="h-3.5 w-3.5" />
             Voir le tableau de bord analytique
-          </a>
+          </Button>
         </div>
       </SettingRow>
 
