@@ -89,3 +89,11 @@ export {
   type OptimizationSuggestion,
   type AnalysisReport,
 } from "./SkillAnalyzer";
+
+export {
+  SkillParser,
+  type ParseResult,
+  type ParseError,
+  type SkillFrontmatter,
+  type FormatOptions,
+} from "./SkillParser";

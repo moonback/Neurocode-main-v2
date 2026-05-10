@@ -12,7 +12,7 @@
 
 import { db } from "@/db";
 import { skillAnalytics } from "@/db/schema";
-import { and, desc, eq, gte, sql } from "drizzle-orm";
+import { and, gte, sql } from "drizzle-orm";
 
 // =============================================================================
 // Type Definitions
@@ -127,17 +127,8 @@ export class PreloaderPredictor {
         this.usageHistory = this.usageHistory.slice(-1000);
       }
 
-      // Persist to database
-      db.insert(skillAnalytics)
-        .values({
-          skillName: event.skillName,
-          conversationId: event.conversationId || null,
-          timestamp: event.timestamp,
-          executionTime: 0, // Not tracking execution time here
-          cacheHit: event.wasPreloaded,
-          errorOccurred: false,
-        })
-        .run();
+      // Note: Database persistence is handled by SkillEngine when updating skill_analytics
+      // This method focuses on in-memory tracking for prediction
 
       // Update prediction accuracy if this was predicted
       const predictionKey = `${event.skillName}-${event.timestamp.getTime()}`;
@@ -164,27 +155,40 @@ export class PreloaderPredictor {
       const lookbackDate = new Date(
         now.getTime() - this.config.lookbackDays * 24 * 60 * 60 * 1000,
       );
-      const recentDate = new Date(
-        now.getTime() - RECENT_DAYS * 24 * 60 * 60 * 1000,
-      );
 
-      // Query database for usage patterns
+      // Query database for usage patterns using skill_analytics table
       const patterns = db
         .select({
           skillName: skillAnalytics.skillName,
-          totalUsages: sql<number>`COUNT(*)`,
-          recentUsages: sql<number>`SUM(CASE WHEN ${skillAnalytics.timestamp} >= ${recentDate.toISOString()} THEN 1 ELSE 0 END)`,
-          lastUsedAt: sql<string>`MAX(${skillAnalytics.timestamp})`,
+          totalUsages: skillAnalytics.executionCount,
+          lastUsedAt: skillAnalytics.lastUsed,
         })
         .from(skillAnalytics)
-        .where(gte(skillAnalytics.timestamp, lookbackDate))
-        .groupBy(skillAnalytics.skillName)
+        .where(
+          and(
+            gte(skillAnalytics.executionCount, this.config.minUsageThreshold),
+            // Only include skills used within lookback period
+            skillAnalytics.lastUsed !== null
+              ? gte(skillAnalytics.lastUsed, lookbackDate)
+              : sql`1=1`,
+          ),
+        )
         .all();
 
       // Calculate scores for each pattern
       const usagePatterns: UsagePattern[] = patterns.map((pattern) => {
         const totalUsages = Number(pattern.totalUsages);
-        const recentUsages = Number(pattern.recentUsages);
+        
+        // Estimate recent usages based on total and recency
+        const daysSinceLastUse = pattern.lastUsedAt
+          ? (now.getTime() - new Date(pattern.lastUsedAt).getTime()) / (24 * 60 * 60 * 1000)
+          : this.config.lookbackDays;
+        
+        // If used recently, assume higher recent usage
+        const recentUsages = daysSinceLastUse < RECENT_DAYS
+          ? Math.ceil(totalUsages * 0.3) // Assume 30% of usage is recent
+          : 0;
+
         const averageUsagePerDay = totalUsages / this.config.lookbackDays;
 
         // Calculate usage frequency score (0-1)
@@ -208,7 +212,7 @@ export class PreloaderPredictor {
         };
       });
 
-      // Filter by minimum usage threshold
+      // Filter by minimum usage threshold and sort by weighted score
       return usagePatterns
         .filter((p) => p.totalUsages >= this.config.minUsageThreshold)
         .sort((a, b) => {

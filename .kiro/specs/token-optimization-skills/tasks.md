@@ -313,8 +313,8 @@ This implementation plan follows a 4-phase migration strategy to add token optim
     - **Property 43: Redundancy Detection**
     - **Validates: Requirements 10.5**
 
-- [ ] 20. Implement dynamic context window utilization
-  - [ ] 20.1 Enhance TokenManager with dynamic window management
+- [-] 20. Implement dynamic context window utilization
+  - [x] 20.1 Enhance TokenManager with dynamic window management
     - Implement context window detection per model type
     - Implement adaptive context inclusion based on window size
     - Implement response token reservation
@@ -333,8 +333,8 @@ This implementation plan follows a 4-phase migration strategy to add token optim
     - **Property 47: Insufficient Context Feedback**
     - **Validates: Requirements 11.6**
 
-- [ ] 21. Implement skill parsing and formatting utilities
-  - [ ] 21.1 Create skill parser and formatter
+- [x] 21. Implement skill parsing and formatting utilities
+  - [x] 21.1 Create skill parser and formatter
     - Implement `parseSkill()` to parse skill files into structured objects
     - Implement `formatSkill()` to pretty-print skill objects back to files
     - Implement `validateSkill()` against schema
@@ -354,7 +354,7 @@ This implementation plan follows a 4-phase migration strategy to add token optim
     - **Property 51: Schema Validation**
     - **Validates: Requirements 12.6**
 
-- [ ] 22. Final checkpoint - Complete system validation
+- [x] 22. Final checkpoint - Complete system validation
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 23. Integration and wiring

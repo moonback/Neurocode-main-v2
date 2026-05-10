@@ -55,7 +55,14 @@ describe('SkillEngine - Preloading', () => {
         name: 'test-skill',
         content: 'test content',
       } as Skill,
-      loadingTime: 10,
+      metrics: {
+        skillName: 'test-skill',
+        operation: 'loadSkill',
+        startTime: Date.now(),
+        endTime: Date.now() + 10,
+        durationMs: 10,
+        success: true,
+      },
     });
 
     engine = new SkillEngine(loader, {
@@ -245,7 +252,15 @@ describe('SkillEngine - Preloading', () => {
       vi.spyOn(loader, 'loadSkill').mockResolvedValueOnce({
         success: false,
         error: 'Load failed',
-        loadingTime: 0,
+        metrics: {
+          skillName: 'failing-skill',
+          operation: 'loadSkill',
+          startTime: Date.now(),
+          endTime: Date.now(),
+          durationMs: 0,
+          success: false,
+          error: 'Load failed',
+        },
       });
 
       const result = await engine.executeSkill('failing-skill', {
@@ -260,7 +275,15 @@ describe('SkillEngine - Preloading', () => {
       vi.spyOn(loader, 'loadSkill').mockResolvedValueOnce({
         success: false,
         error: 'Load failed',
-        loadingTime: 0,
+        metrics: {
+          skillName: 'failing-skill',
+          operation: 'loadSkill',
+          startTime: Date.now(),
+          endTime: Date.now(),
+          durationMs: 0,
+          success: false,
+          error: 'Load failed',
+        },
       });
 
       await engine.executeSkill('failing-skill', { test: 'input' });

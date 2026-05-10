@@ -944,4 +944,145 @@ export class TokenManager {
       return [];
     }
   }
+
+  // =============================================================================
+  // Dynamic Context Window Management Methods
+  // =============================================================================
+
+  /**
+   * Detect the context window size for a specific model type
+   *
+   * @param model - The model to detect context window for
+   * @returns The context window size in tokens
+   *
+   * Requirements: 11.1
+   */
+  async detectContextWindow(model: LargeLanguageModel): Promise<number> {
+    const config = await this.getModelConfig(model);
+    return config.contextWindow;
+  }
+
+  /**
+   * Adaptively include context based on available window size
+   *
+   * @param model - The model being used
+   * @param currentContextTokens - Current context size in tokens
+   * @param availableContent - Array of content items with their token counts
+   * @returns Array of content items that should be included
+   *
+   * Requirements: 11.2, 11.3, 11.5
+   */
+  async adaptiveInclude<T extends { tokens: number }>(
+    model: LargeLanguageModel,
+    currentContextTokens: number,
+    availableContent: T[],
+  ): Promise<T[]> {
+    const contextWindow = await this.detectContextWindow(model);
+    const remainingSpace = contextWindow - currentContextTokens;
+
+    // If we have plenty of space (>50% of window remaining), include more content
+    if (remainingSpace > contextWindow * 0.5) {
+      // Include all content that fits
+      const included: T[] = [];
+      let totalTokens = 0;
+
+      for (const item of availableContent) {
+        if (totalTokens + item.tokens <= remainingSpace) {
+          included.push(item);
+          totalTokens += item.tokens;
+        }
+      }
+
+      return included;
+    }
+
+    // If we have limited space (<50% remaining), be more selective
+    // Sort by tokens (prefer smaller items to fit more)
+    const sortedContent = [...availableContent].sort(
+      (a, b) => a.tokens - b.tokens,
+    );
+
+    const included: T[] = [];
+    let totalTokens = 0;
+
+    for (const item of sortedContent) {
+      if (totalTokens + item.tokens <= remainingSpace) {
+        included.push(item);
+        totalTokens += item.tokens;
+      }
+    }
+
+    return included;
+  }
+
+  /**
+   * Reserve tokens for expected response length
+   *
+   * @param model - The model being used
+   * @param expectedResponseLength - Expected response length category
+   * @returns Number of tokens to reserve for the response
+   *
+   * Requirements: 11.4
+   */
+  async reserveResponseTokens(
+    model: LargeLanguageModel,
+    expectedResponseLength: "short" | "medium" | "long" | "very-long",
+  ): Promise<number> {
+    const config = await this.getModelConfig(model);
+    const maxOutput = config.maxOutputTokens;
+
+    // Reserve tokens based on expected response length
+    switch (expectedResponseLength) {
+      case "short":
+        return Math.min(1_000, Math.floor(maxOutput * 0.1)); // 10% or 1k, whichever is smaller
+      case "medium":
+        return Math.min(4_000, Math.floor(maxOutput * 0.25)); // 25% or 4k, whichever is smaller
+      case "long":
+        return Math.min(8_000, Math.floor(maxOutput * 0.5)); // 50% or 8k, whichever is smaller
+      case "very-long":
+        return Math.min(16_000, Math.floor(maxOutput * 0.75)); // 75% or 16k, whichever is smaller
+      default:
+        return Math.min(4_000, Math.floor(maxOutput * 0.25)); // Default to medium
+    }
+  }
+
+  /**
+   * Provide feedback when tasks require more context than available
+   *
+   * @param model - The model being used
+   * @param requiredTokens - Number of tokens required for the task
+   * @param currentContextTokens - Current context size in tokens
+   * @returns Feedback message explaining the limitation
+   *
+   * Requirements: 11.6
+   */
+  async provideFeedback(
+    model: LargeLanguageModel,
+    requiredTokens: number,
+    currentContextTokens: number,
+  ): Promise<string> {
+    const contextWindow = await this.detectContextWindow(model);
+    const availableSpace = contextWindow - currentContextTokens;
+
+    if (requiredTokens <= availableSpace) {
+      return "Sufficient context window available for this task.";
+    }
+
+    const deficit = requiredTokens - availableSpace;
+    const deficitPercentage = ((deficit / requiredTokens) * 100).toFixed(1);
+
+    const modelType = `${model.provider}/${model.name}`;
+
+    return (
+      `Insufficient context window for this task. ` +
+      `Model ${modelType} has a context window of ${contextWindow.toLocaleString()} tokens. ` +
+      `Current context uses ${currentContextTokens.toLocaleString()} tokens, ` +
+      `leaving ${availableSpace.toLocaleString()} tokens available. ` +
+      `This task requires ${requiredTokens.toLocaleString()} tokens ` +
+      `(${deficit.toLocaleString()} tokens short, ${deficitPercentage}% deficit). ` +
+      `Consider: (1) using a model with a larger context window, ` +
+      `(2) reducing the amount of context included, or ` +
+      `(3) breaking the task into smaller subtasks.`
+    );
+  }
 }
