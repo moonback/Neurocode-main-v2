@@ -35,3 +35,29 @@ export {
 } from "./CompressionEngine";
 
 export { AdaptiveSelector } from "./AdaptiveSelector";
+
+export {
+  SkillLoader,
+  type SkillMetadata,
+  type LoadingMetrics,
+  type LoadResult,
+} from "./SkillLoader";
+
+export {
+  SkillCache,
+  type CacheStats,
+  type CacheInfo,
+} from "./SkillCache";
+
+export {
+  ResultCache,
+  type SkillInput,
+  type CachedResult,
+} from "./ResultCache";
+
+export {
+  SkillEngine,
+  type ExecutionContext,
+  type ExecutionResult,
+  type SkillEngineConfig,
+} from "./SkillEngine";

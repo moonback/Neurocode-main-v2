@@ -128,8 +128,8 @@ This implementation plan follows a 4-phase migration strategy to add token optim
 
 ### Phase 2: Skill Engine Enhancements
 
-- [ ] 8. Implement Skill Loader with lazy loading
-  - [ ] 8.1 Create SkillLoader class with metadata-only loading
+- [x] 8. Implement Skill Loader with lazy loading
+  - [x] 8.1 Create SkillLoader class with metadata-only loading
     - Implement `loadMetadata()` to load skill metadata without full content
     - Implement `loadSkill()` with lazy content loading
     - Implement async loading without blocking main thread
@@ -145,8 +145,8 @@ This implementation plan follows a 4-phase migration strategy to add token optim
     - **Property 16: Loading Time Measurement**
     - **Validates: Requirements 4.6**
 
-- [ ] 9. Implement Skill Cache with LRU eviction
-  - [ ] 9.1 Create SkillCache class with LRU implementation
+- [x] 9. Implement Skill Cache with LRU eviction
+  - [x] 9.1 Create SkillCache class with LRU implementation
     - Implement `get()`, `put()`, `has()`, `evict()`, `clear()` methods
     - Implement time-based eviction (10-minute idle timeout)
     - Implement `getStats()` for cache hit/miss tracking
@@ -158,7 +158,7 @@ This implementation plan follows a 4-phase migration strategy to add token optim
   - [ ]\* 9.3 Write property test for cache performance
     - **Property 22: Cache Performance**
     - **Validates: Requirements 5.7**
-  - [ ] 9.4 Implement deterministic result caching
+  - [x] 9.4 Implement deterministic result caching
     - Add result caching for deterministic skills with identical inputs
     - Implement cache key generation based on skill name and inputs
     - _Requirements: 5.6_
@@ -166,8 +166,8 @@ This implementation plan follows a 4-phase migration strategy to add token optim
     - **Property 21: Deterministic Result Caching**
     - **Validates: Requirements 5.6**
 
-- [ ] 10. Implement Skill Engine execution optimization
-  - [ ] 10.1 Enhance SkillEngine with execution context reuse
+- [x] 10. Implement Skill Engine execution optimization
+  - [x] 10.1 Enhance SkillEngine with execution context reuse
     - Implement `executeSkill()` with context reuse
     - Implement parallel execution for independent skills
     - Implement concurrency limiting to prevent resource exhaustion
@@ -183,7 +183,7 @@ This implementation plan follows a 4-phase migration strategy to add token optim
   - [ ]\* 10.4 Write property test for error reporting
     - **Property 20: Execution Error Reporting**
     - **Validates: Requirements 5.5**
-  - [ ] 10.5 Implement unload functionality
+  - [x] 10.5 Implement unload functionality
     - Implement `unloadSkill()` to remove skills from memory
     - Ensure unload-reload idempotence
     - _Requirements: 4.7_
