@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { setupTest } from './helpers/setup';
 
 test.describe('Token Analytics Dashboard', () => {
   test.beforeEach(async ({ page }) => {
-    await setupTest(page);
+    // Navigate to home page first
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
   });
 
   test('should display the analytics dashboard', async ({ page }) => {

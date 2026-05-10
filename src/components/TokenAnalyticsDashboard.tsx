@@ -58,7 +58,12 @@ export function TokenAnalyticsDashboard() {
   });
 
   const { data: topConversations, isLoading: convLoading } = useQuery({
-    queryKey: queryKeys.tokenAnalytics.topConsumers('conversation', filters.dateRange),
+    queryKey: queryKeys.tokenAnalytics.topConsumers({
+      type: 'conversation',
+      limit: 10,
+      startDate: filters.dateRange.startDate,
+      endDate: filters.dateRange.endDate,
+    }),
     queryFn: () =>
       ipc.tokenAnalytics.getTopConsumers({
         type: 'conversation',
@@ -69,7 +74,12 @@ export function TokenAnalyticsDashboard() {
   });
 
   const { data: topSkills, isLoading: skillsLoading } = useQuery({
-    queryKey: queryKeys.tokenAnalytics.topConsumers('skill', filters.dateRange),
+    queryKey: queryKeys.tokenAnalytics.topConsumers({
+      type: 'skill',
+      limit: 10,
+      startDate: filters.dateRange.startDate,
+      endDate: filters.dateRange.endDate,
+    }),
     queryFn: () =>
       ipc.tokenAnalytics.getTopConsumers({
         type: 'skill',
@@ -80,7 +90,12 @@ export function TokenAnalyticsDashboard() {
   });
 
   const { data: topModels, isLoading: modelsLoading } = useQuery({
-    queryKey: queryKeys.tokenAnalytics.topConsumers('model', filters.dateRange),
+    queryKey: queryKeys.tokenAnalytics.topConsumers({
+      type: 'model',
+      limit: 5,
+      startDate: filters.dateRange.startDate,
+      endDate: filters.dateRange.endDate,
+    }),
     queryFn: () =>
       ipc.tokenAnalytics.getTopConsumers({
         type: 'model',
@@ -319,7 +334,7 @@ export function TokenAnalyticsDashboard() {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percentage }) => `${name}: ${percentage.toFixed(1)}%`}
+                label={(entry: any) => `${entry.name}: ${entry.percentage.toFixed(1)}%`}
                 outerRadius={100}
                 fill="#8884d8"
                 dataKey="value"
