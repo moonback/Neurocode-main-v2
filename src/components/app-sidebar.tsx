@@ -15,6 +15,10 @@ import {
   SidebarMenuItem,
   SidebarRail,
   SidebarTrigger,
+  SidebarHeader,
+  SidebarSearchFilter,
+  PinnedItemsSection,
+  RecentItemsSection,
 } from "@/components/ui/sidebar";
 import { ChatList } from "./ChatList";
 import { AppList } from "./AppList";
@@ -24,26 +28,31 @@ import { LibraryList } from "./LibraryList";
 // Menu items.
 const items = [
   {
+    id: "apps",
     title: "Apps",
     to: "/",
     icon: Home,
   },
   {
+    id: "chat",
     title: "Chat",
     to: "/chat",
     icon: Inbox,
   },
   {
+    id: "settings",
     title: "Config",
     to: "/settings",
     icon: Settings,
   },
   {
+    id: "library",
     title: "Librairie",
     to: "/library",
     icon: BookOpen,
   },
   {
+    id: "hub",
     title: "Hub",
     to: "/hub",
     icon: Store,
@@ -60,10 +69,26 @@ type HoverState =
   | "no-hover";
 
 export function AppSidebar() {
-  const { state, toggleSidebar } = useSidebar(); // retrieve current sidebar state
+  const { state, toggleSidebar, pinnedItems, recentItems, addRecentItem } =
+    useSidebar(); // retrieve current sidebar state
   const [hoverState, setHoverState] = useState<HoverState>("no-hover");
   const expandedByHover = useRef(false);
   const [isDropdownOpen] = useAtom(dropdownOpenAtom);
+
+  // Update recent items when path changes
+  const routerState = useRouterState();
+  const pathname = routerState.location.pathname;
+
+  useEffect(() => {
+    const currentItem = items.find(
+      (item) =>
+        (item.to === "/" && pathname === "/") ||
+        (item.to !== "/" && pathname.startsWith(item.to)),
+    );
+    if (currentItem) {
+      addRecentItem(currentItem.id);
+    }
+  }, [pathname, addRecentItem]);
 
   useEffect(() => {
     if (hoverState.startsWith("start-hover") && state === "collapsed") {
@@ -82,7 +107,7 @@ export function AppSidebar() {
     }
   }, [hoverState, toggleSidebar, state, setHoverState, isDropdownOpen]);
 
-  const routerState = useRouterState();
+
   const isAppRoute =
     routerState.location.pathname === "/" ||
     routerState.location.pathname.startsWith("/app-details");
@@ -120,6 +145,10 @@ export function AppSidebar() {
         }
       }}
     >
+      <SidebarHeader>
+        <SidebarSearchFilter />
+      </SidebarHeader>
+
       <SidebarContent className="overflow-hidden">
         <div className="flex mt-8">
           {/* Left Column: Menu items */}
@@ -133,6 +162,42 @@ export function AppSidebar() {
           </div>
           {/* Right Column: Chat List Section */}
           <div className="w-[272px]">
+            {state === "expanded" && (
+              <>
+                <PinnedItemsSection>
+                  {items
+                    .filter((item) => pinnedItems.includes(item.id))
+                    .map((item) => (
+                      <SidebarMenuItem
+                        key={item.id}
+                        id={item.id}
+                        title={item.title}
+                      >
+                        <SidebarMenuButton as={Link} to={item.to}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                </PinnedItemsSection>
+                <RecentItemsSection>
+                  {items
+                    .filter((item) => recentItems.includes(item.id))
+                    .map((item) => (
+                      <SidebarMenuItem
+                        key={item.id}
+                        id={item.id}
+                        title={item.title}
+                      >
+                        <SidebarMenuButton as={Link} to={item.to}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                </RecentItemsSection>
+              </>
+            )}
             <AppList show={selectedItem === "Apps"} />
             <ChatList show={selectedItem === "Chat"} />
             <SettingsList show={selectedItem === "Settings"} />
@@ -153,6 +218,20 @@ function AppIcons({
 }) {
   const routerState = useRouterState();
   const pathname = routerState.location.pathname;
+  const { itemOrder, reorderItems } = useSidebar();
+
+  // Sort items based on saved order (Requirement 6.3)
+  const sortedItems = React.useMemo(() => {
+    if (itemOrder.length === 0) return items;
+    const itemMap = new Map(items.map((item) => [item.id, item]));
+    const sorted = itemOrder
+      .map((id) => itemMap.get(id))
+      .filter((item): item is (typeof items)[0] => !!item);
+
+    // Add any items not in itemOrder at the end
+    const remaining = items.filter((item) => !itemOrder.includes(item.id));
+    return [...sorted, ...remaining];
+  }, [itemOrder]);
 
   return (
     // When collapsed: only show the main menu
@@ -160,14 +239,14 @@ function AppIcons({
       {/* <SidebarGroupLabel>Dyad</SidebarGroupLabel> */}
 
       <SidebarGroupContent>
-        <SidebarMenu>
-          {items.map((item) => {
+        <SidebarMenu sortable onReorder={reorderItems}>
+          {sortedItems.map((item) => {
             const isActive =
               (item.to === "/" && pathname === "/") ||
               (item.to !== "/" && pathname.startsWith(item.to));
 
             return (
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem key={item.id} title={item.title} id={item.id}>
                 <SidebarMenuButton
                   as={Link}
                   to={item.to}

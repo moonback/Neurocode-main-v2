@@ -1,9 +1,15 @@
 import * as React from "react";
 import { type VariantProps, cva } from "class-variance-authority";
-import { Menu } from "lucide-react";
+import { Menu, Search, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -13,6 +19,23 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
   type IconSize,
   type ThemeVariant,
   loadWidth,
@@ -21,6 +44,11 @@ import {
   saveIconSize,
   loadTheme,
   saveTheme,
+  loadAllPreferences,
+  saveRecentItems,
+  savePinnedItems,
+  saveItemOrder,
+  saveExpandedGroups,
 } from "@/lib/sidebar-preferences";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
@@ -54,9 +82,35 @@ type SidebarContextProps = {
   reorderItems: (newOrder: string[]) => void;
   expandedGroups: Set<string>;
   toggleGroup: (groupId: string) => void;
+  focusedIndex: number;
+  setFocusedIndex: (index: number) => void;
+  badges: Record<string, number>;
+  setBadge: (itemId: string, count: number) => void;
 };
 
 const SidebarContext = React.createContext<SidebarContextProps | null>(null);
+
+const SidebarGroupContext = React.createContext<{
+  id?: string;
+  collapsible: boolean;
+  isExpanded: boolean;
+  toggle: () => void;
+} | null>(null);
+
+function useSidebarGroup() {
+  const context = React.useContext(SidebarGroupContext);
+  if (!context) {
+    return {
+      id: undefined,
+      collapsible: false,
+      isExpanded: true,
+      toggle: () => {
+        /* noop */
+      },
+    };
+  }
+  return context;
+}
 
 function useSidebar() {
   const context = React.useContext(SidebarContext);
@@ -116,6 +170,8 @@ function SidebarProvider({
   const [expandedGroups, setExpandedGroups] = React.useState<Set<string>>(
     new Set(),
   );
+  const [focusedIndex, setFocusedIndex] = React.useState<number>(-1);
+  const [badges, setBadges] = React.useState<Record<string, number>>({});
 
   // Width setter with constraints (Requirement 2.3, 2.4)
   const setWidth = React.useCallback((newWidth: number) => {
@@ -125,13 +181,22 @@ function SidebarProvider({
     _setWidth(constrainedWidth);
   }, []);
 
-  // Restore saved width from PreferenceStore on mount (Requirement 2.6)
+  // Restore all preferences from PreferenceStore on mount (Requirement 2.6, 4.6, 5.7, 8.6, 16.5, 16.6)
   React.useEffect(() => {
-    const savedWidth = loadWidth();
-    setWidth(savedWidth);
-    _setIconSize(loadIconSize());
-    _setTheme(loadTheme());
-  }, [setWidth]);
+    const prefs = loadAllPreferences();
+    _setWidth(prefs.width);
+    _setIconSize(prefs.iconSize);
+    _setTheme(prefs.theme);
+    setRecentItems(prefs.recentItems);
+    setPinnedItems(prefs.pinnedItems);
+    setItemOrder(prefs.itemOrder);
+    setExpandedGroups(new Set(prefs.expandedGroups));
+  }, []);
+
+  // Persist Width (Requirement 2.5)
+  React.useEffect(() => {
+    saveWidth(width);
+  }, [width]);
 
   // Persist IconSize (Requirement 4.4)
   const setIconSize = React.useCallback((size: IconSize) => {
@@ -144,6 +209,26 @@ function SidebarProvider({
     _setTheme(variant);
     saveTheme(variant);
   }, []);
+
+  // Persist Recent Items
+  React.useEffect(() => {
+    saveRecentItems(recentItems);
+  }, [recentItems]);
+
+  // Persist Pinned Items (Requirement 16.5)
+  React.useEffect(() => {
+    savePinnedItems(pinnedItems);
+  }, [pinnedItems]);
+
+  // Persist Item Order (Requirement 16.4)
+  React.useEffect(() => {
+    saveItemOrder(itemOrder);
+  }, [itemOrder]);
+
+  // Persist Expanded Groups (Requirement 16.6)
+  React.useEffect(() => {
+    saveExpandedGroups(Array.from(expandedGroups));
+  }, [expandedGroups]);
 
   // Helper to add a recent item
   const addRecentItem = React.useCallback((itemId: string) => {
@@ -163,6 +248,10 @@ function SidebarProvider({
         return [...prev, itemId];
       }
     });
+  }, []);
+
+  const setBadge = React.useCallback((itemId: string, count: number) => {
+    setBadges((prev) => ({ ...prev, [itemId]: count }));
   }, []);
 
   // Helper to reorder items
@@ -245,6 +334,10 @@ function SidebarProvider({
       reorderItems,
       expandedGroups,
       toggleGroup,
+      focusedIndex,
+      setFocusedIndex,
+      badges,
+      setBadge,
     }),
     [
       state,
@@ -269,6 +362,10 @@ function SidebarProvider({
       reorderItems,
       expandedGroups,
       toggleGroup,
+      focusedIndex,
+      setFocusedIndex,
+      badges,
+      setBadge,
     ],
   );
 
@@ -298,28 +395,71 @@ function SidebarProvider({
   );
 }
 
+const sidebarThemeVariants = cva(
+  "group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm",
+  {
+    variants: {
+      theme: {
+        minimal: "bg-sidebar border-none shadow-none",
+        modern: "bg-gradient-to-b from-sidebar-accent/10 to-sidebar shadow-sm",
+        compact: "bg-sidebar [&_[data-sidebar=menu-button]]:!p-1.5 [&_[data-sidebar=group]]:!p-1.5 [&_[data-sidebar=header]]:!p-1.5 [&_[data-sidebar=footer]]:!p-1.5",
+      },
+    },
+    defaultVariants: {
+      theme: "modern",
+    },
+  }
+);
+
 function Sidebar({
   side = "left",
   variant = "sidebar",
   collapsible = "offcanvas",
   className,
   children,
+  onKeyDown,
   ...props
 }: React.ComponentProps<"div"> & {
   side?: "left" | "right";
   variant?: "sidebar" | "floating" | "inset";
   collapsible?: "offcanvas" | "icon" | "none";
 }) {
-  const { state } = useSidebar();
+  const { state, theme, focusedIndex, setFocusedIndex } = useSidebar();
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    onKeyDown?.(event);
+
+    const menuButtons = Array.from(
+      document.querySelectorAll('[data-sidebar="menu-button"]'),
+    ) as HTMLElement[];
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      const nextIndex = (focusedIndex + 1) % menuButtons.length;
+      setFocusedIndex(nextIndex);
+      menuButtons[nextIndex]?.focus();
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      const nextIndex =
+        (focusedIndex - 1 + menuButtons.length) % menuButtons.length;
+      setFocusedIndex(nextIndex);
+      menuButtons[nextIndex]?.focus();
+    } else if (event.key === "Enter" && focusedIndex !== -1) {
+      event.preventDefault();
+      menuButtons[focusedIndex]?.click();
+    }
+  };
 
   if (collapsible === "none") {
     return (
       <div
         data-slot="sidebar"
         className={cn(
-          "bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col",
+          "text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col",
+          sidebarThemeVariants({ theme }),
           className,
         )}
+        onKeyDown={handleKeyDown}
         {...props}
       >
         {children}
@@ -335,6 +475,7 @@ function Sidebar({
       data-variant={variant}
       data-side={side}
       data-slot="sidebar"
+      onKeyDown={handleKeyDown}
     >
       {/* This is what handles the sidebar gap */}
       {/* Smooth animation system: width transitions with 200ms ease-in-out (Requirement 1.1, 1.2) */}
@@ -369,7 +510,7 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
+          className={sidebarThemeVariants({ theme })}
         >
           {children}
         </div>
@@ -552,6 +693,50 @@ function SidebarHeader({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+function SidebarSearchFilter({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  const { searchQuery, setSearchQuery, state } = useSidebar();
+  const [localQuery, setLocalQuery] = React.useState(searchQuery);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(localQuery);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [localQuery, setSearchQuery]);
+
+  if (state === "collapsed") return null;
+
+  return (
+    <div className={cn("relative flex items-center", className)} {...props}>
+      <Search className="absolute left-2.5 size-4 text-muted-foreground" />
+      <SidebarInput
+        value={localQuery}
+        onChange={(e) => setLocalQuery(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            setLocalQuery("");
+          }
+        }}
+        placeholder="Search..."
+        className="pl-8 pr-8"
+      />
+      {localQuery && (
+        <button
+          onClick={() => setLocalQuery("")}
+          className="absolute right-2 text-muted-foreground hover:text-foreground"
+          aria-label="Clear search"
+          type="button"
+        >
+          <X className="size-4" />
+        </button>
+      )}
+    </div>
+  );
+}
+
 function SidebarFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -591,35 +776,73 @@ function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function SidebarGroup({ className, ...props }: React.ComponentProps<"div">) {
+function SidebarGroup({
+  className,
+  id,
+  collapsible = false,
+  ...props
+}: React.ComponentProps<"div"> & {
+  id?: string;
+  collapsible?: boolean;
+}) {
+  const { expandedGroups, toggleGroup } = useSidebar();
+  const isExpanded = id && collapsible ? expandedGroups.has(id) : true;
+
+  const toggle = React.useCallback(() => {
+    if (id && collapsible) {
+      toggleGroup(id);
+    }
+  }, [id, collapsible, toggleGroup]);
+
   return (
-    <div
-      data-slot="sidebar-group"
-      data-sidebar="group"
-      className={cn("relative flex w-full min-w-0 flex-col p-2", className)}
-      {...props}
-    />
+    <SidebarGroupContext.Provider
+      value={{ id, collapsible, isExpanded, toggle }}
+    >
+      <div
+        data-slot="sidebar-group"
+        data-sidebar="group"
+        data-collapsible={collapsible}
+        data-state={isExpanded ? "expanded" : "collapsed"}
+        className={cn("relative flex w-full min-w-0 flex-col p-2", className)}
+        {...props}
+      />
+    </SidebarGroupContext.Provider>
   );
 }
 
 function SidebarGroupLabel<T extends React.ElementType = "div">({
   className,
   as,
+  children,
   ...props
 }: { as?: T } & Omit<React.ComponentPropsWithoutRef<T>, "as">) {
   const Comp = as || "div";
+  const { collapsible, isExpanded, toggle } = useSidebarGroup();
 
   return (
     <Comp
       data-slot="sidebar-group-label"
       data-sidebar="group-label"
       className={cn(
-        "text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 ease-in-out focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        "text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity,background-color] duration-200 ease-in-out focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
         "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
+        collapsible &&
+          "cursor-pointer hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
         className,
       )}
+      onClick={collapsible ? toggle : undefined}
       {...props}
-    />
+    >
+      {children}
+      {collapsible && (
+        <ChevronDown
+          className={cn(
+            "ml-auto transition-transform duration-200",
+            isExpanded ? "rotate-0" : "-rotate-90",
+          )}
+        />
+      )}
+    </Comp>
   );
 }
 
@@ -650,35 +873,154 @@ function SidebarGroupContent({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { isExpanded } = useSidebarGroup();
+
   return (
     <div
       data-slot="sidebar-group-content"
       data-sidebar="group-content"
-      className={cn("w-full text-sm", className)}
+      className={cn(
+        "w-full text-sm transition-all duration-200 ease-in-out overflow-hidden",
+        isExpanded ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0",
+        className,
+      )}
       {...props}
     />
   );
 }
 
-function SidebarMenu({ className, ...props }: React.ComponentProps<"ul">) {
-  return (
+function SidebarMenu({
+  className,
+  children,
+  sortable = false,
+  onReorder,
+  ...props
+}: React.ComponentProps<"ul"> & {
+  sortable?: boolean;
+  onReorder?: (itemIds: string[]) => void;
+}) {
+  const { searchQuery } = useSidebar();
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const filteredChildren = React.useMemo(() => {
+    if (!searchQuery) return children;
+
+    return React.Children.toArray(children).filter((child) => {
+      if (!React.isValidElement(child)) return true;
+      const element = child as React.ReactElement<{
+        title?: string;
+        "data-title"?: string;
+      }>;
+      const title = element.props.title || element.props["data-title"];
+      if (title && typeof title === "string") {
+        return title.toLowerCase().includes(searchQuery.toLowerCase());
+      }
+      return true;
+    });
+  }, [children, searchQuery]);
+
+  const itemIds = React.useMemo(() => {
+    return React.Children.toArray(filteredChildren)
+      .map((child) => {
+        if (React.isValidElement(child)) {
+          return (child.props as { id?: string }).id;
+        }
+        return null;
+      })
+      .filter((id): id is string => !!id);
+  }, [filteredChildren]);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = itemIds.indexOf(active.id as string);
+      const newIndex = itemIds.indexOf(over.id as string);
+      const newOrder = arrayMove(itemIds, oldIndex, newIndex);
+      onReorder?.(newOrder);
+    }
+  };
+
+  const list = (
     <ul
       data-slot="sidebar-menu"
       data-sidebar="menu"
       className={cn("flex w-full min-w-0 flex-col gap-1", className)}
       {...props}
-    />
+    >
+      {filteredChildren}
+    </ul>
+  );
+
+  if (!sortable) return list;
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
+        {list}
+      </SortableContext>
+    </DndContext>
   );
 }
 
-function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
-  return (
+function SidebarMenuItem({
+  className,
+  title,
+  id,
+  ...props
+}: React.ComponentProps<"li"> & { title?: string; id?: string }) {
+  const { togglePinItem, pinnedItems } = useSidebar();
+  const isPinned = id ? pinnedItems.includes(id) : false;
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: id ?? "" });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : undefined,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const content = (
     <li
+      ref={setNodeRef}
+      style={style}
       data-slot="sidebar-menu-item"
       data-sidebar="menu-item"
+      data-title={title}
       className={cn("group/menu-item relative", className)}
+      {...attributes}
+      {...listeners}
       {...props}
     />
+  );
+
+  if (!id) return content;
+
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger render={content} />
+      <ContextMenuContent>
+        <ContextMenuItem onClick={() => togglePinItem(id)}>
+          {isPinned ? "Unpin from Sidebar" : "Pin to Sidebar"}
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }
 
@@ -722,13 +1064,15 @@ function SidebarMenuButton<T extends React.ElementType = "button">({
   size = "default",
   tooltip,
   className,
+  onFocus,
+  onBlur,
   ...props
 }: { as?: T } & Omit<React.ComponentPropsWithoutRef<T>, "as"> & {
     isActive?: boolean;
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
   } & VariantProps<typeof sidebarMenuButtonVariants>) {
   const Comp = as || "button";
-  const { state, iconSize: contextIconSize } = useSidebar();
+  const { state, iconSize: contextIconSize, setFocusedIndex } = useSidebar();
 
   const iconSizeClasses =
     contextIconSize === "small"
@@ -748,6 +1092,18 @@ function SidebarMenuButton<T extends React.ElementType = "button">({
         iconSizeClasses,
         className,
       )}
+      onFocus={(e) => {
+        onFocus?.(e as React.FocusEvent<Element>);
+        const menuButtons = Array.from(
+          document.querySelectorAll('[data-sidebar="menu-button"]'),
+        );
+        const index = menuButtons.indexOf(e.currentTarget);
+        setFocusedIndex(index);
+      }}
+      onBlur={(e) => {
+        onBlur?.(e as React.FocusEvent<Element>);
+        setFocusedIndex(-1);
+      }}
       {...props}
     />
   );
@@ -808,23 +1164,38 @@ function SidebarMenuAction<T extends React.ElementType = "button">({
 
 function SidebarMenuBadge({
   className,
+  count,
+  variant = "default",
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & {
+  count?: number;
+  variant?: "default" | "outline" | "destructive";
+}) {
+  if (count === undefined || count <= 0) return null;
+
+  const displayCount = count > 99 ? "99+" : count;
+
   return (
     <div
       data-slot="sidebar-menu-badge"
       data-sidebar="menu-badge"
       className={cn(
-        "text-sidebar-foreground pointer-events-none absolute right-1 flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-xs font-medium tabular-nums select-none",
+        "text-sidebar-foreground pointer-events-none absolute right-1 flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-[10px] font-medium tabular-nums select-none transition-all",
         "peer-hover/menu-button:text-sidebar-accent-foreground peer-data-[active=true]/menu-button:text-sidebar-accent-foreground",
         "peer-data-[size=sm]/menu-button:top-1",
         "peer-data-[size=default]/menu-button:top-1.5",
         "peer-data-[size=lg]/menu-button:top-2.5",
-        "group-data-[collapsible=icon]:hidden",
+        variant === "default" && "bg-sidebar-accent text-sidebar-accent-foreground",
+        variant === "outline" && "border border-sidebar-border bg-transparent",
+        variant === "destructive" && "bg-destructive text-destructive-foreground",
+        // Position badge over the icon when collapsed (Requirement 7.1)
+        "group-data-[collapsible=icon]:top-1 group-data-[collapsible=icon]:right-1 group-data-[collapsible=icon]:h-4 group-data-[collapsible=icon]:min-w-4 group-data-[collapsible=icon]:text-[8px] group-data-[collapsible=icon]:px-0.5",
         className,
       )}
       {...props}
-    />
+    >
+      {displayCount}
+    </div>
   );
 }
 
@@ -926,6 +1297,42 @@ function SidebarMenuSubButton<T extends React.ElementType = "a">({
   );
 }
 
+function PinnedItemsSection({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"div">) {
+  const { pinnedItems } = useSidebar();
+  if (pinnedItems.length === 0) return null;
+
+  return (
+    <SidebarGroup id="pinned-items" className={className} {...props}>
+      <SidebarGroupLabel>Pinned</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>{children}</SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  );
+}
+
+function RecentItemsSection({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"div">) {
+  const { recentItems } = useSidebar();
+  if (recentItems.length === 0) return null;
+
+  return (
+    <SidebarGroup id="recent-items" className={className} {...props}>
+      <SidebarGroupLabel>Recent</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>{children}</SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  );
+}
+
 export {
   Sidebar,
   SidebarContent,
@@ -948,8 +1355,11 @@ export {
   SidebarMenuSubItem,
   SidebarProvider,
   SidebarRail,
+  SidebarSearchFilter,
   SidebarSeparator,
   SidebarTrigger,
+  PinnedItemsSection,
+  RecentItemsSection,
   useSidebar,
 };
 
