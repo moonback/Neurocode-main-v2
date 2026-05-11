@@ -71,7 +71,7 @@ export function registerTokenCountHandlers() {
       // Count system prompt tokens
       // Migration on read converts "agent" to "build", so no need to check for it here
       const themePrompt = await getThemePromptById(chat.app?.themeId ?? null);
-      let systemPrompt = constructSystemPrompt({
+      let systemPrompt = await constructSystemPrompt({
         aiRules: await readAiRules(getDyadAppPath(chat.app.path)),
         chatMode:
           settings.selectedChatMode === "local-agent"
@@ -79,6 +79,7 @@ export function registerTokenCountHandlers() {
             : settings.selectedChatMode,
         enableTurboEditsV2: isTurboEditsV2Enabled(settings),
         themePrompt,
+        model: settings.selectedModel,
       });
       let supabaseContext = "";
 

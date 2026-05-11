@@ -4,8 +4,13 @@ import log from "electron-log";
 import { TURBO_EDITS_V2_SYSTEM_PROMPT } from "../pro/main/prompts/turbo_edits_v2_prompt";
 import { constructLocalAgentPrompt } from "./local_agent_prompt";
 import { constructPlanModePrompt } from "./plan_mode_prompt";
+import { LargeLanguageModel } from "@/lib/schemas";
+import { findLanguageModel } from "@/ipc/utils/findLanguageModel";
 
 const logger = log.scope("system_prompt");
+
+// Context window threshold for determining small vs large models
+const SMALL_MODEL_CONTEXT_WINDOW_THRESHOLD = 32000;
 
 export const THINKING_PROMPT = `
 # Thinking Process
@@ -468,6 +473,63 @@ export const BUILD_SYSTEM_POSTFIX = `Directory names MUST be all lower-case (src
 > Do NOT use <dyad-file> tags in the output. ALWAYS use <dyad-write> to generate code.
 `;
 
+// ============================================================================
+// CONCISE PROMPT VARIANTS FOR SMALL MODELS (< 32k context window)
+// ============================================================================
+
+export const BUILD_SYSTEM_PREFIX_CONCISE = `
+<role>You are NeuroCode, an AI editor that creates and modifies web applications. You assist users by making changes to their code in real-time.</role>
+
+# Tools
+
+Use these tags for code operations:
+- <dyad-write path="file.tsx" description="...">code</dyad-write> - Create or update files
+- <dyad-rename from="old.tsx" to="new.tsx"></dyad-rename> - Rename files
+- <dyad-delete path="file.tsx"></dyad-delete> - Delete files
+- <dyad-add-dependency packages="package1 package2"></dyad-add-dependency> - Install packages (space-separated)
+
+# Guidelines
+
+- Reply in the user's language
+- Only edit files related to the user's request
+- Create complete, working code - no placeholders or TODOs
+- Use ONE <dyad-write> block per file
+- Write the entire file content
+- Close all tags properly
+- Set chat summary: <dyad-chat-summary>brief title</dyad-chat-summary>
+
+# Workflow
+
+1. Explain changes briefly (1-2 sentences)
+2. Use <dyad-write> for all code changes
+3. Provide concise summary after changes
+`;
+
+export const BUILD_SYSTEM_PROMPT_CONCISE = `${BUILD_SYSTEM_PREFIX_CONCISE}
+
+[[AI_RULES]]
+
+${BUILD_SYSTEM_POSTFIX}`;
+
+const ASK_MODE_SYSTEM_PROMPT_CONCISE = `
+# Role
+You are a helpful AI assistant for web development. Provide clear explanations and guidance.
+
+# Guidelines
+
+- Reply in the user's language
+- Provide clear, accurate explanations
+- Answer technical questions
+- Explain concepts accessibly
+- **NEVER write or generate code**
+- **DO NOT use <dyad-write>, <dyad-edit>, or any <dyad-*> tags**
+- Focus on explaining concepts and approaches
+
+[[AI_RULES]]
+
+**CRITICAL: YOU MUST NOT WRITE CODE. Explain concepts only.**
+`;
+
 export const BUILD_SYSTEM_PROMPT = `${BUILD_SYSTEM_PREFIX}
 
 [[AI_RULES]]
@@ -641,13 +703,14 @@ When tools are used, provide a brief human-readable summary of the information g
 When tools are not used, simply state: **"Ok, looks like I don't need any tools, I can start building."**
 `;
 
-export const constructSystemPrompt = ({
+export const constructSystemPrompt = async ({
   aiRules,
   chatMode = "build",
   enableTurboEditsV2,
   themePrompt,
   readOnly,
   basicAgentMode,
+  model,
 }: {
   aiRules: string | undefined;
   chatMode?: "build" | "ask" | "local-agent" | "plan";
@@ -657,6 +720,8 @@ export const constructSystemPrompt = ({
   readOnly?: boolean;
   /** If true, use basic agent mode (free tier with limited tools) */
   basicAgentMode?: boolean;
+  /** Optional model information for size-based prompt optimization */
+  model?: LargeLanguageModel;
 }) => {
   if (chatMode === "plan") {
     return constructPlanModePrompt(aiRules, themePrompt);
@@ -669,9 +734,19 @@ export const constructSystemPrompt = ({
     });
   }
 
+  // Detect if model is small (< 32k context window)
+  let isSmallModel = false;
+  if (model) {
+    const modelOption = await findLanguageModel(model);
+    if (modelOption?.contextWindow) {
+      isSmallModel = modelOption.contextWindow < SMALL_MODEL_CONTEXT_WINDOW_THRESHOLD;
+    }
+  }
+
   let systemPrompt = getSystemPromptForChatMode({
     chatMode,
     enableTurboEditsV2,
+    isSmallModel,
   });
   systemPrompt = systemPrompt.replace(
     "[[AI_RULES]]",
@@ -689,15 +764,21 @@ export const constructSystemPrompt = ({
 export const getSystemPromptForChatMode = ({
   chatMode,
   enableTurboEditsV2,
+  isSmallModel = false,
 }: {
   chatMode: "build" | "ask";
   enableTurboEditsV2: boolean;
+  isSmallModel?: boolean;
 }) => {
   if (chatMode === "ask") {
-    return ASK_MODE_SYSTEM_PROMPT;
+    // Use concise variant for small models, full prompt for large models
+    return isSmallModel ? ASK_MODE_SYSTEM_PROMPT_CONCISE : ASK_MODE_SYSTEM_PROMPT;
   }
+  
+  // Build mode: use concise variant for small models
+  const basePrompt = isSmallModel ? BUILD_SYSTEM_PROMPT_CONCISE : BUILD_SYSTEM_PROMPT;
   return (
-    BUILD_SYSTEM_PROMPT +
+    basePrompt +
     (enableTurboEditsV2 ? TURBO_EDITS_V2_SYSTEM_PROMPT : "")
   );
 };

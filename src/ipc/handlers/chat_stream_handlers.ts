@@ -776,12 +776,13 @@ ${componentSnippet}
         );
 
         // Migration on read converts "agent" to "build", so no need to check for it here
-        let systemPrompt = constructSystemPrompt({
+        let systemPrompt = await constructSystemPrompt({
           aiRules,
           chatMode: settings.selectedChatMode,
           enableTurboEditsV2: isTurboEditsV2Enabled(settings),
           themePrompt,
           basicAgentMode: isBasicAgentMode(settings),
+          model: settings.selectedModel,
         });
 
         // Add information about mentioned apps if any
@@ -1189,12 +1190,13 @@ This conversation includes one or more image attachments. When the user uploads 
           !mentionedAppsCodebases.length
         ) {
           // Reconstruct system prompt for local-agent read-only mode
-          const readOnlySystemPrompt = constructSystemPrompt({
+          const readOnlySystemPrompt = await constructSystemPrompt({
             aiRules,
             chatMode: "local-agent",
             enableTurboEditsV2: false,
             themePrompt,
             readOnly: true,
+            model: settings.selectedModel,
           });
 
           // Return value indicates success/failure for quota tracking.
@@ -1233,11 +1235,12 @@ This conversation includes one or more image attachments. When the user uploads 
           !mentionedAppsCodebases.length
         ) {
           // Reconstruct system prompt for plan mode
-          const planModeSystemPrompt = constructSystemPrompt({
+          const planModeSystemPrompt = await constructSystemPrompt({
             aiRules,
             chatMode: "plan",
             enableTurboEditsV2: false,
             themePrompt,
+            model: settings.selectedModel,
           });
 
           await handleLocalAgentStream(event, req, abortController, {
@@ -1327,12 +1330,13 @@ This conversation includes one or more image attachments. When the user uploads 
                   execute: async () => "",
                 },
               },
-              systemPromptOverride: constructSystemPrompt({
+              systemPromptOverride: await constructSystemPrompt({
                 aiRules: await readAiRules(
                   getDyadAppPath(updatedChat.app.path),
                 ),
                 chatMode: "build",
                 enableTurboEditsV2: false,
+                model: settings.selectedModel,
               }),
               files: files,
               dyadDisableFiles: true,
