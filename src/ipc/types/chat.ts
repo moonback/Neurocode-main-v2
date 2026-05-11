@@ -86,6 +86,7 @@ export const ChatStreamParamsSchema = z.object({
   redo: z.boolean().optional(),
   attachments: z.array(ChatAttachmentSchema).optional(),
   selectedComponents: z.array(ComponentSelectionSchema).optional(),
+  agentId: z.string().optional(),
 });
 
 export type ChatStreamParams = z.infer<typeof ChatStreamParamsSchema>;

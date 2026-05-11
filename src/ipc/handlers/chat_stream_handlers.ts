@@ -63,6 +63,7 @@ import { validateChatContext } from "../utils/context_paths_utils";
 import { getProviderOptions, getAiHeaders } from "../utils/provider_options";
 import { mcpServers } from "../../db/schema";
 import { requireMcpToolConsent } from "../utils/mcp_consent";
+import { AgentRegistry } from "../../pro/main/agent_registry/AgentRegistry";
 
 import { handleLocalAgentStream } from "../../pro/main/ipc/handlers/local_agent/local_agent_handler";
 import { trackTokenUsage } from "../../token-optimization/integration";
@@ -775,7 +776,6 @@ ${componentSnippet}
           `Theme for app ${updatedChat.app.id}: ${updatedChat.app.themeId ?? "none"}, prompt length: ${themePrompt.length} chars`,
         );
 
-        // Migration on read converts "agent" to "build", so no need to check for it here
         let systemPrompt = constructSystemPrompt({
           aiRules,
           chatMode: settings.selectedChatMode,
@@ -783,6 +783,16 @@ ${componentSnippet}
           themePrompt,
           basicAgentMode: isBasicAgentMode(settings),
         });
+        
+        // Agent override: if an agentId is provided, use its system prompt
+        if (req.agentId) {
+          const registry = AgentRegistry.getInstance();
+          const agent = await registry.findById(req.agentId);
+          if (agent) {
+            logger.info(`Using custom agent system prompt for ${agent.name}`);
+            systemPrompt = agent.systemPrompt;
+          }
+        }
 
         // Add information about mentioned apps if any
         if (otherAppsCodebaseInfo) {

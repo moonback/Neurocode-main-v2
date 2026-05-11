@@ -249,6 +249,7 @@ export interface QueuedMessageItem {
   prompt: string;
   attachments?: FileAttachment[];
   selectedComponents?: ComponentSelection[];
+  agentId?: string | null;
 }
 
 // Map<chatId, QueuedMessageItem[]>
@@ -273,3 +274,6 @@ export const matchedSkillsAtom = atom<MatchedSkill[]>([]);
 // These skills will not be suggested again until the app is restarted.
 // Map<skillName, timestamp>
 export const dismissedSkillsAtom = atom<Map<string, number>>(new Map());
+
+// Tracks the selected custom agent ID for the current chat
+export const selectedAgentIdAtom = atom<string | null>(null);

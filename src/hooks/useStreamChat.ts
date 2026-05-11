@@ -85,11 +85,12 @@ export function useStreamChat({
 
   const streamMessage = useCallback(
     async ({
-      prompt,
       chatId,
+      prompt,
       redo,
       attachments,
       selectedComponents,
+      agentId,
       onSettled,
     }: {
       prompt: string;
@@ -97,6 +98,7 @@ export function useStreamChat({
       redo?: boolean;
       attachments?: FileAttachment[];
       selectedComponents?: ComponentSelection[];
+      agentId?: string | null;
       onSettled?: (result: { success: boolean }) => void;
     }) => {
       if (
@@ -174,6 +176,7 @@ export function useStreamChat({
             redo,
             attachments: convertedAttachments,
             selectedComponents: selectedComponents ?? [],
+            agentId: agentId ?? undefined,
           },
           {
             onChunk: ({
@@ -446,7 +449,7 @@ export function useStreamChat({
     (
       id: string,
       updates: Partial<
-        Pick<QueuedMessageItem, "prompt" | "attachments" | "selectedComponents">
+        Pick<QueuedMessageItem, "prompt" | "attachments" | "selectedComponents" | "agentId">
       >,
     ) => {
       if (chatId === undefined) return;

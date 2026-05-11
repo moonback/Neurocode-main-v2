@@ -109,6 +109,8 @@ import { matchedSkillsAtom, dismissedSkillsAtom } from "@/atoms/chatAtoms";
 import type { MatchedSkill } from "@/skills/types";
 import { PromptOptimizerButton } from "./PromptOptimizerButton";
 import { AISuggestionsStrip } from "./AISuggestionsStrip";
+import { AgentSelector } from "./AgentSelector";
+import { selectedAgentIdAtom } from "@/atoms/chatAtoms";
 
 const showTokenBarAtom = atom(true);
 
@@ -182,6 +184,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
   const { refreshAppIframe } = useRunApp();
   const { navigate } = useRouter();
   const setSelectedChatId = useSetAtom(selectedChatIdAtom);
+  const [selectedAgentId, setSelectedAgentId] = useAtom(selectedAgentIdAtom);
   const { invalidateChats } = useChats(appId);
   const [imageGeneratorOpen, setImageGeneratorOpen] = useState(false);
   const handleOpenImageGenerator = useCallback(() => {
@@ -328,6 +331,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
     clearAttachments();
     setSelectedComponents([]);
     setVisualEditingSelectedComponent(null);
+    setSelectedAgentId(null);
     if (previewIframeRef?.contentWindow) {
       previewIframeRef.contentWindow.postMessage(
         { type: "clear-dyad-component-overlays" },
@@ -392,6 +396,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
           prompt: inputValue,
           attachments,
           selectedComponents: componentsToSave,
+          agentId: selectedAgentId,
         });
       }
       // Load the message content into the input
@@ -400,6 +405,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
       replaceAttachments(msg.attachments ?? []);
       setIsRestoringQueuedSelection(true);
       setSelectedComponents(msg.selectedComponents ?? []);
+      setSelectedAgentId(msg.agentId ?? null);
       // Reset visual editing target to avoid stale toolbar state
       setVisualEditingSelectedComponent(null);
       // Set editing mode
@@ -507,6 +513,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
         chatId: newChatId,
         attachments,
         redo: false,
+        agentId: selectedAgentId,
       });
       clearAttachments();
       posthog.capture("chat:submit", { chatMode: settings?.selectedChatMode });
@@ -568,6 +575,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
           chatId,
           attachments,
           redo: false,
+          agentId: selectedAgentId,
           selectedComponents:
             selectedComponents && selectedComponents.length > 0
               ? selectedComponents
@@ -592,6 +600,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
         prompt: currentInput,
         attachments,
         selectedComponents: componentsToSend,
+        agentId: selectedAgentId,
       });
       resetEditingState();
       return;
@@ -604,6 +613,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
         prompt: currentInput,
         attachments,
         selectedComponents: componentsToSend,
+        agentId: selectedAgentId,
       });
       if (queued) {
         // Only clear input, attachments, and components on successful queue
@@ -643,6 +653,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
       attachments,
       redo: false,
       selectedComponents: componentsToSend,
+      agentId: selectedAgentId,
     });
     clearAttachments();
     posthog.capture("chat:submit", { chatMode: settings?.selectedChatMode });
@@ -1120,7 +1131,9 @@ export function ChatInput({ chatId }: { chatId?: number }) {
             )}
           </div>
           <div className="px-2 flex items-center justify-between pb-0.5 pt-0.5">
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
+              <AgentSelector />
+              <div className="w-px h-3 bg-border/50 mx-1" />
               <ChatInputControls showContextFilesPicker={false} />
             </div>
 
