@@ -57,6 +57,7 @@ export { imageGenerationContracts } from "./image_generation";
 export { smartContextContracts } from "./smart-context";
 export { skillContracts } from "./skills";
 export { tokenAnalyticsContracts } from "./token-analytics";
+export { multiAgentContracts, multiAgentEvents } from "./multi_agent";
 
 // =============================================================================
 // Client Exports
@@ -93,6 +94,7 @@ export { imageGenerationClient } from "./image_generation";
 export { smartContextClient } from "./smart-context";
 export { skillClient } from "./skills";
 export { tokenAnalyticsClient } from "./token-analytics";
+export { multiAgentClient, multiAgentEventClient } from "./multi_agent";
 
 // =============================================================================
 // Type Exports
@@ -374,6 +376,16 @@ export type {
   GetUsageOverTimeParams,
 } from "./token-analytics";
 
+// Multi-agent types
+export type {
+  AgentCapability,
+  AgentDefinition,
+  CreateAgent,
+  UpdateAgent,
+  TaskDelegation,
+  AgentTaskResult,
+} from "./multi_agent";
+
 // =============================================================================
 // Schema Exports (for validation in handlers/components)
 // =============================================================================
@@ -437,6 +449,7 @@ import { imageGenerationClient } from "./image_generation";
 import { smartContextClient } from "./smart-context";
 import { skillClient } from "./skills";
 import { tokenAnalyticsClient } from "./token-analytics";
+import { multiAgentClient, multiAgentEventClient } from "./multi_agent";
 
 /**
  * Unified IPC client with all domains organized by namespace.
@@ -499,6 +512,7 @@ export const ipc = {
   smartContext: smartContextClient,
   skills: skillClient,
   tokenAnalytics: tokenAnalyticsClient,
+  multiAgent: multiAgentClient,
 
   // Event clients for main->renderer pub/sub
   events: {
@@ -507,5 +521,6 @@ export const ipc = {
     mcp: mcpEventClient,
     system: systemEventClient,
     misc: miscEventClient,
+    multiAgent: multiAgentEventClient,
   },
 } as const;

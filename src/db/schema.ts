@@ -325,3 +325,77 @@ export const skillAnalytics = sqliteTable("skill_analytics", {
   errorCount: integer("error_count").notNull().default(0),
   lastUsed: integer("last_used", { mode: "timestamp" }),
 });
+
+// --- Multi-Agent Workflow tables ---
+
+export const customAgents = sqliteTable("custom_agents", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  description: text("description"),
+  systemPrompt: text("system_prompt").notNull(),
+  toolConfiguration: text("tool_configuration", { mode: "json" }).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+export const agentExecutions = sqliteTable("agent_executions", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  agentId: integer("agent_id").references(() => customAgents.id, {
+    onDelete: "set null",
+  }),
+  agentName: text("agent_name").notNull(),
+  taskId: text("task_id").notNull(),
+  status: text("status", {
+    enum: ["pending", "running", "completed", "failed"],
+  }).notNull(),
+  input: text("input").notNull(),
+  output: text("output"),
+  error: text("error"),
+  tokenUsage: integer("token_usage"),
+  executionTime: integer("execution_time"), // in milliseconds
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  finishedAt: integer("finished_at", { mode: "timestamp" }),
+});
+
+export const agentMessages = sqliteTable("agent_messages", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  executionId: integer("execution_id")
+    .notNull()
+    .references(() => agentExecutions.id, { onDelete: "cascade" }),
+  senderId: text("sender_id").notNull(),
+  receiverId: text("receiver_id").notNull(),
+  content: text("content").notNull(),
+  messageType: text("message_type").notNull(), // e.g., "request", "response", "broadcast"
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+// Relations for Multi-Agent tables
+export const customAgentsRelations = relations(customAgents, ({ many }) => ({
+  executions: many(agentExecutions),
+}));
+
+export const agentExecutionsRelations = relations(
+  agentExecutions,
+  ({ one, many }) => ({
+    agent: one(customAgents, {
+      fields: [agentExecutions.agentId],
+      references: [customAgents.id],
+    }),
+    messages: many(agentMessages),
+  }),
+);
+
+export const agentMessagesRelations = relations(agentMessages, ({ one }) => ({
+  execution: one(agentExecutions, {
+    fields: [agentMessages.executionId],
+    references: [agentExecutions.id],
+  }),
+}));

@@ -204,6 +204,13 @@
       "when": 1778426321207,
       "tag": "0028_ambiguous_norrin_radd",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "6",
+      "when": 1778488451619,
+      "tag": "0029_broad_beast",
+      "breakpoints": true
     }
   ]
 }
