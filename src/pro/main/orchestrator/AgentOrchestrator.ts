@@ -39,8 +39,10 @@ export class AgentOrchestrator {
   private registry = AgentRegistry.getInstance();
 
   async createPlan(userRequest: string): Promise<ExecutionPlan> {
+    logger.info("Creating execution plan for request:", userRequest);
     const agents = await this.registry.getAll();
     const settings = readSettings();
+    logger.info(`Found ${agents.length} available agents. Using model: ${settings.selectedModel.provider}/${settings.selectedModel.name}`);
     const { modelClient } = await getModelClient(settings.selectedModel, settings);
 
     const agentList = agents
@@ -73,10 +75,12 @@ Example output:
 Return ONLY the JSON object.`;
 
     try {
+      logger.info("Sending plan generation request to LLM...");
       const { text } = await generateText({
         model: modelClient.model,
         prompt: prompt,
       });
+      logger.info("Received plan from LLM:", text);
 
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
@@ -97,6 +101,7 @@ Return ONLY the JSON object.`;
   }
 
   async executePlan(plan: ExecutionPlan, sender: WebContents): Promise<void> {
+    logger.info(`Executing plan with ${plan.tasks.length} tasks.`);
     const completedTasks = new Set<string>();
     const runningTasks = new Set<string>();
     const failedTasks = new Set<string>();

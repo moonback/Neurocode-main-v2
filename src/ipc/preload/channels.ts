@@ -46,6 +46,7 @@ import { imageGenerationContracts } from "../types/image_generation";
 import { smartContextContracts } from "../types/smart-context";
 import { skillContracts } from "../types/skills";
 import { tokenAnalyticsContracts } from "../types/token-analytics";
+import { multiAgentContracts, multiAgentEvents } from "../types/multi_agent";
 
 // =============================================================================
 // Invoke Channels (derived from all contracts)
@@ -107,6 +108,7 @@ export const VALID_INVOKE_CHANNELS = [
   ...getInvokeChannels(smartContextContracts),
   ...getInvokeChannels(skillContracts),
   ...getInvokeChannels(tokenAnalyticsContracts),
+  ...getInvokeChannels(multiAgentContracts),
 
   // Codebase export
   "codebase:export",
@@ -138,6 +140,7 @@ export const VALID_RECEIVE_CHANNELS = [
   ...getReceiveChannels(systemEvents),
   ...getReceiveChannels(miscEvents),
   ...getReceiveChannels(planEvents),
+  ...getReceiveChannels(multiAgentEvents),
 ] as const;
 
 // =============================================================================

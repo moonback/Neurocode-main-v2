@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ipc } from "@/ipc/client";
+import { ipc } from "@/ipc/types";
 import { Bot, Plus, MoreVertical, Trash2, Edit } from "lucide-react";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
@@ -26,10 +26,8 @@ export function AgentList({ show }: AgentListProps) {
           <Bot className="h-5 w-5 text-primary" />
           Agents
         </h2>
-        <Button size="icon" variant="ghost" asChild>
-          <Link to="/agents/new">
-            <Plus className="h-4 w-4" />
-          </Link>
+        <Button size="icon" variant="ghost" as={Link} to="/agents">
+          <Plus className="h-4 w-4" />
         </Button>
       </div>
 
@@ -45,7 +43,7 @@ export function AgentList({ show }: AgentListProps) {
           </div>
         ) : (
           <div className="space-y-1">
-            {agents?.map((agent) => (
+            {agents?.map((agent: any) => (
               <div
                 key={agent.id}
                 className="group flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors"
