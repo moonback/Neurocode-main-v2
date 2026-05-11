@@ -96,6 +96,11 @@ export const multiAgentContracts = {
     input: TaskDelegationSchema,
     output: AgentTaskResultSchema,
   }),
+  respondToCommunication: defineContract({
+    channel: "multi-agent:respond-to-communication",
+    input: z.object({ requestId: z.string(), content: z.string() }),
+    output: z.void(),
+  }),
 } as const;
 
 // =============================================================================
@@ -121,6 +126,8 @@ export const multiAgentEvents = {
       senderId: z.string(),
       receiverId: z.string(),
       content: z.string(),
+      messageType: z.enum(["request", "response", "info", "broadcast"]),
+      requestId: z.string().optional(),
     }),
   }),
 } as const;

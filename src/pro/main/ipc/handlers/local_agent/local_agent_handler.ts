@@ -101,6 +101,7 @@ import {
   allocateTokenBudget,
   trackTokenUsage,
 } from "@/token-optimization";
+import { AgentCommunicationChannel } from "../../../agent_communication/AgentCommunicationChannel";
 
 const logger = log.scope("local_agent_handler");
 const PLANNING_QUESTIONNAIRE_TOOL_NAME = "planning_questionnaire";
@@ -572,6 +573,21 @@ export async function handleLocalAgentStream(
       },
       onWarningMessage: (message) => {
         warningMessages.push(message);
+      },
+      sendMessage: (receiverId, content, type) => {
+        AgentCommunicationChannel.getInstance().send(event.sender, {
+          senderId: "local-agent", // Or agentId from req if available
+          receiverId,
+          content,
+          messageType: type,
+        });
+      },
+      requestFromAgent: (receiverId, content) => {
+        return AgentCommunicationChannel.getInstance().request(event.sender, {
+          senderId: "local-agent",
+          receiverId,
+          content,
+        });
       },
     };
 

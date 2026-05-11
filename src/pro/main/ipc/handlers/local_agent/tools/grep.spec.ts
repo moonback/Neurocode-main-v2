@@ -105,6 +105,8 @@ function deepHello() {
       requireConsent: vi.fn().mockResolvedValue(true),
       appendUserMessage: vi.fn(),
       onUpdateTodos: vi.fn(),
+      sendMessage: vi.fn(),
+      requestFromAgent: vi.fn(),
     };
   });
 

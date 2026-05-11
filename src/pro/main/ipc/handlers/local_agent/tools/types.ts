@@ -95,6 +95,18 @@ export interface AgentContext {
    * Queues a warning toast to be shown to the user when the turn completes.
    */
   onWarningMessage?: (message: string) => void;
+  /**
+   * Send a message to another agent.
+   */
+  sendMessage: (
+    receiverId: string,
+    content: string,
+    type?: "info" | "broadcast",
+  ) => void;
+  /**
+   * Send a request to another agent and wait for a response.
+   */
+  requestFromAgent: (receiverId: string, content: string) => Promise<string>;
 }
 
 // ============================================================================

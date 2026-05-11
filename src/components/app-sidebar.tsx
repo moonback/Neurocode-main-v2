@@ -4,6 +4,7 @@ import {
   Settings,
   Store,
   BookOpen,
+  Bot,
 } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -26,11 +27,13 @@ import { ChatList } from "./ChatList";
 import { AppList } from "./AppList";
 import { SettingsList } from "./SettingsList";
 import { LibraryList } from "./LibraryList";
+import { AgentList } from "./AgentList";
 
 // Menu items
 const items = [
   { title: "Apps", label: "Apps", to: "/", icon: Home },
   { title: "Chat", label: "Chat", to: "/chat", icon: Inbox },
+  { title: "Agents", label: "Agents", to: "/agents", icon: Bot },
   { title: "Config", label: "Réglages", to: "/settings", icon: Settings },
   { title: "Librairie", label: "Librairie", to: "/library", icon: BookOpen },
   { title: "Hub", label: "Hub", to: "/hub", icon: Store },
@@ -40,6 +43,7 @@ const items = [
 type HoverState =
   | "start-hover:app"
   | "start-hover:chat"
+  | "start-hover:agents"
   | "start-hover:settings"
   | "start-hover:library"
   | "clear-hover"
@@ -81,6 +85,8 @@ export function AppSidebar() {
     selectedItem = "Apps";
   } else if (hoverState === "start-hover:chat") {
     selectedItem = "Chat";
+  } else if (hoverState === "start-hover:agents") {
+    selectedItem = "Agents";
   } else if (hoverState === "start-hover:settings") {
     selectedItem = "Settings";
   } else if (hoverState === "start-hover:library") {
@@ -88,6 +94,7 @@ export function AppSidebar() {
   } else if (state === "expanded") {
     if (isAppRoute) selectedItem = "Apps";
     else if (isChatRoute) selectedItem = "Chat";
+    else if (routerState.location.pathname.startsWith("/agents")) selectedItem = "Agents";
     else if (isSettingsRoute) selectedItem = "Settings";
     else if (isLibraryRoute) selectedItem = "Library";
   }
@@ -116,6 +123,7 @@ export function AppSidebar() {
           <div className="w-[272px]">
             <AppList show={selectedItem === "Apps"} />
             <ChatList show={selectedItem === "Chat"} />
+            <AgentList show={selectedItem === "Agents"} />
             <SettingsList show={selectedItem === "Settings"} />
             <LibraryList show={selectedItem === "Library"} />
           </div>
@@ -165,6 +173,7 @@ function AppIcons({
                   onMouseEnter={() => {
                     if (item.title === "Apps") onHoverChange("start-hover:app");
                     else if (item.title === "Chat") onHoverChange("start-hover:chat");
+                    else if (item.title === "Agents") onHoverChange("start-hover:agents");
                     else if (item.title === "Config") onHoverChange("start-hover:settings");
                     else if (item.title === "Librairie") onHoverChange("start-hover:library");
                   }}

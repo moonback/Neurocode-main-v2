@@ -3,12 +3,19 @@ import { createTypedHandler } from "./base";
 import { multiAgentContracts } from "../types/multi_agent";
 import { AgentRegistry } from "../../pro/main/agent_registry/AgentRegistry";
 import { AgentOrchestrator } from "../../pro/main/orchestrator/AgentOrchestrator";
+import { AgentCommunicationChannel } from "../../pro/main/agent_communication/AgentCommunicationChannel";
 import { DyadError, DyadErrorKind } from "@/errors/dyad_error";
 
 const logger = log.scope("multi_agent_handlers");
 const registry = AgentRegistry.getInstance();
+const commChannel = AgentCommunicationChannel.getInstance();
 
 export function registerMultiAgentHandlers(): void {
+  // ── respondToCommunication ──────────────────────────────────────────────
+  createTypedHandler(multiAgentContracts.respondToCommunication, async (_event, { requestId, content }) => {
+    commChannel.handleResponse(requestId, content);
+  });
+
   // ── getAgents ─────────────────────────────────────────────────────────────
   createTypedHandler(multiAgentContracts.getAgents, async () => {
     try {
@@ -78,7 +85,7 @@ export function registerMultiAgentHandlers(): void {
       return {
         taskId: params.taskId,
         agentId: params.agentId,
-        status: "completed",
+        status: "completed" as const,
         output: "Multi-agent workflow execution completed.",
       };
     } catch (err) {

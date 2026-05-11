@@ -12,6 +12,8 @@ import log from "electron-log";
 import { getModelClient } from "../../../ipc/utils/get_model_client";
 import { readSettings } from "../../../main/settings";
 import { generateText } from "ai";
+import { AgentCommunicationChannel } from "../agent_communication/AgentCommunicationChannel";
+import { AgentContextManager } from "../context_manager/AgentContextManager";
 import { DyadError, DyadErrorKind } from "../../../errors/dyad_error";
 import { safeSend } from "../../../ipc/utils/safe_sender";
 import { WebContents } from "electron";
@@ -237,14 +239,28 @@ Return ONLY the JSON object.`;
     input: string,
     sender: WebContents,
   ): Promise<Omit<AgentTaskResult, "taskId" | "agentId">> {
-    // Simplified agent loop for MVP
     const settings = readSettings();
     const { modelClient } = await getModelClient(settings.selectedModel, settings);
+    const contextManager = AgentContextManager.getInstance();
+    const context = contextManager.getContext(agent.id);
+
+    const messages: any[] = [
+      ...context.history,
+      { role: "user", content: input },
+    ];
 
     const { text, usage } = await generateText({
       model: modelClient.model,
       system: agent.systemPrompt,
-      prompt: input,
+      messages: messages,
+    });
+
+    contextManager.updateContext(agent.id, {
+      history: [
+        { role: "user", content: input },
+        { role: "assistant", content: text },
+      ],
+      tokenUsage: usage.totalTokens,
     });
 
     return {

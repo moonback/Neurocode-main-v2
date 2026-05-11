@@ -11,6 +11,7 @@ import { themesRoute } from "./routes/themes";
 import { promptsRoute } from "./routes/prompts";
 import { mediaRoute } from "./routes/media";
 import { tokenAnalyticsRoute } from "./routes/token-analytics";
+import { agentsRoute } from "./routes/agents";
 
 const routeTree = rootRoute.addChildren([
   homeRoute,
@@ -23,6 +24,7 @@ const routeTree = rootRoute.addChildren([
   appDetailsRoute,
   settingsRoute.addChildren([providerSettingsRoute]),
   tokenAnalyticsRoute,
+  agentsRoute,
 ]);
 
 // src/components/NotFoundRedirect.tsx
