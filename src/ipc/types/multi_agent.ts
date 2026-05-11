@@ -120,6 +120,15 @@ export const multiAgentEvents = {
     channel: "multi-agent:task-failed",
     payload: AgentTaskResultSchema,
   }),
+  agentTaskProgress: defineEvent({
+    channel: "multi-agent:task-progress",
+    payload: z.object({
+      taskId: z.string(),
+      agentId: z.string(),
+      delta: z.string(),
+      fullOutput: z.string(),
+    }),
+  }),
   agentCommunication: defineEvent({
     channel: "multi-agent:communication",
     payload: z.object({

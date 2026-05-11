@@ -11,7 +11,7 @@ import { eq } from "drizzle-orm";
 import log from "electron-log";
 import { getModelClient } from "../../../ipc/utils/get_model_client";
 import { readSettings } from "../../../main/settings";
-import { generateText } from "ai";
+import { generateText, streamText } from "ai";
 import { AgentCommunicationChannel } from "../agent_communication/AgentCommunicationChannel";
 import { AgentContextManager } from "../context_manager/AgentContextManager";
 import { DyadError, DyadErrorKind } from "../../../errors/dyad_error";
@@ -192,7 +192,7 @@ Return ONLY the JSON object.`;
       .returning();
 
     try {
-      const result = await this.runAgentLoop(agent, task.input, sender);
+      const result = await this.runAgentLoop(agent, task.input, task.id, sender);
 
       await db
         .update(agentExecutions)
@@ -242,6 +242,7 @@ Return ONLY the JSON object.`;
   private async runAgentLoop(
     agent: AgentDefinition,
     input: string,
+    taskId: string,
     sender: WebContents,
   ): Promise<Omit<AgentTaskResult, "taskId" | "agentId">> {
     const settings = readSettings();
@@ -254,24 +255,39 @@ Return ONLY the JSON object.`;
       { role: "user", content: input },
     ];
 
-    const { text, usage } = await generateText({
+    logger.info(`Starting streaming for task ${taskId} by agent ${agent.id}`);
+    
+    let fullText = "";
+    const { textStream, usage } = await streamText({
       model: modelClient.model,
       system: agent.systemPrompt,
       messages: messages,
     });
 
+    for await (const delta of textStream) {
+      fullText += delta;
+      safeSend(sender, "multi-agent:task-progress", {
+        taskId,
+        agentId: agent.id,
+        delta,
+        fullOutput: fullText,
+      });
+    }
+
+    const finalUsage = await usage;
+
     contextManager.updateContext(agent.id, {
       history: [
         { role: "user", content: input },
-        { role: "assistant", content: text },
+        { role: "assistant", content: fullText },
       ],
-      tokenUsage: usage.totalTokens,
+      tokenUsage: finalUsage.totalTokens,
     });
 
     return {
       status: "completed",
-      output: text,
-      tokenUsage: usage.totalTokens,
+      output: fullText,
+      tokenUsage: finalUsage.totalTokens,
     };
   }
 }

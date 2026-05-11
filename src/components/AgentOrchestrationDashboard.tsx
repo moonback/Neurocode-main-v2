@@ -63,11 +63,22 @@ export function AgentOrchestrationDashboard() {
       }]);
     });
 
+    const unsubProgress = multiAgentEventClient.onAgentTaskProgress((event: any) => {
+      setTasks((prev) => ({
+        ...prev,
+        [event.taskId]: {
+          ...prev[event.taskId],
+          output: event.fullOutput,
+        },
+      }));
+    });
+
     return () => {
       unsubStarted();
       unsubCompleted();
       unsubFailed();
       unsubComm();
+      unsubProgress();
     };
   }, []);
 
@@ -109,10 +120,13 @@ export function AgentOrchestrationDashboard() {
                           {task.error}
                         </p>
                       )}
-                      {task.status === "completed" && task.output && (
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2 italic">
-                          {task.output}
-                        </p>
+                      {(task.status === "completed" || task.status === "running") && task.output && (
+                        <div className="mt-2 p-2 rounded bg-muted/30 border border-border/30">
+                          <p className="text-[10px] text-muted-foreground mb-1 uppercase tracking-tighter font-bold">Output:</p>
+                          <p className="text-xs font-mono break-words whitespace-pre-wrap line-clamp-6">
+                            {task.output}
+                          </p>
+                        </div>
                       )}
                     </div>
                   </div>
