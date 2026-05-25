@@ -12,10 +12,10 @@ Ce fichier récapitule l'ensemble des chantiers et tâches identifiés lors de l
   - [ ] Activer par défaut le mode "Plan before execute" pour les agents autonomes.
 - [ ] **Reçus d'action ("Action receipts")**
   - [ ] Implémenter un système de reçus pour chaque action : justification de l'action + diff visuel + mécanisme de rollback.
-- [ ] **Premier niveau de refactoring de l'orchestration**
-  - [ ] Découper le module `chat_stream_handlers.ts` en au moins 3 sous-services distincts.
-- [ ] **Dashboard de performance interne**
-  - [ ] Suivre et afficher les métriques clés : temps de démarrage (startup time), consommation mémoire, coût des tokens par chat, latence des outils (tool latency).
+- [/] **Premier niveau de refactoring de l'orchestration**
+  - [/] Découper le module `chat_stream_handlers.ts` en au moins 3 sous-services distincts.
+- [/] **Dashboard de performance interne**
+  - [/] Suivre et afficher les métriques clés : temps de démarrage (startup time), consommation mémoire, coût des tokens par chat, latence des outils (tool latency).
 
 ---
 
@@ -43,11 +43,11 @@ Ce fichier récapitule l'ensemble des chantiers et tâches identifiés lors de l
 ## 🏗️ Architecture & Qualité de Code
 
 ### Refactoring de la boucle Agent & Chat
-- [ ] Extraire les responsabilités de `chat_stream_handlers.ts` dans des services dédiés :
-  - [ ] `PromptAssemblyService` (assemblage des invites et du contexte).
-  - [ ] `ModelOrchestrator` (appels LLM, gestion des providers).
+- [/] Extraire les responsabilités de `chat_stream_handlers.ts` dans des services dédiés :
+  - [/] `PromptAssemblyService` (assemblage des invites et du contexte).
+  - [/] `ModelOrchestrator` (appels LLM, gestion des providers).
   - [ ] `ToolExecutionBroker` (exécution et cycle de vie des outils).
-  - [ ] `ResponseTagParser` (parsing des balises custom `<dyad-*>`).
+  - [/] `ResponseTagParser` (parsing des balises custom `<dyad-*>`).
   - [ ] `PersistenceSink` (sauvegarde de l'historique et des sessions).
   - [ ] `TelemetrySink` (télémétrie et suivi des coûts).
 - [ ] Introduire une architecture "Ports & Adapters" (Clean Architecture) pour découpler l'exécution des outils de l'orchestrateur.

@@ -51,6 +51,11 @@ import {
   isWithinDyadMediaDir,
 } from "./ipc/utils/media_path_utils";
 
+const APP_START_TIME = Date.now();
+export function getAppStartupTime() {
+  return APP_START_TIME;
+}
+
 log.errorHandler.startCatching();
 log.eventLogger.startLogging();
 log.scope.labelPadding = false;

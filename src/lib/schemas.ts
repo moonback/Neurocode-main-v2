@@ -338,6 +338,7 @@ const BaseUserSettingsFields = {
   neon: NeonSchema.optional(),
   autoApproveChanges: z.boolean().optional(),
   telemetryConsent: z.enum(["opted_in", "opted_out", "unset"]).optional(),
+  planBeforeExecute: z.boolean().optional(),
   telemetryUserId: z.string().optional(),
   hasRunBefore: z.boolean().optional(),
   enableDyadPro: z.boolean().optional(),
@@ -366,7 +367,8 @@ const BaseUserSettingsFields = {
   blockUnsafeNpmPackages: z.boolean().optional(),
   enableNativeGit: z.boolean().optional(),
   enableMcpServersForBuildMode: z.boolean().optional(),
-  enableAutoUpdate: z.boolean(),
+  enableAutoUpdate: z.boolean().optional(),
+// enableAutoUpdate duplicate removed
   releaseChannel: ReleaseChannelSchema,
   runtimeMode2: RuntimeMode2Schema.optional(),
   customNodePath: z.string().optional().nullable(),

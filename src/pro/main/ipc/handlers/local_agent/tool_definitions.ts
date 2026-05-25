@@ -46,6 +46,8 @@ import {
   FILE_EDIT_TOOL_NAMES,
 } from "./tools/types";
 import { AgentToolConsent } from "@/lib/schemas";
+import { RiskEngine } from "@/lib/RiskEngine";
+import { sendTelemetryEvent } from "@/ipc/utils/telemetry";
 import { getSupabaseClientCode } from "@/supabase_admin/supabase_context";
 import { getNeonClientCode } from "@/neon_admin/neon_context";
 import { DyadError, DyadErrorKind } from "@/errors/dyad_error";
@@ -516,7 +518,16 @@ export function buildAgentToolSet(
           trackFileEditTool(ctx, tool.name, processedArgs);
 
           const result = await tool.execute(processedArgs, ctx);
-
+          // Assess risk of the tool execution
+          const risk = RiskEngine.assessRisk(tool.name, result as any);
+          if (risk !== "low") {
+              // Emit telemetry for non‑low risk tool usage
+              sendTelemetryEvent("local_agent:tool_risk", {
+                  tool: tool.name,
+                  risk,
+              });
+              console.warn(`Tool ${tool.name} executed with risk level ${risk}`);
+          }
           return convertToolResultForAiSdk(result);
         } catch (error) {
           const errorMessage = getToolErrorSummary(error);

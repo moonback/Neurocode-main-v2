@@ -195,6 +195,14 @@ export function TokenAnalyticsDashboard() {
     staleTime: 0,
   });
 
+  const {
+    data: performanceMetrics,
+  } = useQuery({
+    queryKey: ['performanceMetrics'],
+    queryFn: () => ipc.system.getPerformanceMetrics(),
+    refetchInterval: 5000,
+  });
+
   const handleRefresh = async () => {
     console.log('🔄 Manual refresh triggered');
     try {
@@ -362,7 +370,13 @@ export function TokenAnalyticsDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 lg:grid-cols-3 gap-6 mb-12">
+          <StatCard
+            title="Temps de démarrage"
+            value={performanceMetrics?.startupTimeMs ? `${(performanceMetrics.startupTimeMs / 1000).toFixed(2)}s` : '...'}
+            icon={<Zap className="h-5 w-5" />}
+            color="yellow"
+          />
           <StatCard
             title="Total Tokens"
             value={statistics?.totalTokens?.toLocaleString() || '0'}

@@ -164,7 +164,7 @@ function sanitizeSettingsForDebug(settings: UserSettings) {
     maxChatTurnsInContext: settings.maxChatTurnsInContext ?? null,
     enableAutoFixProblems: settings.enableAutoFixProblems ?? null,
     enableNativeGit: settings.enableNativeGit ?? null,
-    enableAutoUpdate: settings.enableAutoUpdate,
+    enableAutoUpdate: settings.enableAutoUpdate ?? false,
     releaseChannel: settings.releaseChannel,
     runtimeMode2: settings.runtimeMode2 ?? null,
     zoomLevel: settings.zoomLevel ?? null,
@@ -180,10 +180,10 @@ function sanitizeSettingsForDebug(settings: UserSettings) {
     agentToolConsents: settings.agentToolConsents ?? null,
     experiments: settings.experiments
       ? Object.fromEntries(
-          Object.entries(settings.experiments).filter(
-            ([, v]) => typeof v === "boolean",
-          ),
-        )
+        Object.entries(settings.experiments).filter(
+          ([, v]) => typeof v === "boolean",
+        ),
+      )
       : null,
     customNodePath: settings.customNodePath ?? null,
     providerSetupStatus,
@@ -267,6 +267,24 @@ export function registerDebugHandlers() {
       linesOfLogs: 20,
       level: "warn",
     });
+  });
+
+  createTypedHandler(systemContracts.getPerformanceMetrics, async () => {
+    console.log('IPC: getPerformanceMetrics called');
+    try {
+      // Lazy load the getAppStartupTime getter from main.ts
+      const { getAppStartupTime } = require("../../main");
+      const metrics = {
+        startupTimeMs: getAppStartupTime(),
+        memoryUsageMB: process.memoryUsage().heapUsed / 1024 / 1024,
+      };
+      console.log('IPC: getPerformanceMetrics result', metrics);
+      return metrics;
+    } catch (err) {
+      console.error('Failed to obtain performance metrics:', err);
+      // Propagate error to renderer for handling
+      throw err;
+    }
   });
 
   createTypedHandler(miscContracts.getSessionDebugBundle, async (_, chatId) => {
