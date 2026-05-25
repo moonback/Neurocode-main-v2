@@ -1,5 +1,10 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { ModeSelector } from "@/components/ModeSelector";
+import { InspectPanel } from "@/components/InspectPanel";
+import { AutomatePanel } from "@/components/AutomatePanel";
+
+import { ideModeAtom } from "@/atoms/modeAtom";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import { DeepLinkProvider } from "../contexts/DeepLinkContext";
 import { Toaster } from "sonner";
@@ -26,6 +31,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   // Subscribe to app output events once at the root level to avoid duplicates
   useAppOutputSubscription();
   const previewMode = useAtomValue(previewModeAtom);
+  const mode = useAtomValue(ideModeAtom);
   const { settings } = useSettings();
   const setSelectedComponentsPreview = useSetAtom(
     selectedComponentsPreviewAtom,
@@ -64,7 +70,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       };
     }
 
-    return () => {};
+    return () => { };
   }, [settings?.zoomLevel]);
 
   // Sync i18n language with persisted user setting
@@ -109,11 +115,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <SidebarProvider>
             <TitleBar />
             <AppSidebar />
+            <div className="absolute top-1 left-1/2 transform -translate-x-1/2 z-50 no-app-region-drag">
+              <ModeSelector />
+            </div>
             <div
               id="layout-main-content-container"
               className="flex h-screenish w-full overflow-x-hidden mt-12 mb-4 mr-4 border-t border-l border-border rounded-lg bg-background"
             >
-              {children}
+              {mode === "build" && children}
+              {mode === "inspect" && <InspectPanel />}
+              {mode === "automate" && <AutomatePanel />}
             </div>
             <Toaster
               richColors

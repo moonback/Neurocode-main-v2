@@ -1,0 +1,124 @@
+/* ========================================================
+   ModeSelector — Premium glass-morphism tab bar
+   ======================================================== */
+
+.mode-selector {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 6px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  position: relative;
+  /* no-app-region-drag so clicks land on the buttons */
+  -webkit-app-region: no-drag;
+}
+
+.mode-selector__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--muted-foreground, #8a8fa8);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition:
+    color 180ms ease,
+    background 180ms ease,
+    transform 120ms ease;
+  outline: none;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.mode-selector__item:hover:not(.mode-selector__item--active) {
+  color: var(--foreground, #e2e8f0);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-0.5px);
+}
+
+.mode-selector__item:active {
+  transform: translateY(0);
+}
+
+.mode-selector__item:focus-visible {
+  outline: 2px solid rgba(108, 85, 220, 0.6);
+  outline-offset: 2px;
+}
+
+/* ── Active state ──────────────────────────────── */
+.mode-selector__item--active {
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    rgba(108, 85, 220, 0.85) 0%,
+    rgba(79, 130, 236, 0.75) 100%
+  );
+  box-shadow:
+    0 1px 6px rgba(108, 85, 220, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* ── Indicator bar (bottom-left glow dot) ─────── */
+.mode-selector__active-bar {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.7);
+  animation: modeBarIn 220ms ease forwards;
+}
+
+@keyframes modeBarIn {
+  from {
+    opacity: 0;
+    width: 6px;
+  }
+  to {
+    opacity: 1;
+    width: 20px;
+  }
+}
+
+/* ── Icon wrapper ─────────────────────────────── */
+.mode-selector__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 180ms ease;
+}
+
+.mode-selector__item:hover .mode-selector__icon {
+  transform: scale(1.12);
+}
+
+.mode-selector__item--active .mode-selector__icon {
+  transform: scale(1.05);
+}
+
+/* ── Label ────────────────────────────────────── */
+.mode-selector__label {
+  line-height: 1;
+}
+
+/* Dark-mode refinement (if .dark class is on html/body) */
+.dark .mode-selector {
+  background: rgba(15, 15, 25, 0.55);
+  border-color: rgba(255, 255, 255, 0.07);
+}
