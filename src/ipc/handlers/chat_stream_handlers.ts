@@ -66,7 +66,6 @@ import { mcpServers } from "../../db/schema";
 import { requireMcpToolConsent } from "../utils/mcp_consent";
 
 // New service imports
-import { processStreamChunks } from "./model_orchestrator";
 import { processAttachments, processSelectedComponents, buildSystemPrompt, isTextFile } from "./prompt_assembly_service";
 import { 
   expandPromptReferences, 
@@ -1156,6 +1155,7 @@ ${formattedSearchReplaceIssues}`,
                 abortController,
                 chatId: req.chatId,
                 processResponseChunkUpdate,
+                escapeDyadTagsFn: escapeDyadTags,
               });
               fullResponse = result.fullResponse;
               previousAttempts.push({
@@ -1335,6 +1335,7 @@ ${problemReport.problems
                   abortController,
                   chatId: req.chatId,
                   processResponseChunkUpdate,
+                  escapeDyadTagsFn: escapeDyadTags,
                 });
                 fullResponse = result.fullResponse;
                 previousAttempts.push({
