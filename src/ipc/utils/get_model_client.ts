@@ -486,6 +486,20 @@ function getRegularModelClient(
         backupModelClients: [],
       };
     }
+    case "nvidia": {
+      const provider = createOpenAICompatible({
+        name: "nvidia",
+        baseURL: "https://integrate.api.nvidia.com/v1",
+        apiKey,
+      });
+      return {
+        modelClient: {
+          model: provider(model.name),
+          builtinProviderId: providerId,
+        },
+        backupModelClients: [],
+      };
+    }
     default: {
       // Handle custom providers
       if (providerConfig.type === "custom") {

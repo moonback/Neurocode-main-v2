@@ -365,6 +365,44 @@ export const MODEL_OPTIONS: Record<string, ModelOption[]> = {
       temperature: 0,
     },
   ],
+  nvidia: [
+    {
+      name: "nvidia/nemotron-3-super-120b-a12b",
+      displayName: "Nemotron-3-Super 120B",
+      description: "NVIDIA's Nemotron-3 Super 120B model",
+      maxOutputTokens: 32_000,
+      contextWindow: 128_000,
+      temperature: 0.7,
+      dollarSigns: 2,
+    },
+    {
+      name: "z-ai/glm5.1",
+      displayName: "GLM 5.1 (NVIDIA NIM)",
+      description: "Z-AI's GLM 5.1 model hosted on NVIDIA NIM",
+      maxOutputTokens: 32_000,
+      contextWindow: 128_000,
+      temperature: 0.7,
+      dollarSigns: 2,
+    },
+    {
+      name: "moonshotai/kimi-k2.5",
+      displayName: "Kimi K2.5 (NVIDIA NIM)",
+      description: "Moonshot AI's Kimi K2.5 model hosted on NVIDIA NIM",
+      maxOutputTokens: 32_000,
+      contextWindow: 128_000,
+      temperature: 0.7,
+      dollarSigns: 2,
+    },
+    {
+      name: "minimaxai/minimax-m2.5",
+      displayName: "MiniMax M2.5 (NVIDIA NIM)",
+      description: "MiniMax AI's M2.5 model hosted on NVIDIA NIM",
+      maxOutputTokens: 32_000,
+      contextWindow: 128_000,
+      temperature: 0.7,
+      dollarSigns: 2,
+    },
+  ],
 };
 
 export const FREE_OPENROUTER_MODEL_NAMES = MODEL_OPTIONS.openrouter
@@ -378,6 +416,7 @@ export const PROVIDER_TO_ENV_VAR: Record<string, string> = {
   anthropic: "ANTHROPIC_API_KEY",
   google: "GOOGLE_GENERATIVE_AI_API_KEY",
   openrouter: "OPENROUTER_API_KEY",
+  nvidia: "NVIDIA_API_KEY",
 };
 
 export const CLOUD_PROVIDERS: Record<
@@ -414,6 +453,12 @@ export const CLOUD_PROVIDERS: Record<
     hasFreeTier: true,
     websiteUrl: "https://openrouter.ai/settings/keys",
     gatewayPrefix: "openrouter/",
+  },
+  nvidia: {
+    displayName: "NVIDIA NIM",
+    hasFreeTier: false,
+    websiteUrl: "https://build.nvidia.com/settings/api-keys",
+    gatewayPrefix: "nvidia/",
   },
   auto: {
     displayName: "Dyad",

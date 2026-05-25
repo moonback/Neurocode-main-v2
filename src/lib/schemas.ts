@@ -72,6 +72,7 @@ const providers = [
   "xai",
   "bedrock",
   "minimax",
+  "nvidia",
 ] as const;
 
 export const cloudProviders = providers.filter(
