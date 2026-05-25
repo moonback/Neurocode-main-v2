@@ -114,7 +114,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <DeepLinkProvider>
           <SidebarProvider>
             <TitleBar />
-            <AppSidebar />
+            {mode === "build" && <AppSidebar />}
             <div className="absolute top-1 left-1/2 transform -translate-x-1/2 z-50 no-app-region-drag">
               <ModeSelector />
             </div>

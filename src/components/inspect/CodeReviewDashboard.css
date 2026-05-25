@@ -1,0 +1,173 @@
+/* ========================================================
+   Code Review Dashboard Styles
+   ======================================================== */
+
+.cr-dashboard {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  background: var(--background);
+  color: var(--foreground);
+  overflow: hidden;
+  font-family: inherit;
+}
+
+/* ── Sidebar (File List) ──────────────────────────────── */
+.cr-sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.cr-sidebar-header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cr-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--muted-foreground);
+  transition: all 150ms ease;
+}
+.cr-back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--foreground);
+}
+
+.cr-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.cr-file-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── File Item ────────────────────────────────────────── */
+.cr-file-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.cr-file-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cr-file-item.active {
+  background: rgba(79, 130, 236, 0.15);
+  border-color: rgba(79, 130, 236, 0.3);
+}
+
+.cr-file-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cr-file-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.cr-badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.cr-badge.modified { background: rgba(234, 179, 8, 0.2); color: #eab308; }
+.cr-badge.added    { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+.cr-badge.deleted  { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+.cr-file-metrics {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.cr-metric {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cr-metric-score {
+  font-weight: 600;
+  color: #a78bfa; /* subtle purple */
+}
+
+/* ── Main Area (Diff Viewer) ──────────────────────────── */
+.cr-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.cr-diff-header {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+  gap: 8px;
+}
+
+.cr-diff-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.cr-empty-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--muted-foreground);
+}
+
+/* Dark mode tweaks */
+.dark .cr-sidebar {
+  border-right-color: rgba(255, 255, 255, 0.05);
+}

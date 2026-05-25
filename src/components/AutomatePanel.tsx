@@ -1,14 +1,23 @@
 import { Bot, Clock, Zap, Server, Cpu } from "lucide-react";
+import { useAtom } from "jotai";
+import { automateViewAtom } from "@/atoms/automateAtoms";
+import { AgentConsoleDashboard } from "./automate/AgentConsoleDashboard";
 
 const AUTOMATE_FEATURES = [
-  { icon: Bot, title: "AI Agents", desc: "Run autonomous agents to generate code, refactor, or analyze projects." },
-  { icon: Zap, title: "Task Scheduler", desc: "Schedule recurring tasks, background jobs, and timers." },
-  { icon: Clock, title: "Workflow Recorder", desc: "Record and replay sequences of actions across sessions." },
-  { icon: Server, title: "Service Orchestration", desc: "Spin up local services, mock APIs, and container workflows." },
-  { icon: Cpu, title: "Resource Monitor", desc: "CPU/Memory usage visualization for agents." },
+  { icon: Bot, title: "AI Agents", desc: "Run autonomous agents to generate code, refactor, or analyze projects.", action: "agents", status: "active" },
+  { icon: Zap, title: "Task Scheduler", desc: "Schedule recurring tasks, background jobs, and timers.", action: "scheduler", status: "coming-soon" },
+  { icon: Clock, title: "Workflow Recorder", desc: "Record and replay sequences of actions across sessions.", action: "recorder", status: "coming-soon" },
+  { icon: Server, title: "Service Orchestration", desc: "Spin up local services, mock APIs, and container workflows.", action: "orchestration", status: "coming-soon" },
+  { icon: Cpu, title: "Resource Monitor", desc: "CPU/Memory usage visualization for agents.", action: "monitor", status: "coming-soon" },
 ];
 
 export function AutomatePanel() {
+  const [automateView, setAutomateView] = useAtom(automateViewAtom);
+
+  if (automateView === "agents") {
+    return <AgentConsoleDashboard />;
+  }
+
   return (
     <div className="automate-panel" style={containerStyle}>
       <header style={headerStyle}>
@@ -19,10 +28,26 @@ export function AutomatePanel() {
         </div>
       </header>
       <div style={gridStyle}>
-        {AUTOMATE_FEATURES.map(({ icon: Icon, title, desc }) => (
-          <div key={title} style={cardStyle}>
-            <Icon size={16} color="#4f82ec" strokeWidth={1.8} />
-            <h3 style={cardTitle}>{title}</h3>
+        {AUTOMATE_FEATURES.map(({ icon: Icon, title, desc, action, status }) => (
+          <div
+            key={title}
+            style={{
+              ...cardStyle,
+              cursor: status === "active" ? "pointer" : "default",
+            }}
+            onClick={() => {
+              if (status === "active" && action === "agents") {
+                setAutomateView("agents");
+              }
+            }}
+          >
+            <div style={cardHeaderStyle}>
+              <Icon size={16} color="#4f82ec" strokeWidth={1.8} />
+              <h3 style={cardTitle}>{title}</h3>
+              {status === "coming-soon" && (
+                <span style={badgeStyle}>Soon</span>
+              )}
+            </div>
             <p style={cardDesc}>{desc}</p>
           </div>
         ))}
@@ -30,6 +55,24 @@ export function AutomatePanel() {
     </div>
   );
 }
+
+const badgeStyle: React.CSSProperties = {
+  fontSize: "0.65rem",
+  fontWeight: 600,
+  padding: "2px 7px",
+  borderRadius: "20px",
+  background: "rgba(79,130,236,0.15)",
+  color: "#4f82ec",
+  border: "1px solid rgba(79,130,236,0.25)",
+  letterSpacing: "0.02em",
+  marginLeft: "auto",
+};
+
+const cardHeaderStyle: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+};
 
 // ----- Inline styles -----
 const containerStyle: React.CSSProperties = {

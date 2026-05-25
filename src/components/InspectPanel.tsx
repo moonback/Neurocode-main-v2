@@ -1,4 +1,7 @@
 import { ScanSearch, AlertTriangle, Clock, BarChart2, FileCode } from "lucide-react";
+import { useAtom } from "jotai";
+import { inspectViewAtom } from "@/atoms/inspectAtoms";
+import { CodeReviewDashboard } from "./inspect/CodeReviewDashboard";
 
 const PLACEHOLDER_ITEMS = [
   {
@@ -6,28 +9,38 @@ const PLACEHOLDER_ITEMS = [
     title: "Performance Dashboard",
     description: "Startup time, memory usage, token cost & tool latency metrics.",
     status: "coming-soon",
+    action: "dashboard",
   },
   {
     icon: AlertTriangle,
     title: "AI Diagnostics",
     description: "AI-assisted error explanations, cross-file error tracing and call-chain visualisations.",
     status: "coming-soon",
+    action: "diagnostics",
   },
   {
     icon: FileCode,
     title: "Code Review",
     description: "Diff viewer, complexity scores and pattern analysis across the codebase.",
-    status: "coming-soon",
+    status: "active",
+    action: "codeReview",
   },
   {
     icon: Clock,
     title: "Agent Timeline",
     description: "Chronological view of past AI actions, modified files and token checkpoints.",
     status: "coming-soon",
+    action: "timeline",
   },
 ];
 
 export function InspectPanel() {
+  const [inspectView, setInspectView] = useAtom(inspectViewAtom);
+
+  if (inspectView === "codeReview") {
+    return <CodeReviewDashboard />;
+  }
+
   return (
     <div className="inspect-panel" style={panelContainerStyle}>
       {/* Header */}
@@ -43,8 +56,19 @@ export function InspectPanel() {
 
       {/* Cards */}
       <div style={gridStyle}>
-        {PLACEHOLDER_ITEMS.map(({ icon: Icon, title, description, status }) => (
-          <div key={title} style={cardStyle}>
+        {PLACEHOLDER_ITEMS.map(({ icon: Icon, title, description, status, action }) => (
+          <div
+            key={title}
+            style={{
+              ...cardStyle,
+              cursor: status === "active" ? "pointer" : "default",
+            }}
+            onClick={() => {
+              if (status === "active" && action === "codeReview") {
+                setInspectView("codeReview");
+              }
+            }}
+          >
             <div style={cardHeaderStyle}>
               <Icon size={16} color="#4f82ec" strokeWidth={1.8} />
               <span style={cardTitleStyle}>{title}</span>
