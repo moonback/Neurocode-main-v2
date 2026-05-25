@@ -180,10 +180,10 @@ function sanitizeSettingsForDebug(settings: UserSettings) {
     agentToolConsents: settings.agentToolConsents ?? null,
     experiments: settings.experiments
       ? Object.fromEntries(
-          Object.entries(settings.experiments).filter(
-            ([, v]) => typeof v === "boolean",
-          ),
-        )
+        Object.entries(settings.experiments).filter(
+          ([, v]) => typeof v === "boolean",
+        ),
+      )
       : null,
     customNodePath: settings.customNodePath ?? null,
     providerSetupStatus,
@@ -270,13 +270,21 @@ export function registerDebugHandlers() {
   });
 
   createTypedHandler(systemContracts.getPerformanceMetrics, async () => {
-    // Lazy load the getAppStartupTime getter from main.ts
-    const { getAppStartupTime } = require("../../main");
-    
-    return {
-      startupTimeMs: getAppStartupTime(),
-      memoryUsageMB: process.memoryUsage().heapUsed / 1024 / 1024,
-    };
+    console.log('IPC: getPerformanceMetrics called');
+    try {
+      // Lazy load the getAppStartupTime getter from main.ts
+      const { getAppStartupTime } = require("../../main");
+      const metrics = {
+        startupTimeMs: getAppStartupTime(),
+        memoryUsageMB: process.memoryUsage().heapUsed / 1024 / 1024,
+      };
+      console.log('IPC: getPerformanceMetrics result', metrics);
+      return metrics;
+    } catch (err) {
+      console.error('Failed to obtain performance metrics:', err);
+      // Propagate error to renderer for handling
+      throw err;
+    }
   });
 
   createTypedHandler(miscContracts.getSessionDebugBundle, async (_, chatId) => {
