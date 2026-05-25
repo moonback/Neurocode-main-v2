@@ -164,7 +164,7 @@ function sanitizeSettingsForDebug(settings: UserSettings) {
     maxChatTurnsInContext: settings.maxChatTurnsInContext ?? null,
     enableAutoFixProblems: settings.enableAutoFixProblems ?? null,
     enableNativeGit: settings.enableNativeGit ?? null,
-    enableAutoUpdate: settings.enableAutoUpdate,
+    enableAutoUpdate: settings.enableAutoUpdate ?? false,
     releaseChannel: settings.releaseChannel,
     runtimeMode2: settings.runtimeMode2 ?? null,
     zoomLevel: settings.zoomLevel ?? null,
@@ -267,6 +267,16 @@ export function registerDebugHandlers() {
       linesOfLogs: 20,
       level: "warn",
     });
+  });
+
+  createTypedHandler(systemContracts.getPerformanceMetrics, async () => {
+    // Lazy load the getAppStartupTime getter from main.ts
+    const { getAppStartupTime } = require("../../main");
+    
+    return {
+      startupTimeMs: getAppStartupTime(),
+      memoryUsageMB: process.memoryUsage().heapUsed / 1024 / 1024,
+    };
   });
 
   createTypedHandler(miscContracts.getSessionDebugBundle, async (_, chatId) => {

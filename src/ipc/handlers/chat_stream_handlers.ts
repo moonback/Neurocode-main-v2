@@ -58,11 +58,22 @@ import * as path from "path";
 import * as crypto from "crypto";
 import { readFile, writeFile } from "fs/promises";
 import { getMaxTokens, getTemperature } from "../utils/token_utils";
+import { processStreamChunks, escapeDyadTags } from "./model_orchestrator";
 import { MAX_CHAT_TURNS_IN_CONTEXT } from "@/constants/settings_constants";
 import { validateChatContext } from "../utils/context_paths_utils";
 import { getProviderOptions, getAiHeaders } from "../utils/provider_options";
 import { mcpServers } from "../../db/schema";
 import { requireMcpToolConsent } from "../utils/mcp_consent";
+
+// New service imports
+import { processStreamChunks } from "./model_orchestrator";
+import { processAttachments, processSelectedComponents, buildSystemPrompt, isTextFile } from "./prompt_assembly_service";
+import { 
+  expandPromptReferences, 
+  expandSlashSkillReferences, 
+  processMediaMentions, 
+  expandImplementPlan 
+} from "./tag_parser_service";
 
 import { handleLocalAgentStream } from "../../pro/main/ipc/handlers/local_agent/local_agent_handler";
 import { trackTokenUsage } from "../../token-optimization/integration";
@@ -127,112 +138,6 @@ const activeStreams = new Map<number, AbortController>();
 
 // Track partial responses for cancelled streams
 const partialResponses = new Map<number, string>();
-
-// Common helper functions
-const TEXT_FILE_EXTENSIONS = [
-  ".md",
-  ".txt",
-  ".json",
-  ".csv",
-  ".js",
-  ".ts",
-  ".html",
-  ".css",
-];
-
-async function isTextFile(filePath: string): Promise<boolean> {
-  const ext = path.extname(filePath).toLowerCase();
-  return TEXT_FILE_EXTENSIONS.includes(ext);
-}
-
-// Use escapeXmlAttr from shared/xmlEscape for XML escaping
-
-// Safely parse an MCP tool key that combines server and tool names.
-// We split on the LAST occurrence of "__" to avoid ambiguity if either
-// side contains "__" as part of its sanitized name.
-function parseMcpToolKey(toolKey: string): {
-  serverName: string;
-  toolName: string;
-} {
-  const separator = "__";
-  const lastIndex = toolKey.lastIndexOf(separator);
-  if (lastIndex === -1) {
-    return { serverName: "", toolName: toolKey };
-  }
-  const serverName = toolKey.slice(0, lastIndex);
-  const toolName = toolKey.slice(lastIndex + separator.length);
-  return { serverName, toolName };
-}
-
-// Helper function to process stream chunks
-async function processStreamChunks({
-  fullStream,
-  fullResponse,
-  abortController,
-  chatId,
-  processResponseChunkUpdate,
-}: {
-  fullStream: AsyncIterableStream<TextStreamPart<ToolSet>>;
-  fullResponse: string;
-  abortController: AbortController;
-  chatId: number;
-  processResponseChunkUpdate: (params: {
-    fullResponse: string;
-  }) => Promise<string>;
-}): Promise<{ fullResponse: string; incrementalResponse: string }> {
-  let incrementalResponse = "";
-  let inThinkingBlock = false;
-
-  for await (const part of fullStream) {
-    let chunk = "";
-    if (
-      inThinkingBlock &&
-      !["reasoning-delta", "reasoning-end", "reasoning-start"].includes(
-        part.type,
-      )
-    ) {
-      chunk = "</think>";
-      inThinkingBlock = false;
-    }
-    if (part.type === "text-delta") {
-      chunk += part.text;
-    } else if (part.type === "reasoning-delta") {
-      if (!inThinkingBlock) {
-        chunk = "<think>";
-        inThinkingBlock = true;
-      }
-
-      chunk += escapeDyadTags(part.text);
-    } else if (part.type === "tool-call") {
-      const { serverName, toolName } = parseMcpToolKey(part.toolName);
-      const content = escapeDyadTags(JSON.stringify(part.input));
-      chunk = `<dyad-mcp-tool-call server="${serverName}" tool="${toolName}">\n${content}\n</dyad-mcp-tool-call>\n`;
-    } else if (part.type === "tool-result") {
-      const { serverName, toolName } = parseMcpToolKey(part.toolName);
-      const content = escapeDyadTags(part.output);
-      chunk = `<dyad-mcp-tool-result server="${serverName}" tool="${toolName}">\n${content}\n</dyad-mcp-tool-result>\n`;
-    }
-
-    if (!chunk) {
-      continue;
-    }
-
-    fullResponse += chunk;
-    incrementalResponse += chunk;
-    fullResponse = cleanFullResponse(fullResponse);
-    fullResponse = await processResponseChunkUpdate({
-      fullResponse,
-    });
-
-    // If the stream was aborted, exit early
-    if (abortController.signal.aborted) {
-      logger.log(`Stream for chat ${chatId} was aborted`);
-      break;
-    }
-  }
-
-  return { fullResponse, incrementalResponse };
-}
 
 export function registerChatStreamHandlers() {
   ipcMain.handle("chat:stream", async (event, req: ChatStreamParams) => {
@@ -299,238 +204,37 @@ export function registerChatStreamHandlers() {
       }
 
       // Process attachments if any
-      let attachmentInfo = "";
-      // Display-only attachment info uses <dyad-attachment> tags for inline rendering
-      let displayAttachmentInfo = "";
-
-      if (req.attachments && req.attachments.length > 0) {
-        attachmentInfo = "\n\nAttachments:\n";
-
-        // Create persistent .dyad/media directory for this app
-        const appPath = getDyadAppPath(chat.app.path);
-        const mediaDir = path.join(appPath, DYAD_MEDIA_DIR_NAME);
-        if (!fs.existsSync(mediaDir)) {
-          fs.mkdirSync(mediaDir, { recursive: true });
-        }
-        await ensureDyadGitignored(appPath);
-
-        for (let i = 0; i < req.attachments.length; i++) {
-          const attachment = req.attachments[i];
-          // Generate a unique filename (include index to avoid collisions
-          // when multiple attachments share the same name within the same ms)
-          const hash = crypto
-            .createHash("md5")
-            .update(attachment.name + Date.now() + i)
-            .digest("hex");
-          const fileExtension = path.extname(attachment.name);
-          const filename = `${hash}${fileExtension}`;
-
-          // Extract the base64 data (remove the data:mime/type;base64, prefix)
-          const base64Data = attachment.data.split(";base64,").pop() || "";
-          const fileBuffer = Buffer.from(base64Data, "base64");
-
-          // Save to .dyad/media dir
-          const persistentPath = path.join(mediaDir, filename);
-          await writeFile(persistentPath, fileBuffer);
-          attachmentPaths.push(persistentPath);
-
-          // Build dyad-media:// URL for display
-          // Use a fixed hostname to avoid URL hostname normalization (lowercasing)
-          // Encode path segments so special characters (spaces, #, ?, %) don't
-          // break URL parsing. The protocol handler already decodeURIComponent's.
-          const mediaUrl = `dyad-media://media/${encodeURIComponent(chat.app.path)}/.dyad/media/${encodeURIComponent(filename)}`;
-
-          // Build display tag for inline rendering (escape attribute values)
-          displayAttachmentInfo += `\n<dyad-attachment name="${escapeXmlAttr(attachment.name)}" type="${escapeXmlAttr(attachment.type)}" url="${escapeXmlAttr(mediaUrl)}" path="${escapeXmlAttr(persistentPath)}" attachment-type="${escapeXmlAttr(attachment.attachmentType)}"></dyad-attachment>\n`;
-
-          if (attachment.attachmentType === "upload-to-codebase") {
-            // Provide the .dyad/media path so the AI can copy it into the codebase
-            attachmentInfo += `\n\nFile to upload to codebase: "${attachment.name}" (path: ${persistentPath})\nUse the copy_file tool (or <dyad-copy> tag) to copy this file into the codebase at the appropriate location.\n`;
-          } else {
-            // For chat-context, provide file info for reference (no path to avoid auto-copying)
-            attachmentInfo += `- ${attachment.name} (${attachment.type})\n`;
-            // If it's a text-based file, try to include the content
-            if (await isTextFile(persistentPath)) {
-              try {
-                attachmentInfo += `<dyad-text-attachment filename="${escapeXmlAttr(attachment.name)}" type="${escapeXmlAttr(attachment.type)}" path="${escapeXmlAttr(persistentPath)}">
-                </dyad-text-attachment>
-                \n\n`;
-              } catch (err) {
-                logger.error(`Error reading file content: ${err}`);
-              }
-            }
-          }
-        }
-      }
+      const attachmentsResult = await processAttachments(req.attachments || [], chat.app.path, attachmentPaths);
+      let attachmentInfo = attachmentsResult.attachmentInfo;
+      let displayAttachmentInfo = attachmentsResult.displayAttachmentInfo;
 
       // Build the full AI prompt (with .dyad/media paths and copy_file instructions)
       let userPrompt = req.prompt + (attachmentInfo ? attachmentInfo : "");
+      
       // Build the display prompt (with <dyad-attachment> tags for inline rendering)
-      // This separates what the user sees from what the AI receives.
-      // IMPORTANT: Always initialize displayUserPrompt with the original prompt
-      // to preserve /skill-name format instead of expanded skill content
       let displayUserPrompt: string = req.prompt;
       if (displayAttachmentInfo) {
         displayUserPrompt = displayUserPrompt + displayAttachmentInfo;
       }
+
       // Inline referenced prompt contents for mentions like @prompt:<id>
-      try {
-        const matches = Array.from(userPrompt.matchAll(/@prompt:(\d+)/g));
-        if (matches.length > 0) {
-          const ids = Array.from(new Set(matches.map((m) => Number(m[1]))));
-          const referenced = await db
-            .select()
-            .from(promptsTable)
-            .where(inArray(promptsTable.id, ids));
-          if (referenced.length > 0) {
-            const promptsMap: Record<number, string> = {};
-            for (const p of referenced) {
-              promptsMap[p.id] = p.content;
-            }
-            userPrompt = replacePromptReference(userPrompt, promptsMap);
-          }
-        }
-      } catch (e) {
-        logger.error("Failed to inline referenced prompts:", e);
-      }
+      userPrompt = await expandPromptReferences(userPrompt);
 
       // Expand /slug skill references (e.g. /webapp-testing) to prompt content
-      // Keep the original /slug format for display, but expand for AI processing
-      try {
-        const slashSkillPattern = /(?:^|\s)\/([a-zA-Z0-9-]+)(?=\s|$)/;
-        if (slashSkillPattern.test(userPrompt)) {
-          const allPrompts = db.select().from(promptsTable).all();
-          const promptsBySlug: Record<string, string> = {};
-          for (const p of allPrompts) {
-            if (p.slug && !promptsBySlug[p.slug]) {
-              promptsBySlug[p.slug] = p.content;
-            }
-          }
-          // Expand skills in the actual prompt sent to AI
-          // displayUserPrompt already contains the original /slug format
-          userPrompt = replaceSlashSkillReference(userPrompt, promptsBySlug);
-        }
-      } catch (e) {
-        logger.error("Failed to expand slash skill references:", e);
-      }
+      userPrompt = await expandSlashSkillReferences(userPrompt);
 
       // Resolve @media: mentions to image attachments
-      const mediaRefs = parseMediaMentions(userPrompt);
-      if (mediaRefs.length > 0) {
-        try {
-          const resolvedMedia = await resolveMediaMentions(
-            mediaRefs,
-            chat.app.path,
-            chat.app.name,
-          );
-          const resolvedMediaRefs = resolvedMedia.map((media) =>
-            encodeURIComponent(media.fileName),
-          );
-          let mediaDisplayInfo = "";
-          for (const media of resolvedMedia) {
-            attachmentPaths.push(media.filePath);
-            const mediaUrl = buildDyadMediaUrl(chat.app.path, media.fileName);
-            mediaDisplayInfo += `\n<dyad-attachment name="${escapeXmlAttr(media.fileName)}" type="${escapeXmlAttr(media.mimeType)}" url="${escapeXmlAttr(mediaUrl)}" path="${escapeXmlAttr(media.filePath)}" attachment-type="chat-context"></dyad-attachment>\n`;
-          }
-          // Strip only resolved @media: tags from the prompt text.
-          // This preserves adjacent user text when mentions are directly followed
-          // by text without a whitespace separator.
-          userPrompt = stripResolvedMediaMentions(
-            userPrompt,
-            resolvedMediaRefs,
-          );
-          // Build display prompt with attachment tags for inline rendering.
-          if (mediaDisplayInfo) {
-            const strippedPrompt = stripResolvedMediaMentions(
-              displayUserPrompt,
-              resolvedMediaRefs,
-            );
-            displayUserPrompt = strippedPrompt + mediaDisplayInfo;
-          }
-        } catch (e) {
-          logger.error("Failed to resolve media mentions:", e);
-        }
-      }
+      const mediaResult = await processMediaMentions(userPrompt, displayUserPrompt, chat.app.path, chat.app.name, attachmentPaths);
+      userPrompt = mediaResult.userPrompt;
+      displayUserPrompt = mediaResult.displayUserPrompt;
 
       // Expand /implement-plan= into full implementation prompt
-      // Keep the original short form for display in the UI; the expanded
-      // content is only injected into the AI message history.
-      let implementPlanDisplayPrompt: string | undefined;
-      const implementPlanMatch = userPrompt.match(/^\/implement-plan=(.+)$/);
-      if (implementPlanMatch) {
-        try {
-          implementPlanDisplayPrompt = userPrompt;
-          const planSlug = implementPlanMatch[1];
-          validatePlanId(planSlug);
-          const appPath = getDyadAppPath(chat.app.path);
-          const planFilePath = path.join(
-            appPath,
-            ".dyad",
-            "plans",
-            `${planSlug}.md`,
-          );
-          const raw = await fs.promises.readFile(planFilePath, "utf-8");
-          const { meta, content } = parsePlanFile(raw);
+      const planResult = await expandImplementPlan(userPrompt, chat.app.path);
+      userPrompt = planResult.userPrompt;
+      let implementPlanDisplayPrompt = planResult.implementPlanDisplayPrompt;
 
-          const planPath = `.dyad/plans/${planSlug}.md`;
-
-          userPrompt = `Please implement the following plan:
-
-## ${meta.title || "Implementation Plan"}
-
-${content}
-
-Start implementing this plan now. Follow the steps outlined and create/modify the necessary files.
-You may update the plan at \`${planPath}\` to mark your progress.`;
-        } catch (e) {
-          implementPlanDisplayPrompt = undefined;
-          logger.error("Failed to expand /implement-plan= prompt:", e);
-        }
-      }
-
-      const componentsToProcess = req.selectedComponents || [];
-
-      if (componentsToProcess.length > 0) {
-        userPrompt += "\n\nSelected components:\n";
-
-        for (const component of componentsToProcess) {
-          let componentSnippet = "[component snippet not available]";
-          try {
-            const componentFileContent = await readFile(
-              path.join(getDyadAppPath(chat.app.path), component.relativePath),
-              "utf8",
-            );
-            const lines = componentFileContent.split(/\r?\n/);
-            const selectedIndex = component.lineNumber - 1;
-
-            // Let's get one line before and three after for context.
-            const startIndex = Math.max(0, selectedIndex - 1);
-            const endIndex = Math.min(lines.length, selectedIndex + 4);
-
-            const snippetLines = lines.slice(startIndex, endIndex);
-            const selectedLineInSnippetIndex = selectedIndex - startIndex;
-
-            if (snippetLines[selectedLineInSnippetIndex]) {
-              snippetLines[selectedLineInSnippetIndex] =
-                `${snippetLines[selectedLineInSnippetIndex]} // <-- EDIT HERE`;
-            }
-
-            componentSnippet = snippetLines.join("\n");
-          } catch (err) {
-            logger.error(
-              `Error reading selected component file content: ${err}`,
-            );
-          }
-
-          userPrompt += `\n${componentsToProcess.length > 1 ? `${componentsToProcess.indexOf(component) + 1}. ` : ""}Component: ${component.name} (file: ${component.relativePath})
-
-Snippet:
-\`\`\`
-${componentSnippet}
-\`\`\`
-`;
-        }
-      }
+      // Process selected components
+      userPrompt += await processSelectedComponents(req.selectedComponents || [], chat.app.path);
 
       const [insertedUserMessage] = await db
         .insert(messages)
@@ -1344,6 +1048,7 @@ This conversation includes one or more image attachments. When the user uploads 
               abortController,
               chatId: req.chatId,
               processResponseChunkUpdate,
+              escapeDyadTagsFn: escapeDyadTags,
             });
             fullResponse = result.fullResponse;
             chatMessages.push({
@@ -1372,6 +1077,7 @@ This conversation includes one or more image attachments. When the user uploads 
             abortController,
             chatId: req.chatId,
             processResponseChunkUpdate,
+            escapeDyadTagsFn: escapeDyadTags,
           });
           fullResponse = result.fullResponse;
 

@@ -105,6 +105,13 @@ export const ForceCloseDetectedPayloadSchema = z.object({
     .optional(),
 });
 
+export const PerformanceMetricsSchema = z.object({
+  startupTimeMs: z.number(),
+  memoryUsageMB: z.number(),
+});
+
+export type PerformanceMetrics = z.infer<typeof PerformanceMetricsSchema>;
+
 // =============================================================================
 // System Contracts
 // =============================================================================
@@ -268,6 +275,13 @@ export const systemContracts = {
     channel: "restart-dyad",
     input: z.void(),
     output: z.void(),
+  }),
+
+  // Performance
+  getPerformanceMetrics: defineContract({
+    channel: "get-performance-metrics",
+    input: z.void(),
+    output: PerformanceMetricsSchema,
   }),
 } as const;
 
