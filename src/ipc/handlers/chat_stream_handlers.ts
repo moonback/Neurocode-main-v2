@@ -145,6 +145,9 @@ type AsyncIterableStream<T> = AsyncIterable<T> & ReadableStream<T>;
 
 const logger = log.scope("chat_stream_handlers");
 
+const STREAM_UI_UPDATE_INTERVAL_MS = 50;
+const PARTIAL_RESPONSE_DB_SAVE_INTERVAL_MS = 500;
+
 // Track active streams for cancellation
 const activeStreams = new Map<number, AbortController>();
 
@@ -883,17 +886,30 @@ This conversation includes one or more image attachments. When the user uploads 
         };
 
         let lastDbSaveAt = 0;
+        let lastUiUpdateAt = 0;
+        let lastSentStreamingContent = "";
 
         const processResponseChunkUpdate = async ({
           fullResponse,
+          force = false,
         }: {
           fullResponse: string;
+          force?: boolean;
         }) => {
-          // Store the current partial response
+          // Store the current partial response for cancellation recovery on every chunk.
           partialResponses.set(req.chatId, fullResponse);
-          // Save to DB (in case user is switching chats during the stream)
+
           const now = Date.now();
-          if (now - lastDbSaveAt >= 150) {
+          const shouldPersistPartialResponse =
+            force || now - lastDbSaveAt >= PARTIAL_RESPONSE_DB_SAVE_INTERVAL_MS;
+          const shouldSendUiUpdate =
+            force ||
+            !lastSentStreamingContent ||
+            now - lastUiUpdateAt >= STREAM_UI_UPDATE_INTERVAL_MS;
+
+          // Save to DB periodically (in case user is switching chats during the stream),
+          // but avoid doing synchronous SQLite work for every token-sized delta.
+          if (shouldPersistPartialResponse) {
             await db
               .update(messages)
               .set({ content: fullResponse })
@@ -903,13 +919,27 @@ This conversation includes one or more image attachments. When the user uploads 
           }
 
           // Send incremental update with only the streaming message content
-          // instead of the full messages array to reduce IPC overhead
-          safeSend(event.sender, "chat:response:chunk", {
-            chatId: req.chatId,
-            streamingMessageId: placeholderAssistantMessage.id,
-            streamingContent: fullResponse,
-          });
+          // instead of the full messages array to reduce IPC overhead.
+          // Throttling keeps long code-generation streams from spending more time
+          // on renderer IPC than on consuming the model stream.
+          if (shouldSendUiUpdate && fullResponse !== lastSentStreamingContent) {
+            safeSend(event.sender, "chat:response:chunk", {
+              chatId: req.chatId,
+              streamingMessageId: placeholderAssistantMessage.id,
+              streamingContent: fullResponse,
+            });
+            lastSentStreamingContent = fullResponse;
+            lastUiUpdateAt = now;
+          }
+
           return fullResponse;
+        };
+
+        const flushResponseUpdates = async () => {
+          fullResponse = await processResponseChunkUpdate({
+            fullResponse,
+            force: true,
+          });
         };
 
         // Handle ask mode: use local-agent in read-only mode
@@ -1078,6 +1108,7 @@ This conversation includes one or more image attachments. When the user uploads 
               escapeDyadTagsFn: escapeDyadTags,
             });
             fullResponse = result.fullResponse;
+            await flushResponseUpdates();
             chatMessages.push({
               role: "assistant",
               content: fullResponse,
@@ -1107,6 +1138,7 @@ This conversation includes one or more image attachments. When the user uploads 
             escapeDyadTagsFn: escapeDyadTags,
           });
           fullResponse = result.fullResponse;
+          await flushResponseUpdates();
 
           if (
             settings.selectedChatMode !== "ask" &&
@@ -1186,6 +1218,7 @@ ${formattedSearchReplaceIssues}`,
                 escapeDyadTagsFn: escapeDyadTags,
               });
               fullResponse = result.fullResponse;
+              await flushResponseUpdates();
               previousAttempts.push({
                 role: "assistant",
                 content: removeNonEssentialTags(result.incrementalResponse),
@@ -1255,6 +1288,7 @@ ${formattedSearchReplaceIssues}`,
                   fullResponse,
                 });
               }
+              await flushResponseUpdates();
             }
           }
           const addDependencies = getDyadAddDependencyTags(fullResponse);
@@ -1366,6 +1400,7 @@ ${problemReport.problems
                   escapeDyadTagsFn: escapeDyadTags,
                 });
                 fullResponse = result.fullResponse;
+                await flushResponseUpdates();
                 previousAttempts.push({
                   role: "assistant",
                   content: removeNonEssentialTags(result.incrementalResponse),
