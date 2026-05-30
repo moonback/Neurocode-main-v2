@@ -136,6 +136,10 @@ import {
   redactSensitiveData,
   sanitizeProviderErrorMessage,
 } from "../utils/redaction";
+import {
+  getStoredUserPrompt,
+  replaceLastUserPromptForModel,
+} from "./chat_stream_display_prompt";
 
 type AsyncIterableStream<T> = AsyncIterable<T> & ReadableStream<T>;
 
@@ -262,8 +266,11 @@ export function registerChatStreamHandlers() {
         .values({
           chatId: req.chatId,
           role: "user",
-          content:
-            implementPlanDisplayPrompt ?? displayUserPrompt ?? userPrompt,
+          content: getStoredUserPrompt({
+            displayPrompt: req.displayPrompt,
+            displayUserPrompt,
+            userPrompt,
+          }),
         })
         .returning({ id: messages.id });
       const userMessageId = insertedUserMessage.id;
@@ -433,19 +440,20 @@ export function registerChatStreamHandlers() {
         // so the AI doesn't try to reconcile cancelled/incorrect prompts with new ones.
         const messageHistory = filterCancelledMessagePairs(messageHistoryRaw);
 
-        // The DB stores display-friendly versions (short /implement-plan= form
-        // or clean <dyad-attachment> tags). Replace the last user message with the
-        // full AI prompt so the model receives expanded plan content or attachment paths.
-        if (implementPlanDisplayPrompt || displayUserPrompt) {
-          for (let i = messageHistory.length - 1; i >= 0; i--) {
-            if (messageHistory[i].role === "user") {
-              messageHistory[i] = {
-                ...messageHistory[i],
-                content: userPrompt,
-              };
-              break;
-            }
-          }
+        // The DB stores display-friendly versions (slash skill invocations,
+        // short /implement-plan= form, or clean <dyad-attachment> tags).
+        // Replace the last user message with the full AI prompt so the model
+        // receives expanded skill/plan content or attachment paths.
+        if (
+          req.displayPrompt ||
+          implementPlanDisplayPrompt ||
+          displayUserPrompt
+        ) {
+          messageHistory.splice(
+            0,
+            messageHistory.length,
+            ...replaceLastUserPromptForModel(messageHistory, userPrompt),
+          );
         }
 
         // For Dyad Pro + Deep Context, we set to 200 chat turns (+1)
