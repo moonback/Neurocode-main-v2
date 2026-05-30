@@ -58,6 +58,29 @@ export abstract class BaseVirtualFileSystem {
       : normalizedPath;
   }
 
+  private resolveChangePath(relativePath: string): string {
+    if (/(^|[\\/])\.\.([\\/]|$)/.test(relativePath)) {
+      throw new Error(
+        `Unsafe virtual file path "${relativePath}" contains a path traversal segment`,
+      );
+    }
+
+    const absolutePath = path.isAbsolute(relativePath)
+      ? path.resolve(relativePath)
+      : path.resolve(this.baseDir, relativePath);
+    const relativeToBase = path.relative(this.baseDir, absolutePath);
+    if (
+      relativeToBase === ".." ||
+      relativeToBase.startsWith(`..${path.sep}`) ||
+      path.isAbsolute(relativeToBase)
+    ) {
+      throw new Error(
+        `Unsafe virtual file path "${relativePath}" escapes the project directory`,
+      );
+    }
+    return absolutePath;
+  }
+
   /**
    * Apply changes from a response containing dyad tags
    */
@@ -86,7 +109,7 @@ export abstract class BaseVirtualFileSystem {
    * Write a file to the virtual filesystem
    */
   protected writeFile(relativePath: string, content: string): void {
-    const absolutePath = path.resolve(this.baseDir, relativePath);
+    const absolutePath = this.resolveChangePath(relativePath);
     const normalizedKey = this.normalizePathForKey(absolutePath);
 
     this.virtualFiles.set(normalizedKey, content);
@@ -98,7 +121,7 @@ export abstract class BaseVirtualFileSystem {
    * Delete a file from the virtual filesystem
    */
   protected deleteFile(relativePath: string): void {
-    const absolutePath = path.resolve(this.baseDir, relativePath);
+    const absolutePath = this.resolveChangePath(relativePath);
     const normalizedKey = this.normalizePathForKey(absolutePath);
 
     this.deletedFiles.add(normalizedKey);
@@ -110,8 +133,8 @@ export abstract class BaseVirtualFileSystem {
    * Rename a file in the virtual filesystem
    */
   protected renameFile(fromPath: string, toPath: string): void {
-    const fromAbsolute = path.resolve(this.baseDir, fromPath);
-    const toAbsolute = path.resolve(this.baseDir, toPath);
+    const fromAbsolute = this.resolveChangePath(fromPath);
+    const toAbsolute = this.resolveChangePath(toPath);
     const fromNormalized = this.normalizePathForKey(fromAbsolute);
     const toNormalized = this.normalizePathForKey(toAbsolute);
 

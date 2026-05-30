@@ -1,3 +1,4 @@
+import { escapeXmlAttr, escapeXmlContent } from "../../shared/xmlEscape";
 import type {
   AssembledContext,
   AssemblerOptions,
@@ -94,7 +95,7 @@ function truncateToTokenBudget(content: string, maxTokens: number): string {
  * Formats a single file for inclusion in the assembled context.
  */
 function formatFile(path: string, content: string): string {
-  return `<dyad-file path="${path}">\n${content}\n</dyad-file>\n\n`;
+  return `<dyad-file path="${escapeXmlAttr(path)}">\n${escapeXmlContent(content)}\n</dyad-file>\n\n`;
 }
 
 /**

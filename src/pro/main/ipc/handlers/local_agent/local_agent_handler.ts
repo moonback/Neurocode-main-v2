@@ -613,7 +613,9 @@ export async function handleLocalAgentStream(
     // Initialize token optimization system
     logger.info("🚀 Token Optimization System: ACTIVATING...");
     initializeTokenOptimization();
-    logger.info("✅ Token Optimization System: ACTIVE and ready to track usage");
+    logger.info(
+      "✅ Token Optimization System: ACTIVE and ready to track usage",
+    );
 
     // Allocate token budget for this request
     // Determine task complexity based on message history and tools
@@ -939,7 +941,7 @@ export async function handleLocalAgentStream(
                     dyadRequestId,
                     {
                       modelType: settings.selectedModel.name,
-                    }
+                    },
                   );
                   logger.info(
                     `Tracked ${totalTokens} tokens for chat ${chat.id} (total: ${totalTokensUsed})`,
@@ -1701,7 +1703,7 @@ async function getMcpTools(
               const { serverName, toolName } = parseMcpToolKey(key);
               const content = JSON.stringify(args, null, 2);
               ctx.onXmlComplete(
-                `<dyad-mcp-tool-call server="${serverName}" tool="${toolName}">\n${content}\n</dyad-mcp-tool-call>`,
+                `<dyad-mcp-tool-call server="${escapeXmlAttr(serverName)}" tool="${escapeXmlAttr(toolName)}">\n${escapeXmlContent(content)}\n</dyad-mcp-tool-call>`,
               );
 
               const res = await mcpTool.execute(args, execCtx);
@@ -1709,7 +1711,7 @@ async function getMcpTools(
                 typeof res === "string" ? res : JSON.stringify(res);
 
               ctx.onXmlComplete(
-                `<dyad-mcp-tool-result server="${serverName}" tool="${toolName}">\n${resultStr}\n</dyad-mcp-tool-result>`,
+                `<dyad-mcp-tool-result server="${escapeXmlAttr(serverName)}" tool="${escapeXmlAttr(toolName)}">\n${escapeXmlContent(resultStr)}\n</dyad-mcp-tool-result>`,
               );
 
               return resultStr;

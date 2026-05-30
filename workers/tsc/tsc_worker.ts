@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { parentPort } from "node:worker_threads";
+import { parentPort, threadId } from "node:worker_threads";
 
 import {
   Problem,
@@ -118,9 +118,19 @@ async function runSingleProject(
     const appHash = Buffer.from(appPath)
       .toString("base64")
       .replace(/[/+=]/g, "_");
+    const requestHash = Buffer.from(
+      JSON.stringify({
+        worker: `${process.pid}-${threadId}-${Date.now()}-${Math.random()}`,
+        virtualFiles: vfs.getVirtualFiles(),
+        deletedFiles: vfs.getDeletedFiles(),
+      }),
+    )
+      .toString("base64")
+      .slice(0, 32)
+      .replace(/[/+=]/g, "_");
     options.tsBuildInfoFile = path.join(
       tmpDir,
-      `${appHash}-${configName}.tsbuildinfo`,
+      `${appHash}-${configName}-${requestHash}.tsbuildinfo`,
     );
     options.incremental = true;
   }
@@ -177,7 +187,7 @@ async function runSingleProject(
     if (!diagnostic.file) continue;
 
     const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(
-      diagnostic.start!,
+      diagnostic.start ?? 0,
     );
     const message = ts.flattenDiagnosticMessageText(
       diagnostic.messageText,
