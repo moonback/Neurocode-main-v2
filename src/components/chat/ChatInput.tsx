@@ -565,6 +565,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
         setVisualEditingSelectedComponent(null);
         await streamMessage({
           prompt: skillContent,
+          displayPrompt: currentInput,
           chatId,
           attachments,
           redo: false,

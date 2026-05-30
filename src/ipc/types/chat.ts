@@ -83,6 +83,7 @@ export interface FileAttachment {
 export const ChatStreamParamsSchema = z.object({
   chatId: z.number(),
   prompt: z.string(),
+  displayPrompt: z.string().optional(),
   redo: z.boolean().optional(),
   attachments: z.array(ChatAttachmentSchema).optional(),
   selectedComponents: z.array(ComponentSelectionSchema).optional(),
