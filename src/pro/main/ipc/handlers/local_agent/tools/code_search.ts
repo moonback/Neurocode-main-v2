@@ -7,6 +7,10 @@ import {
   escapeXmlContent,
 } from "./types";
 import { extractCodebase } from "../../../../../../utils/codebase";
+import { db } from "@/db";
+import { apps } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { validateChatContext } from "@/ipc/utils/context_paths_utils";
 import { engineFetch } from "./engine_fetch";
 import { DyadError, DyadErrorKind } from "@/errors/dyad_error";
 
@@ -92,14 +96,15 @@ export const codeSearchTool: ToolDefinition<z.infer<typeof codeSearchSchema>> =
     execute: async (args, ctx: AgentContext) => {
       logger.log(`Executing code search: ${args.query}`);
 
-      // Gather all files from the project
+      const app = await db.query.apps.findFirst({
+        where: eq(apps.id, ctx.appId),
+      });
+      const chatContext = validateChatContext(app?.chatContext);
+
+      // Gather files from the project while honoring user include/exclude context paths.
       const { files } = await extractCodebase({
         appPath: ctx.appPath,
-        chatContext: {
-          contextPaths: [],
-          smartContextAutoIncludes: [],
-          excludePaths: [],
-        },
+        chatContext,
       });
 
       // Map files to FileContext format

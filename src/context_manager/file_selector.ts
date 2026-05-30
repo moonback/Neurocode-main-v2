@@ -1,6 +1,7 @@
 import fsAsync from "node:fs/promises";
 import * as path from "path";
 import log from "electron-log";
+import { glob } from "glob";
 import { readSettings } from "@/main/settings";
 import {
   collectFilesNativeGit,
@@ -87,6 +88,54 @@ function findMatchingFile(
   }
 
   return null;
+}
+
+function createFullGlobPath(appPath: string, globPath: string): string {
+  return `${appPath.replace(/\\/g, "/")}/${globPath}`;
+}
+
+async function collectGlobMatches(
+  appPath: string,
+  patterns: { globPath: string }[] | undefined,
+): Promise<Set<string>> {
+  const matches = new Set<string>();
+  if (!patterns?.length) return matches;
+
+  for (const pattern of patterns) {
+    const files = await glob(createFullGlobPath(appPath, pattern.globPath), {
+      nodir: true,
+      absolute: true,
+      ignore: "**/node_modules/**",
+    });
+    for (const file of files) {
+      matches.add(path.normalize(file));
+    }
+  }
+
+  return matches;
+}
+
+async function applyChatContextPathFilters(
+  appPath: string,
+  absolutePaths: string[],
+  chatContext: FileSelectorOptions["chatContext"],
+): Promise<string[]> {
+  const includedFiles = await collectGlobMatches(
+    appPath,
+    chatContext.contextPaths,
+  );
+  const excludedFiles = await collectGlobMatches(
+    appPath,
+    chatContext.excludePaths,
+  );
+
+  return absolutePaths.filter((absolutePath) => {
+    const normalizedPath = path.normalize(absolutePath);
+    if (excludedFiles.has(normalizedPath)) return false;
+    if (includedFiles.size > 0 && !includedFiles.has(normalizedPath))
+      return false;
+    return true;
+  });
 }
 
 /**
@@ -181,6 +230,12 @@ export async function selectCandidateFiles(
     logger.error("Failed to collect workspace files:", error);
     absolutePaths = [];
   }
+
+  absolutePaths = await applyChatContextPathFilters(
+    appPath,
+    absolutePaths,
+    options.chatContext,
+  );
 
   // Step 2: Determine import-related paths if activeFilePath is set
   const importedAbsolutePaths = new Set<string>();

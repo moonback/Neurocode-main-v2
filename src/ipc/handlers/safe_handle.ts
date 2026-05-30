@@ -3,6 +3,7 @@ import log from "electron-log";
 import { DyadError } from "@/errors/dyad_error";
 import { sendTelemetryException } from "../utils/telemetry";
 import { IS_TEST_BUILD } from "../utils/test_utils";
+import { redactSensitiveData, safeJsonForLog } from "../utils/redaction";
 
 export function createLoggedHandler(logger: log.LogFunctions) {
   return (
@@ -12,17 +13,17 @@ export function createLoggedHandler(logger: log.LogFunctions) {
     ipcMain.handle(
       channel,
       async (event: IpcMainInvokeEvent, ...args: any[]) => {
-        logger.log(`IPC: ${channel} called with args: ${JSON.stringify(args)}`);
+        logger.log(`IPC: ${channel} called with args: ${safeJsonForLog(args)}`);
         try {
           const result = await fn(event, ...args);
           logger.log(
-            `IPC: ${channel} returned: ${JSON.stringify(result)?.slice(0, 100)}...`,
+            `IPC: ${channel} returned: ${safeJsonForLog(result).slice(0, 100)}...`,
           );
           return result;
         } catch (error) {
           logger.error(
-            `Error in ${fn.name}: args: ${JSON.stringify(args)}`,
-            error,
+            `Error in ${fn.name}: args: ${safeJsonForLog(args)}`,
+            redactSensitiveData(error),
           );
           sendTelemetryException(error, { ipc_channel: channel });
           // Preserve DyadError so telemetry classification stay consistent.

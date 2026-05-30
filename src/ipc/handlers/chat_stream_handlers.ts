@@ -66,12 +66,17 @@ import { mcpServers } from "../../db/schema";
 import { requireMcpToolConsent } from "../utils/mcp_consent";
 
 // New service imports
-import { processAttachments, processSelectedComponents, buildSystemPrompt, isTextFile } from "./prompt_assembly_service";
-import { 
-  expandPromptReferences, 
-  expandSlashSkillReferences, 
-  processMediaMentions, 
-  expandImplementPlan 
+import {
+  processAttachments,
+  processSelectedComponents,
+  buildSystemPrompt,
+  isTextFile,
+} from "./prompt_assembly_service";
+import {
+  expandPromptReferences,
+  expandSlashSkillReferences,
+  processMediaMentions,
+  expandImplementPlan,
 } from "./tag_parser_service";
 
 import { handleLocalAgentStream } from "../../pro/main/ipc/handlers/local_agent/local_agent_handler";
@@ -127,6 +132,10 @@ import {
   VersionedFiles,
 } from "../utils/versioned_codebase_context";
 import { getAiMessagesJsonIfWithinLimit } from "../utils/ai_messages_utils";
+import {
+  redactSensitiveData,
+  sanitizeProviderErrorMessage,
+} from "../utils/redaction";
 
 type AsyncIterableStream<T> = AsyncIterable<T> & ReadableStream<T>;
 
@@ -203,13 +212,17 @@ export function registerChatStreamHandlers() {
       }
 
       // Process attachments if any
-      const attachmentsResult = await processAttachments(req.attachments || [], chat.app.path, attachmentPaths);
+      const attachmentsResult = await processAttachments(
+        req.attachments || [],
+        chat.app.path,
+        attachmentPaths,
+      );
       let attachmentInfo = attachmentsResult.attachmentInfo;
       let displayAttachmentInfo = attachmentsResult.displayAttachmentInfo;
 
       // Build the full AI prompt (with .dyad/media paths and copy_file instructions)
       let userPrompt = req.prompt + (attachmentInfo ? attachmentInfo : "");
-      
+
       // Build the display prompt (with <dyad-attachment> tags for inline rendering)
       let displayUserPrompt: string = req.prompt;
       if (displayAttachmentInfo) {
@@ -223,7 +236,13 @@ export function registerChatStreamHandlers() {
       userPrompt = await expandSlashSkillReferences(userPrompt);
 
       // Resolve @media: mentions to image attachments
-      const mediaResult = await processMediaMentions(userPrompt, displayUserPrompt, chat.app.path, chat.app.name, attachmentPaths);
+      const mediaResult = await processMediaMentions(
+        userPrompt,
+        displayUserPrompt,
+        chat.app.path,
+        chat.app.name,
+        attachmentPaths,
+      );
       userPrompt = mediaResult.userPrompt;
       displayUserPrompt = mediaResult.displayUserPrompt;
 
@@ -233,7 +252,10 @@ export function registerChatStreamHandlers() {
       let implementPlanDisplayPrompt = planResult.implementPlanDisplayPrompt;
 
       // Process selected components
-      userPrompt += await processSelectedComponents(req.selectedComponents || [], chat.app.path);
+      userPrompt += await processSelectedComponents(
+        req.selectedComponents || [],
+        chat.app.path,
+      );
 
       const [insertedUserMessage] = await db
         .insert(messages)
@@ -817,27 +839,25 @@ This conversation includes one or more image attachments. When the user uploads 
                     inputTokens: response.usage?.inputTokens,
                     outputTokens: response.usage?.outputTokens,
                     modelType: settings.selectedModel.name,
-                  }
+                  },
                 ).catch((err) => {
-                  logger.error("Failed to track token usage in analytics:", err);
+                  logger.error(
+                    "Failed to track token usage in analytics:",
+                    err,
+                  );
                 });
               } else {
                 logger.log("Total tokens used: unknown");
               }
             },
             onError: (error: any) => {
-              let errorMessage = (error as any)?.error?.message;
-              const responseBody = error?.error?.responseBody;
-              if (errorMessage && responseBody) {
-                errorMessage += "\n\nDetails: " + responseBody;
-              }
-              const message = errorMessage || JSON.stringify(error);
+              const message = sanitizeProviderErrorMessage(error);
               const requestIdPrefix = isEngineEnabled
                 ? `[Request ID: ${dyadRequestId}] `
                 : "";
               logger.error(
-                `AI stream text error for request: ${requestIdPrefix} errorMessage=${errorMessage} error=`,
-                error,
+                `AI stream text error for request: ${requestIdPrefix} message=${message}`,
+                redactSensitiveData(error),
               );
               event.sender.send("chat:response:error", {
                 chatId: req.chatId,

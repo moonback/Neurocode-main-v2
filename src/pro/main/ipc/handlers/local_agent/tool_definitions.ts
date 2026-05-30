@@ -117,13 +117,28 @@ interface PendingConsentEntry {
 }
 
 const pendingConsentResolvers = new Map<string, PendingConsentEntry>();
+const AGENT_TOOL_CONSENT_TIMEOUT_MS = 5 * 60 * 1000;
 
 export function waitForAgentToolConsent(
   requestId: string,
   chatId: number,
 ): Promise<"accept-once" | "accept-always" | "decline"> {
   return new Promise((resolve) => {
-    pendingConsentResolvers.set(requestId, { chatId, resolve });
+    const timeout = setTimeout(() => {
+      const entry = pendingConsentResolvers.get(requestId);
+      if (entry) {
+        pendingConsentResolvers.delete(requestId);
+        entry.resolve("decline");
+      }
+    }, AGENT_TOOL_CONSENT_TIMEOUT_MS);
+
+    pendingConsentResolvers.set(requestId, {
+      chatId,
+      resolve: (decision) => {
+        clearTimeout(timeout);
+        resolve(decision);
+      },
+    });
   });
 }
 
@@ -521,12 +536,12 @@ export function buildAgentToolSet(
           // Assess risk of the tool execution
           const risk = RiskEngine.assessRisk(tool.name, result as any);
           if (risk !== "low") {
-              // Emit telemetry for non‑low risk tool usage
-              sendTelemetryEvent("local_agent:tool_risk", {
-                  tool: tool.name,
-                  risk,
-              });
-              console.warn(`Tool ${tool.name} executed with risk level ${risk}`);
+            // Emit telemetry for non‑low risk tool usage
+            sendTelemetryEvent("local_agent:tool_risk", {
+              tool: tool.name,
+              risk,
+            });
+            console.warn(`Tool ${tool.name} executed with risk level ${risk}`);
           }
           return convertToolResultForAiSdk(result);
         } catch (error) {

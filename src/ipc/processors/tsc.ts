@@ -13,6 +13,7 @@ import {
 import { getTypeScriptCachePath } from "@/paths/paths";
 
 const logger = log.scope("tsc");
+const TSC_WORKER_TIMEOUT_MS = 60_000;
 
 export async function generateProblemReport({
   fullResponse,
@@ -29,32 +30,54 @@ export async function generateProblemReport({
 
     // Create the worker
     const worker = new Worker(workerPath);
+    let settled = false;
+
+    const timeout = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      logger.error(`TSC worker timed out for app ${appPath}`);
+      void worker.terminate();
+      reject(new Error("TypeScript worker timed out"));
+    }, TSC_WORKER_TIMEOUT_MS);
+
+    const settle = (callback: () => void) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      void worker.terminate();
+      callback();
+    };
 
     // Handle worker messages
     worker.on("message", (output: WorkerOutput) => {
-      worker.terminate();
-
-      if (output.success && output.data) {
-        logger.info(`TSC worker completed successfully for app ${appPath}`);
-        resolve(output.data);
-      } else {
-        logger.error(`TSC worker failed for app ${appPath}: ${output.error}`);
-        reject(new Error(output.error || "Unknown worker error"));
-      }
+      settle(() => {
+        if (output.success && output.data) {
+          logger.info(`TSC worker completed successfully for app ${appPath}`);
+          resolve(output.data);
+        } else {
+          logger.error(`TSC worker failed for app ${appPath}: ${output.error}`);
+          reject(new Error(output.error || "Unknown worker error"));
+        }
+      });
     });
 
     // Handle worker errors
     worker.on("error", (error) => {
-      logger.error(`TSC worker error for app ${appPath}:`, error);
-      worker.terminate();
-      reject(error);
+      settle(() => {
+        logger.error(`TSC worker error for app ${appPath}:`, error);
+        reject(error);
+      });
     });
 
     // Handle worker exit
     worker.on("exit", (code) => {
       if (code !== 0) {
-        logger.error(`TSC worker exited with code ${code} for app ${appPath}`);
-        reject(new Error(`Worker exited with code ${code}`));
+        settle(() => {
+          logger.error(
+            `TSC worker exited with code ${code} for app ${appPath}`,
+          );
+          reject(new Error(`Worker exited with code ${code}`));
+        });
       }
     });
 
