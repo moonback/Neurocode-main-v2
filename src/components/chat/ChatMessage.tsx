@@ -16,6 +16,7 @@ import {
   Info,
   Bot,
   Ban,
+  Sparkles,
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { useVersions } from "@/hooks/useVersions";
@@ -29,6 +30,10 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { unescapeXmlAttr } from "../../../shared/xmlEscape";
+import {
+  getSkillInvocationDisplay,
+  stripChatAttachmentTags,
+} from "./skillInvocationDisplay";
 import {
   isCancelledResponseContent,
   stripCancelledResponseNotice,
@@ -69,13 +74,6 @@ function extractAttachments(content: string): {
     });
   }
   return results;
-}
-
-/** Strip <dyad-attachment> tags from user message content. */
-function stripAttachmentInfo(content: string): string {
-  return content
-    .replace(/<dyad-attachment\s+[^>]*><\/dyad-attachment>/g, "")
-    .trim();
 }
 
 interface ChatMessageProps {
@@ -158,7 +156,9 @@ const ChatMessage = ({
   const isCancelled =
     isCancelledResponseContent(message.content) || !!isCancelledPrompt;
   const userTextContent =
-    message.role === "user" ? stripAttachmentInfo(message.content) : "";
+    message.role === "user" ? stripChatAttachmentTags(message.content) : "";
+  const skillInvocation =
+    message.role === "user" ? getSkillInvocationDisplay(message.content) : null;
   const attachments =
     message.role === "user" ? extractAttachments(message.content) : [];
   const hasUserText = userTextContent.length > 0;
@@ -203,7 +203,21 @@ const ChatMessage = ({
                     )}
                   </>
                 ) : (
-                  <VanillaMarkdownParser content={userTextContent} />
+                  <>
+                    {skillInvocation && (
+                      <div
+                        className="not-prose mb-2 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-medium text-purple-700 dark:border-purple-800 dark:bg-purple-950/40 dark:text-purple-300"
+                        data-testid="skill-invocation-badge"
+                      >
+                        <Sparkles className="h-3.5 w-3.5" />
+                        <span>Skill utilisé</span>
+                        <code className="rounded bg-purple-100 px-1.5 py-0.5 font-mono text-[11px] text-purple-800 dark:bg-purple-900/60 dark:text-purple-200">
+                          {skillInvocation.command}
+                        </code>
+                      </div>
+                    )}
+                    <VanillaMarkdownParser content={userTextContent} />
+                  </>
                 )}
               </div>
             )}

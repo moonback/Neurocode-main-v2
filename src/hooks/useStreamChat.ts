@@ -86,6 +86,7 @@ export function useStreamChat({
   const streamMessage = useCallback(
     async ({
       prompt,
+      displayPrompt,
       chatId,
       redo,
       attachments,
@@ -93,6 +94,7 @@ export function useStreamChat({
       onSettled,
     }: {
       prompt: string;
+      displayPrompt?: string;
       chatId: number;
       redo?: boolean;
       attachments?: FileAttachment[];
@@ -171,6 +173,7 @@ export function useStreamChat({
           {
             chatId,
             prompt,
+            displayPrompt,
             redo,
             attachments: convertedAttachments,
             selectedComponents: selectedComponents ?? [],
