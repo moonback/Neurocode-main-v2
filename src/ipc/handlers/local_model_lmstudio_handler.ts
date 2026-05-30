@@ -21,27 +21,39 @@ export interface LMStudioModel {
 }
 
 export async function fetchLMStudioModels(): Promise<{ models: LocalModel[] }> {
-  const modelsResponse: Response = await fetch(
-    `${LM_STUDIO_BASE_URL}/api/v0/models`,
-  );
-  if (!modelsResponse.ok) {
-    throw new DyadError(
-      "Failed to fetch models from LM Studio",
-      DyadErrorKind.External,
+  try {
+    const modelsResponse: Response = await fetch(
+      `${LM_STUDIO_BASE_URL}/api/v0/models`,
     );
-  }
-  const modelsJson = await modelsResponse.json();
-  const downloadedModels = modelsJson.data as LMStudioModel[];
-  const models: LocalModel[] = downloadedModels
-    .filter((model: any) => model.type === "llm")
-    .map((model: any) => ({
-      modelName: model.id,
-      displayName: model.id,
-      provider: "lmstudio",
-    }));
+    if (!modelsResponse.ok) {
+      throw new DyadError(
+        "Failed to fetch models from LM Studio",
+        DyadErrorKind.External,
+      );
+    }
+    const modelsJson = await modelsResponse.json();
+    const downloadedModels = modelsJson.data as LMStudioModel[];
+    const models: LocalModel[] = downloadedModels
+      .filter((model: any) => model.type === "llm")
+      .map((model: any) => ({
+        modelName: model.id,
+        displayName: model.id,
+        provider: "lmstudio",
+      }));
 
-  logger.info(`Successfully fetched ${models.length} models from LM Studio`);
-  return { models };
+    logger.info(`Successfully fetched ${models.length} models from LM Studio`);
+    return { models };
+  } catch (error) {
+    if (
+      error instanceof TypeError &&
+      (error as Error).message.includes("fetch failed")
+    ) {
+      throw new Error(
+        "Could not connect to LM Studio. Make sure the local server is running.",
+      );
+    }
+    throw error;
+  }
 }
 
 export function registerLMStudioHandlers() {

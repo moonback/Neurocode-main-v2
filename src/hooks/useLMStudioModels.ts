@@ -6,6 +6,11 @@ import {
   lmStudioModelsErrorAtom,
 } from "@/atoms/localModelsAtoms";
 import { ipc } from "@/ipc/types";
+import {
+  getLocalModelConnectionError,
+  isExpectedLocalModelConnectionError,
+  toError,
+} from "./localModelErrorUtils";
 
 export function useLocalLMSModels() {
   const [models, setModels] = useAtom(lmStudioModelsAtom);
@@ -25,8 +30,12 @@ export function useLocalLMSModels() {
 
       return modelList;
     } catch (error) {
-      console.error("Error loading local LMStudio models:", error);
-      setError(error instanceof Error ? error : new Error(String(error)));
+      if (!isExpectedLocalModelConnectionError(error, "LM Studio")) {
+        console.error("Error loading local LMStudio models:", error);
+        setError(toError(error));
+      } else {
+        setError(getLocalModelConnectionError("LM Studio"));
+      }
       return [];
     } finally {
       setLoading(false);

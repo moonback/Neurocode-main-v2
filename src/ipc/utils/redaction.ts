@@ -55,7 +55,8 @@ export function redactSensitiveData(value: unknown, depth = 0): unknown {
 
 export function safeJsonForLog(value: unknown): string {
   try {
-    return JSON.stringify(redactSensitiveData(value));
+    const serialized = JSON.stringify(redactSensitiveData(value));
+    return serialized === undefined ? String(value) : serialized;
   } catch {
     return "[Unserializable value]";
   }

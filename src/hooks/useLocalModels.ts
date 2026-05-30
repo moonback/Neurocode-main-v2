@@ -6,6 +6,11 @@ import {
   localModelsErrorAtom,
 } from "@/atoms/localModelsAtoms";
 import { ipc } from "@/ipc/types";
+import {
+  getLocalModelConnectionError,
+  isExpectedLocalModelConnectionError,
+  toError,
+} from "./localModelErrorUtils";
 
 export function useLocalModels() {
   const [models, setModels] = useAtom(localModelsAtom);
@@ -24,8 +29,12 @@ export function useLocalModels() {
 
       return modelList;
     } catch (error) {
-      console.error("Error loading local Ollama models:", error);
-      setError(error instanceof Error ? error : new Error(String(error)));
+      if (!isExpectedLocalModelConnectionError(error, "Ollama")) {
+        console.error("Error loading local Ollama models:", error);
+        setError(toError(error));
+      } else {
+        setError(getLocalModelConnectionError("Ollama"));
+      }
       return [];
     } finally {
       setLoading(false);
