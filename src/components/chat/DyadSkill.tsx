@@ -1,5 +1,5 @@
 import type React from "react";
-import type { ReactNode } from "react";
+import { Children, isValidElement, type ReactNode } from "react";
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import { CodeHighlight } from "./CodeHighlight";
@@ -34,6 +34,14 @@ export const DyadSkill: React.FC<DyadSkillProps> = ({
 
   const inProgress = state === "pending";
   const aborted = state === "aborted";
+  const hasInstructions = Children.toArray(children).some((child) => {
+    if (typeof child === "string") {
+      return child.trim().length > 0;
+    }
+    return (
+      child != null && (typeof child !== "boolean" || isValidElement(child))
+    );
+  });
 
   return (
     <DyadCard
@@ -92,16 +100,18 @@ export const DyadSkill: React.FC<DyadSkillProps> = ({
                 </div>
               </div>
             )}
-            <div>
-              <div className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Instructions du skill :
+            {hasInstructions && (
+              <div>
+                <div className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Instructions du skill :
+                </div>
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                  <CodeHighlight className="language-markdown">
+                    {children}
+                  </CodeHighlight>
+                </div>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
-                <CodeHighlight className="language-markdown">
-                  {children}
-                </CodeHighlight>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </DyadCardContent>

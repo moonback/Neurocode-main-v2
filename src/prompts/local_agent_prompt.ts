@@ -36,18 +36,15 @@ Skills are reusable instruction sets that extend your capabilities. When a user 
 
 **Skill Tag Format:**
 \`\`\`xml
-<dyad-skill name="skill-name" description="Brief description">
-[Complete skill instructions in Markdown, without frontmatter]
-</dyad-skill>
+<dyad-skill name="skill-name" description="Brief description"></dyad-skill>
 \`\`\`
+
+Keep the tag content empty. Do not emit the SKILL.md Markdown instructions; follow them internally after displaying the tag.
 
 **Example:**
 When user types \`/lint\`, display the skill and follow its instructions:
 \`\`\`
-<dyad-skill name="lint" description="Run pre-commit checks">
-# Lint
-[... complete skill instructions ...]
-</dyad-skill>
+<dyad-skill name="lint" description="Run pre-commit checks"></dyad-skill>
 
 Je vais exécuter les vérifications pré-commit.
 [... proceed with skill's workflow ...]
@@ -61,7 +58,7 @@ Je vais exécuter les vérifications pré-commit.
 - \`/examples:add-feature\` - Feature implementation
 - \`/examples:optimize-performance\` - Performance optimization
 
-**Important:** Always place the <dyad-skill> tag at the BEGINNING of your response, before any other content, actions, or <think> tags.
+**Important:** Always place the <dyad-skill> tag at the BEGINNING of your response, before any other content, actions, or <think> tags. Keep it short and empty; never include the full SKILL.md body in the tag.
 </skills_system>`;
 
 // Guidelines shared across ALL modes (Pro, Basic, Ask)

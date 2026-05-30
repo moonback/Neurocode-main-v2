@@ -97,25 +97,7 @@ Example:
 User: /lint
 
 Your response:
-<dyad-skill name="lint" description="Run pre-commit checks including formatting, linting, and type-checking">
-# Lint
-
-Run pre-commit checks including formatting, linting, and type-checking, and fix any errors.
-
-## Instructions
-
-1. **Run formatting check and fix:**
-   \`\`\`
-   npm run fmt
-   \`\`\`
-
-2. **Run linting with auto-fix:**
-   \`\`\`
-   npm run lint:fix
-   \`\`\`
-
-[... rest of skill instructions ...]
-</dyad-skill>
+<dyad-skill name="lint" description="Run pre-commit checks including formatting, linting, and type-checking"></dyad-skill>
 
 Je vais exécuter les vérifications pré-commit pour votre code.
 
@@ -129,9 +111,7 @@ When the user's message matches a skill's context (e.g., mentions debugging, cod
 ## Skill Tag Format
 
 \`\`\`xml
-<dyad-skill name="skill-name" description="Brief description">
-[Complete skill instructions in Markdown, without frontmatter]
-</dyad-skill>
+<dyad-skill name="skill-name" description="Brief description"></dyad-skill>
 \`\`\`
 
 **Attributes:**
@@ -139,9 +119,9 @@ When the user's message matches a skill's context (e.g., mentions debugging, cod
 - \`description\`: Brief description of what the skill does
 
 **Content:**
-- Include the COMPLETE skill instructions from the SKILL.md file
-- Do NOT include the YAML frontmatter (the part between \`---\` markers)
-- Keep all Markdown formatting, headings, lists, and code blocks
+- Keep the tag content empty; only emit the short tag with the skill name and brief description
+- Do NOT include the SKILL.md Markdown instructions or YAML frontmatter in the response
+- Continue to follow the skill instructions internally after displaying the tag
 
 ## Skill Tag Placement
 
@@ -149,9 +129,7 @@ When the user's message matches a skill's context (e.g., mentions debugging, cod
 
 ✅ **Correct (with thinking):**
 \`\`\`
-<dyad-skill name="examples:code-review" description="Perform thorough code review">
-[skill content]
-</dyad-skill>
+<dyad-skill name="examples:code-review" description="Perform thorough code review"></dyad-skill>
 
 <think>
 [your thinking process here]
@@ -163,9 +141,7 @@ Je vais effectuer une revue de code complète.
 
 ✅ **Correct (no thinking needed):**
 \`\`\`
-<dyad-skill name="examples:code-review" description="Perform thorough code review">
-[skill content]
-</dyad-skill>
+<dyad-skill name="examples:code-review" description="Perform thorough code review"></dyad-skill>
 
 Je vais effectuer une revue de code complète.
 ...
@@ -179,9 +155,7 @@ Je vais effectuer une revue de code.
 ...
 </dyad-read>
 
-<dyad-skill name="examples:code-review" description="Perform thorough code review">
-[skill content]
-</dyad-skill>
+<dyad-skill name="examples:code-review" description="Perform thorough code review"></dyad-skill>
 \`\`\`
 
 ## Available Example Skills
@@ -199,9 +173,9 @@ The following example skills are available for common workflows:
 
 1. **Always display the skill** when invoked with a slash command
 2. **Place the tag at the start** of your response
-3. **Include complete instructions** from the skill file
+3. **Keep the tag short and empty**; do not emit the SKILL.md body
 4. **Follow the skill's workflow** exactly as written
-5. **Do not modify** the skill's content
+5. **Do not modify** the skill's instructions internally
 6. **Close the tag properly** with </dyad-skill>
 
 ## Skill Discovery
