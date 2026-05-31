@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Logo NeuroCode](assets/icon/logo.png)
+![Logo NeuroCode](assets/icon/logo-github.png)
 
 **Générateur d'applications IA gratuit, local et open-source**
 
