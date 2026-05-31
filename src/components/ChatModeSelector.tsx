@@ -148,7 +148,7 @@ export function ChatModeSelector() {
                 <span className="font-medium">Plan</span>
               </div>
               <span className="text-xs text-muted-foreground ml-[22px]">
-                Design before you build
+                Concevoir plan avant de construire
               </span>
             </div>
           </SelectItem>
@@ -159,7 +159,7 @@ export function ChatModeSelector() {
                 <span className="font-medium">Agent</span>
               </div>
               <span className="text-xs text-muted-foreground ml-[22px]">
-                Better at bigger tasks and debugging
+                Idéal pour les tâches complexes et le débogage
               </span>
             </div>
           </SelectItem>
@@ -167,10 +167,10 @@ export function ChatModeSelector() {
             <div className="flex flex-col items-start">
               <div className="flex items-center gap-1.5">
                 <Hammer size={14} className="text-muted-foreground" />
-                <span className="font-medium">Build</span>
+                <span className="font-medium">Constructeur</span>
               </div>
               <span className="text-xs text-muted-foreground ml-[22px]">
-                Generate and edit code
+                Générer et modifier du code
               </span>
             </div>
           </SelectItem>
@@ -178,10 +178,10 @@ export function ChatModeSelector() {
             <div className="flex flex-col items-start">
               <div className="flex items-center gap-1.5">
                 <MessageCircle size={14} className="text-purple-500" />
-                <span className="font-medium">Ask</span>
+                <span className="font-medium">Questions</span>
               </div>
               <span className="text-xs text-muted-foreground ml-[22px]">
-                Ask questions about the app
+                Poser des questions sur le code
               </span>
             </div>
           </SelectItem>

@@ -16,7 +16,7 @@ export function ImportAppButton({ className }: { className?: string }) {
           onClick={() => setIsDialogOpen(true)}
         >
           <Upload className="mr-2 h-4 w-4" />
-          Importer un projet
+          Uploader un projet
         </Button>
       </div>
       <ImportAppDialog

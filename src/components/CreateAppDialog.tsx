@@ -104,11 +104,10 @@ export function CreateAppDialog({
                   value={appName}
                   onChange={(e) => setAppName(e.target.value)}
                   placeholder={t("home:enterAppName")}
-                  className={`h-11 shadow-sm transition-all duration-200 focus-visible:ring-2 ${
-                    nameExists
+                  className={`h-11 shadow-sm transition-all duration-200 focus-visible:ring-2 ${nameExists
                       ? "border-red-500 focus-visible:ring-red-500/20"
                       : "focus-visible:border-blue-500 focus-visible:ring-blue-500/20 hover:border-border/80"
-                  }`}
+                    }`}
                   disabled={isSubmitting}
                   autoComplete="off"
                   autoFocus
