@@ -1,0 +1,108 @@
+# Project Context
+- Utilise NeuroCode comme une application desktop Electron open source de génération et édition d'applications assistée par IA.
+- Considère le renderer React comme une UI cliente, et le main process Electron comme le backend applicatif local.
+- Traite les canaux IPC comme l'API interne principale du projet.
+- Préserve la compatibilité des données locales SQLite, des settings utilisateur et des projets générés.
+- Documente explicitement toute information incertaine avec `> ⚠️ À compléter : ...` au lieu de l'inventer.
+
+# Tech Stack
+- Utilise TypeScript pour tout nouveau code applicatif.
+- Utilise React 19 pour l'interface renderer.
+- Utilise TanStack Router pour les routes sous `src/routes/`.
+- Utilise Jotai pour l'état global UI transversal.
+- Utilise TanStack Query pour les données asynchrones et les invalidations.
+- Utilise Electron IPC pour la communication renderer → main.
+- Utilise Zod pour valider les contrats et frontières de données.
+- Utilise Drizzle ORM pour le schéma et les migrations SQLite.
+- Utilise `better-sqlite3` pour la persistance locale.
+- Utilise l'AI SDK pour les fournisseurs IA.
+- Utilise Tailwind CSS et les composants `src/components/ui/` pour le styling.
+- Utilise Vitest pour les tests unitaires et Playwright pour les tests E2E.
+
+# Code Style & Conventions
+- Écris du TypeScript strict et lisible.
+- Préfère les types explicites aux `any`.
+- N'ajoute jamais de bloc `try/catch` autour des imports.
+- Garde les noms de fichiers cohérents avec les domaines existants.
+- Place les composants React réutilisables dans `src/components/`.
+- Place les primitives UI génériques dans `src/components/ui/`.
+- Place les pages dans `src/pages/` et les définitions de routes dans `src/routes/`.
+- Place les contrats IPC dans `src/ipc/types/`.
+- Place les handlers IPC dans `src/ipc/handlers/`.
+- Place les utilitaires sans état dans `src/ipc/utils/`, `src/lib/` ou `src/utils/` selon leur portée.
+- Utilise les alias d'import existants lorsque c'est cohérent.
+- Lance `npm run fmt` ou respecte `oxfmt` avant de finaliser une modification.
+
+# Architecture Patterns
+- Déclare toujours un contrat IPC typé avant d'ajouter un nouveau handler.
+- Ajoute tout nouveau handler au registre `src/ipc/ipc_host.ts` si son domaine n'est pas déjà enregistré.
+- Expose uniquement les canaux IPC présents dans la whitelist preload dérivée des contrats.
+- Valide les entrées IPC avec des schémas Zod.
+- Retourne des objets de sortie stables et documentables depuis les handlers.
+- Garde les effets de bord système dans le main process.
+- Ne manipule pas directement le système de fichiers depuis le renderer.
+- Ne stocke pas de secrets dans SQLite si le mécanisme de settings chiffrés convient mieux.
+- Utilise les relations Drizzle existantes pour les nouvelles relations DB.
+- Génère une migration Drizzle pour toute modification du schéma SQLite.
+
+# Best Practices
+- Vérifie les chemins utilisateur avant toute opération de lecture, écriture, déplacement ou suppression.
+- Empêche le path traversal dans tous les handlers qui acceptent un chemin.
+- Ne logge jamais de clé API, token OAuth, secret provider ou contenu chiffré/déchiffré.
+- Demande un consentement utilisateur pour les outils MCP ou agent potentiellement dangereux.
+- Évite les commandes shell arbitraires issues d'une entrée utilisateur.
+- Ajoute des tests pour toute logique de parsing, migration, sécurité, Git ou IPC critique.
+- Préserve la rétrocompatibilité des settings utilisateur dans `src/lib/schemas.ts` et `src/main/settings.ts`.
+- Utilise des messages d'erreur actionnables pour les erreurs visibles utilisateur.
+- Préfère des fonctions petites, testables et nommées.
+- Documente les compromis techniques dans la PR ou dans un fichier Markdown dédié.
+
+# Common Workflows
+- Lance l'application en développement avec `npm run dev`.
+- Lance le typecheck complet avec `npm run ts`.
+- Lance les tests unitaires avec `npm test`.
+- Lance le format check avec `npm run fmt:check`.
+- Lance le lint avec `npm run lint`.
+- Lance les tests E2E avec `npm run pre:e2e` puis `npm run e2e`.
+- Génère une migration DB avec `npm run db:generate` après modification de `src/db/schema.ts`.
+- Inspecte la DB locale avec `npm run db:studio` si nécessaire.
+- Lance Storybook avec `npm run storybook` pour les composants isolés.
+- Utilise `rg` pour rechercher dans le dépôt.
+- N'utilise jamais `grep -R` ni `ls -R` dans ce dépôt.
+
+# Preferred Dependencies
+- Réutilise les dépendances déjà présentes avant d'en ajouter une nouvelle.
+- Utilise Zod pour la validation runtime.
+- Utilise Drizzle pour les accès et migrations DB.
+- Utilise AI SDK pour les interactions modèles.
+- Utilise `electron-log` pour les logs main process.
+- Utilise `date-fns` pour les manipulations de dates si nécessaire.
+- Utilise `lucide-react` pour les icônes UI.
+- Utilise `sonner` pour les notifications toast.
+- Utilise `react-markdown` et `remark-gfm` pour le rendu Markdown.
+- Justifie toute nouvelle dépendance dans la PR.
+
+# Anti-patterns to Avoid
+- N'invente pas de fonctionnalité non détectée dans le code.
+- Ne duplique pas un canal IPC existant sous un autre nom.
+- Ne contourne pas le preload sécurisé pour accéder à Electron depuis le renderer.
+- Ne mets pas de logique métier durable dans un composant UI profond.
+- Ne modifie pas manuellement les fichiers de migration générés sans raison explicite.
+- Ne supprime pas de champs de settings sans migration de compatibilité.
+- Ne bloque pas le thread UI avec des opérations longues.
+- Ne fais pas d'appels réseau non encapsulés dans un service ou handler de domaine.
+- Ne capture pas les erreurs silencieusement.
+- Ne masque pas les erreurs critiques dans des logs uniquement debug.
+- Ne commite jamais `.env`, tokens, builds locaux ou fichiers temporaires.
+
+# Documentation Rules
+- Rédige la documentation en Markdown GitHub-compatible.
+- Utilise des tableaux pour les variables, endpoints, colonnes DB et décisions.
+- Utilise des blocs de code avec langage explicite.
+- Sépare clairement les faits détectés des hypothèses.
+- Ajoute `> ⚠️ À compléter : [raison]` pour toute information manquante ou ambiguë.
+- Mets à jour `README.md` quand les scripts, prérequis ou variables d'environnement changent.
+- Mets à jour `API_DOCS.md` quand un contrat IPC est ajouté, supprimé ou modifié.
+- Mets à jour `DB_SCHEMA.md` quand `src/db/schema.ts` change.
+- Mets à jour `ARCHITECTURE.md` quand un flux majeur, une intégration ou une couche change.
+- Mets à jour `CONTRIBUTING.md` quand le workflow de test, lint ou review change.
