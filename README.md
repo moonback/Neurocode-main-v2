@@ -1,19 +1,38 @@
 # NeuroCode
 
-## Pitch
+<div align="center">
 
-NeuroCode est une application desktop open source pour créer, modifier et exécuter des applications avec l'aide de modèles d'IA.
-Elle s'adresse aux développeurs, makers et équipes qui veulent prototyper rapidement tout en gardant les projets sur leur machine.
-L'application combine chat IA, édition de code, prévisualisation locale, historique Git et intégrations cloud optionnelles.
-Elle supporte plusieurs fournisseurs IA, des modèles locaux, des workflows de prompts, des skills et des outils MCP.
-Elle fournit aussi des fonctions d'administration pour les paramètres, la télémétrie, les intégrations GitHub/Supabase/Neon/Vercel et les métriques de tokens.
+![Logo NeuroCode](assets/icon/logo-github.png)
 
-## Badges
+**Générateur d'applications IA gratuit, local et open-source**
 
-![Build](https://img.shields.io/badge/build-CI%20GitHub%20Actions-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-0.44.0--beta.1-orange)
+[![Licence MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.45.0--beta.1-blue.svg)](package.json)
+[![Node](https://img.shields.io/badge/node-%3E%3D24-brightgreen.svg)](package.json)
+[![Electron](https://img.shields.io/badge/electron-40.0.0-blue.svg)](package.json)
+[![Tests](https://img.shields.io/badge/Tests-1565%20passing-brightgreen?logo=vitest)](__tests__/README.md)
 
+[Fonctionnalités](#fonctionnalités) • [Installation](#installation) • [Utilisation](#utilisation) • [Développement](#développement) • [Contribution](#contribution)
+
+</div>
+
+---
+
+## Présentation
+
+NeuroCode est une puissante application de bureau qui permet aux développeurs de créer et de modifier des applications web grâce au développement assisté par l'IA. Basé sur Electron, il offre un aperçu en direct de vos applications tout en effectuant des modifications de code en temps réel, combinant interaction par chat et capacités d'IA autonomes.
+
+### Pourquoi choisir NeuroCode ?
+
+- **🔒 Confidentialité avant tout :** Tout le traitement se fait localement sur votre machine
+- **🤖 Support multi-IA :** Fonctionne avec OpenAI, Anthropic, Google, Azure, et bien d'autres
+- **⚡ Aperçu en temps réel :** Visualisez instantanément vos changements dans le panneau d'aperçu intégré
+- **🎯 Plusieurs modes :** Modes Build, Ask, Plan et Agent Local pour différents flux de travail
+- **🛠️ Full Stack :** Intégration Git, gestion de base de données et outils de déploiement
+- **🎨 Personnalisable :** Thèmes, modèles et fournisseurs de modèles d'IA personnalisés
+- **🧠 Contexte intelligent :** Sélection automatique des fichiers les plus pertinents pour des réponses IA plus rapides et précises
+
+---
 ## Stack technique
 
 | Technologie                 | Rôle                                           | Version détectable                    |
@@ -38,76 +57,180 @@ Elle fournit aussi des fonctions d'administration pour les paramètres, la tél�
 | Storybook                   | Catalogue de composants                        | ^8.6.15                               |
 | Oxlint / Oxfmt              | Lint et formatage                              | oxlint ^1.41.0, oxfmt ^0.26.0         |
 
-## Fonctionnalités principales
+## Fonctionnalités
 
-### Utilisateur
+### Capacités de base
 
-- Créer, importer, copier, renommer, rechercher, lancer, arrêter et redémarrer des applications locales.
-- Dialoguer avec l'IA en modes build, ask, plan et agent local, avec streaming, annulation, pièces jointes et sélection de composants.
-- Modifier et lire des fichiers de projet depuis l'interface, rechercher dans le code et suivre les versions générées.
-- Configurer plusieurs fournisseurs IA : OpenAI, Anthropic, Google, Vertex, OpenRouter, Ollama, LM Studio, Azure, xAI, Bedrock, Minimax et NVIDIA.
-- Utiliser des modèles locaux, des providers custom, des prompts réutilisables, des skills et des serveurs MCP.
-- Gérer les intégrations GitHub, Supabase, Neon et Vercel depuis l'application.
-- Visualiser médias, thèmes, bibliothèque de prompts/templates, analytics de tokens et notes de release.
-- Activer la génération d'images, la transcription audio Pro, les sandboxes cloud et les liens de partage lorsque les services associés sont disponibles.
+#### 🤖 Développement propulsé par l'IA
 
-### Administrateur / mainteneur
+- **Mode Build :** Génération et modification interactive de code avec aperçu en direct
+- **Mode Ask :** Questions-réponses sur votre base de code
+- **Mode Plan :** Planification assistée par l'IA et décomposition des tâches avec collecte des besoins
+- **Mode Agent Local :** Agent autonome qui exécute des outils et prend des décisions
+- **Suggestions IA :** Propositions contextuelles intelligentes (fonctionnalités, corrections, optimisations) basées sur votre projet
+- **Optimisation de prompt :** Amélioration automatique des prompts pour de meilleurs résultats IA
 
-- Gérer les paramètres utilisateur chiffrés localement, la télémétrie, le canal de release et les fonctionnalités expérimentales.
-- Définir le dossier d'applications, le chemin Node.js, les variables d'environnement par application et les règles de sécurité npm.
-- Superviser logs, debug bundle, métriques de performance, statut Node.js et état des processus applicatifs.
-- Exécuter migrations Drizzle, tests unitaires, tests E2E, lint, formatage, packaging et publication Electron Forge.
-- Maintenir les contrats IPC typés, les handlers main process, les migrations SQLite et les tests associés.
+#### 💻 Édition de code et aperçu
 
-## Prérequis
+- Intégration de l'éditeur Monaco avec coloration syntaxique
+- Panneau d'aperçu en direct avec modes d'appareils réponsifs (ordinateur, tablette, mobile)
+- Modifications de code reflétées instantanément en temps réel
+- Support de nombreux types de fichiers et frameworks
 
-| Outil / compte                   | Version minimale / condition                          | Pourquoi                                                                |
-| -------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------- |
-| Node.js                          | >= 22                                                 | Requis par `package.json` et les scripts Electron/Vite                  |
-| npm                              | Version fournie avec Node 22 recommandée              | Les scripts utilisent `npm run ...`                                     |
-| Git                              | Version récente                                       | Gestion des projets générés, synchronisation GitHub et repository local |
-| Python / outils natifs           | Selon OS, requis par certains modules natifs Electron | Compilation de `better-sqlite3`, `node-pty` si nécessaire               |
-| Compte fournisseur IA            | Optionnel                                             | Requis pour les modèles cloud configurés par clé API ou OAuth           |
-| Compte GitHub                    | Optionnel                                             | Requis pour connecter, créer, pousser et cloner des dépôts              |
-| Comptes Supabase / Neon / Vercel | Optionnel                                             | Requis pour les intégrations cloud correspondantes                      |
-| macOS Apple Developer            | Optionnel                                             | Uniquement pour notarisation/signature macOS                            |
+#### 🔄 Contrôle de version et Git
 
-## Installation
+- Intégration Git native (compatible Windows)
+- Gestion des dépôts GitHub
+- Opérations sur les branches et résolution de conflits de fusion
+- Suivi des commits et versionnage
 
-1. Cloner le dépôt.
+#### 🗄️ Intégration de base de données
 
-```bash
-git clone https://github.com/dyad-sh/dyad.git NeuroCode
-cd NeuroCode
-```
+- **Supabase :** Intégration de base de données PostgreSQL et d'authentification
+- **Neon :** Gestion de PostgreSQL Serverless
+- Gestion des schémas et migrations
+- Exécution de requêtes SQL
 
-2. Installer les dépendances.
+#### 🚀 Déploiement et hébergement
 
-```bash
-npm install
-```
+- Intégration Vercel pour un déploiement en un clic
+- Suivi des URL de déploiement
+- Gestion des variables d'environnement
+- Support des dossiers d'applications personnalisés
 
-3. Préparer la configuration locale.
+#### 🎨 Personnalisation
 
-```bash
-cp .env.example .env
-```
+- Thèmes générés par l'IA ou création manuelle de thèmes
+- Fournisseurs de modèles de langage personnalisés
+- Intégration de serveurs Model Context Protocol (MCP)
+- Configuration du contexte de chat spécifique à l'application
 
-4. Renseigner les clés et options nécessaires dans `.env`.
+#### 🖼️ Gestion des médias
 
-```bash
-$EDITOR .env
-```
+- Bibliothèque de médias intégrée pour les ressources d'application
+- Capacités de génération d'images par l'IA
+- Optimisation et nettoyage des fichiers médias
+- Service de médias persistant avec protocole personnalisé
 
-5. Vérifier le typage, le formatage et les tests avant de développer.
+#### 📦 Export de Codebase pour LLM
 
-```bash
-npm run ts
-npm run fmt:check
-npm test
-```
+- **Export en un clic :** Exportez toute votre codebase en un seul fichier Markdown optimisé pour les LLM
+- **Format structuré :** Table des matières, coloration syntaxique, métadonnées de fichiers
+- **Options configurables :** Inclure/exclure les tests, fichiers cachés, avec taille maximale personnalisable
+- **Filtrage intelligent :** Exclusion automatique de node_modules, .git, dist, fichiers binaires
+- **Ouverture automatique :** Le dossier contenant le fichier exporté s'ouvre automatiquement après l'export
+- **Cas d'usage :** Analyse de code par IA, documentation automatique, revue de code, migration de projet
 
-## Configuration
+#### 🧩 Système de Skills
+
+- **Création de skills :** Définissez des instructions réutilisables dans des fichiers SKILL.md
+- **Invocation par commande slash :** Utilisez `/skill-name` pour invoquer des skills
+- **Chargement automatique :** L'IA suggère automatiquement les skills pertinents selon le contexte
+- **Skills groupés :** Organisez des skills connexes sous des namespaces
+- **Partage de skills :** Partagez des skills au niveau utilisateur ou workspace
+- **Skills d'exemple :** Bibliothèque de skills pour workflows courants (revue de code, débogage, tests, etc.)
+- **Validation :** Validation automatique du format et de la syntaxe des skills
+
+### 🧠 Contexte Intelligent (Smart Context)
+
+NeuroCode utilise un **Context Manager avancé** pour sélectionner automatiquement les fichiers les plus pertinents de votre projet avant de les envoyer à l’IA.
+
+#### ⚙️ Pipeline
+
+Le système fonctionne en 4 étapes :
+
+1. **File Selector**
+   - Analyse les imports et dépendances
+   - Recherche par mots-clés si aucun fichier actif
+
+2. **Scorer**
+   - Attribue un score de pertinence (0 → 1) basé sur :
+     - Relations d’import (40%)
+     - Correspondance de symboles (30%)
+     - Proximité des fichiers (20%)
+     - Récence (10%)
+
+3. **Assembler**
+   - Sélectionne les fichiers selon une stratégie :
+     - Conservative (précis, rapide)
+     - Balanced (équilibré)
+     - Deep (contexte large)
+   - Tronque automatiquement les fichiers peu pertinents
+   - Respecte strictement le budget de tokens
+
+4. **Observability Store**
+   - Enregistre chaque interaction
+   - Permet d’expliquer pourquoi un fichier a été inclus
+
+#### 🎯 Bénéfices
+
+- Réduction massive du nombre de tokens
+- Réponses IA plus pertinentes
+- Meilleures performances sur gros projets
+- Debug facilité grâce à l’observabilité
+
+#### 🎛️ Stratégies disponibles
+
+| Stratégie        | Description                  |
+| ---------------- | ---------------------------- |
+| **Conservative** | Très précis, peu de fichiers |
+| **Balanced**     | Équilibre (par défaut)       |
+| **Deep**         | Contexte large, plus complet |
+
+#### 🔍 Observabilité
+
+Accédez aux décisions du Context Manager :
+
+- Quels fichiers ont été sélectionnés
+- Leur score de pertinence
+- Pourquoi certains fichiers ont été exclus
+
+Disponible via IPC :
+
+- `get-context-observability`
+- `get-recent-context-observability`
+
+#### 📊 Pipeline du Context Manager
+
+![Pipeline Context Manager](assets/context-manager-pipeline.png)
+
+### 🎯 Optimisation des Tokens et Performance des Skills
+
+NeuroCode intègre un système avancé d'optimisation des tokens qui réduit considérablement la consommation de tokens (jusqu'à 70%) tout en améliorant les performances des skills.
+
+#### 💰 Réduction des Coûts
+
+- **Gestion intelligente du budget** : Allocation automatique selon la complexité de la tâche
+- **Optimisation du contexte** : Suppression des duplicatas, logs et commentaires non essentiels
+- **Compression intelligente** : Extraction de signatures pour les gros fichiers (>500 lignes)
+- **Sélection adaptive** : Inclusion uniquement des fichiers les plus pertinents
+
+#### ⚡ Performance des Skills
+
+- **Chargement lazy** : Métadonnées chargées en premier, contenu à la demande
+- **Cache LRU** : Skills fréquemment utilisés gardés en mémoire (timeout 10 min)
+- **Préchargement prédictif** : Skills prédits et préchargés pendant l'inactivité
+- **Exécution parallèle** : Skills indépendants exécutés simultanément
+- **Gestion des dépendances** : Résolution topologique et détection circulaire
+
+#### 📊 Analytics et Reporting
+
+Suivez votre utilisation en temps réel :
+
+- **Statistiques détaillées** : Tokens par conversation, skill, modèle
+- **Top consommateurs** : Identifiez les conversations les plus coûteuses
+- **Calcul des coûts** : Estimation automatique basée sur les tarifs des modèles
+- **Export de données** : CSV ou JSON pour analyse externe
+- **Utilisation au fil du temps** : Visualisez les tendances
+
+#### 🔧 Outils d'Analyse
+
+- **Analyseur de skills** : Estimation de tokens, détection de redondance
+- **Avertissements automatiques** : Alertes si un skill dépasse les limites
+- **Suggestions d'optimisation** : Recommandations pour réduire la taille
+- **Parser et validateur** : Validation automatique du format des skills
+
+#### ⚙️ Configuration
 
 | Variable                    | Description                                               | Exemple                       | Obligatoire |
 | --------------------------- | --------------------------------------------------------- | ----------------------------- | ----------- |
@@ -125,66 +248,887 @@ npm test
 | `NODE_ENV`                  | Mode d'exécution Node/Electron.                           | `development`                 | Non         |
 | `E2E_TEST_BUILD`            | Active les comportements de build E2E.                    | `true`                        | Non         |
 | `CI`                        | Indique une exécution en CI.                              | `true`                        | Non         |
-| `DYAD_ENGINE_URL`           | URL d'un moteur IA compatible Dyad.                       | `http://localhost:8080/v1`    | Non         |
-| `DYAD_GATEWAY_URL`          | URL d'une gateway Dyad si utilisée.                       | `https://gateway.example.com` | Non         |
 
 Les secrets utilisateur saisis dans l'application sont stockés dans le fichier de paramètres local et chiffrés via `electron.safeStorage` lorsque disponible. Les données applicatives locales sont stockées dans le répertoire utilisateur Electron, notamment `sqlite.db`.
 
-## Lancement
+Activez l'optimisation dans **Paramètres > AI Settings** :
 
-### Développement
+- ☑️ **Enable Token Optimization** - Active le système complet
+- ☑️ **Enable Skill Caching** - Active le cache LRU
+- ☑️ **Enable Skill Preloading** - Active le préchargement prédictif
+- 📊 **Skill Cache Size** : 50 (par défaut)
+- 📊 **Preloading Memory Limit** : 10 skills (par défaut)
+
+#### 📈 Résultats Typiques
+
+| Métrique                   | Amélioration |
+| -------------------------- | ------------ |
+| Réduction de tokens        | 50-70%       |
+| Temps de chargement skills | -80%         |
+| Temps d'exécution          | -60%         |
+| Taux de cache hit          | 85-95%       |
+| Précision de prédiction    | 70-85%       |
+
+
+#### 🎯 Démarrage Rapide
+
+1. Ouvrez les Paramètres (`Ctrl/Cmd + ,`)
+2. Activez les trois options d'optimisation
+3. Commencez à utiliser NeuroCode normalement
+4. Observez la réduction de consommation dans la TokenBar
+
+**Économies estimées :** 40-60% de réduction des coûts mensuels
+
+---
+
+### Fonctionnalités avancées
+
+- **Système de Skills :** Créez et gérez des instructions réutilisables pour étendre les capacités de NeuroCode
+- **Suggestions IA :** Génération dynamique de propositions d'évolution basées sur le contexte actuel du chat et du projet
+- **Optimisation de prompt :** Améliorez automatiquement vos prompts avec l'IA pour obtenir de meilleurs résultats
+- **Compactage du contexte :** Résumé automatique des longues conversations
+- **Revue de sécurité :** Analyse de sécurité du code par l'IA
+- **Correction automatique des problèmes :** Détection et résolution automatique des erreurs
+- **Barre de jetons (TokenBar) :** Visibilité en temps réel de la consommation de jetons (activée par défaut)
+- **Gestion des jetons :** Gestion intelligente du contexte pour les longs chats
+- **Recherche Web :** Recherche sur le web pour des informations à jour
+- **Budget de réflexion :** Support des modèles de raisonnement (o1/o3)
+- **Contexte intelligent :** Sélection intelligente de fichiers pour le contexte
+- **Génération de code (Codegen) :** Système de scaffolding et génération automatique de code pour accélérer le développement
+
+---
+
+## Génération de Code (Codegen)
+
+NeuroCode intègre un système puissant de génération de code qui automatise la création de boilerplate et accélère le développement.
+
+### 🚀 Fonctionnalités Codegen
+
+#### Génération automatique
+
+- **Endpoints IPC :** Génération complète (contrat, handler, hook React Query, test E2E)
+- **Composants React :** Composant + test + story Storybook
+- **Schémas de base de données :** Schémas Drizzle ORM avec migrations
+- **Tests E2E :** Tests Playwright avec fixtures et patterns Base UI
+- **Snippets :** Bibliothèque de snippets réutilisables
+
+#### Système de templates
+
+- **Templates personnalisables :** Modifiez les templates selon vos besoins
+- **Substitution de variables :** Syntaxe `{{variableName}}` avec filtres (camelCase, PascalCase, kebab-case)
+- **Logique conditionnelle :** `{{#if condition}}...{{/if}}` et boucles `{{#each items}}...{{/each}}`
+- **Héritage de templates :** Templates parent-child avec override de blocs
+- **Cache intelligent :** Rechargement automatique lors de modifications
+
+#### Validation et formatage
+
+- **Validation TypeScript :** Vérification des types sur le code généré
+- **Formatage automatique :** Intégration oxfmt et oxlint avec auto-fix
+- **Validation des imports :** Vérification de la résolution des imports
+- **Conventions de nommage :** Validation des conventions du projet
+
+#### Refactoring sécurisé
+
+- **Renommage IPC :** Mise à jour automatique de toutes les références (handler, contrat, hook, tests)
+- **Renommage de composants :** Mise à jour des imports et références
+- **Préservation Git :** Utilisation de `git mv` pour conserver l'historique
+
+### 📋 Commandes Codegen
+
+#### Générer un endpoint IPC
 
 ```bash
+npm run codegen -- ipc <nom> --domain <domaine> [options]
+```
+
+**Options :**
+
+- `--dry-run` - Aperçu sans créer de fichiers
+- `--non-interactive` - Mode non-interactif
+- `--no-test` - Ignorer la génération du test E2E
+- `-m, --mutation` - Marquer comme endpoint de mutation
+- `--no-format` - Ignorer le formatage automatique
+- `--lint` - Exécuter le linter avec auto-fix
+
+**Exemple :**
+
+```bash
+npm run codegen -- ipc getUser --domain user
+```
+
+Génère :
+
+- `src/ipc/types/user/getUser.ts` - Contrat IPC
+- `src/ipc/handlers/user/getUser.ts` - Handler
+- `src/hooks/use-getUser.ts` - Hook React Query
+- `e2e-tests/user-getUser.spec.ts` - Test E2E
+
+#### Générer un composant React
+
+```bash
+npm run codegen -- component <nom> [options]
+```
+
+**Options :**
+
+- `--dry-run` - Aperçu sans créer de fichiers
+- `--no-test` - Ignorer le fichier de test
+- `--no-story` - Ignorer la story Storybook
+- `--base-ui` - Inclure les patterns Base UI
+- `--no-format` - Ignorer le formatage automatique
+
+**Exemple :**
+
+```bash
+npm run codegen -- component UserProfile --base-ui
+```
+
+Génère :
+
+- `src/components/UserProfile.tsx` - Composant
+- `src/components/UserProfile.test.tsx` - Tests
+- `src/components/UserProfile.stories.tsx` - Story Storybook
+
+#### Générer un schéma de base de données
+
+```bash
+npm run codegen -- db <nom> [options]
+```
+
+**Options :**
+
+- `--dry-run` - Aperçu sans créer de fichiers
+- `--no-append` - Créer un nouveau fichier au lieu d'ajouter à `schema.ts`
+- `--no-format` - Ignorer le formatage automatique
+
+**Exemple :**
+
+```bash
+npm run codegen -- db users
+```
+
+Génère un schéma Drizzle ORM et exécute `drizzle-kit generate` pour créer les migrations.
+
+#### Générer un test E2E
+
+```bash
+npm run codegen -- test <nom> [options]
+```
+
+**Options :**
+
+- `--dry-run` - Aperçu sans créer de fichiers
+- `-f, --feature <feature>` - Nom de la fonctionnalité pour le fichier
+- `--no-format` - Ignorer le formatage automatique
+
+**Exemple :**
+
+```bash
+npm run codegen -- test authentication --feature login
+```
+
+#### Insérer un snippet
+
+```bash
+npm run codegen -- snippet <type> [nom] [options]
+```
+
+**Types disponibles :** `ipc-registration`, `react-hook`
+
+**Options :**
+
+- `-f, --file <fichier>` - Fichier cible pour l'insertion
+- `--dry-run` - Aperçu sans modifications
+
+#### Refactoring (Renommage)
+
+```bash
+npm run codegen -- rename <type> <ancienNom> <nouveauNom> [options]
+```
+
+**Types :** `ipc`, `component`
+
+**Options :**
+
+- `-d, --domain <domaine>` - Domaine pour l'endpoint IPC
+- `--dry-run` - Aperçu sans modifications
+
+**Exemple :**
+
+```bash
+npm run codegen -- rename ipc getUser fetchUser --domain user
+```
+
+Met à jour automatiquement toutes les références dans le projet.
+
+#### Workflow complexe
+
+```bash
+npm run codegen -- workflow <nom> [options]
+```
+
+Génère un ensemble complet (IPC + Composant + DB) pour une fonctionnalité.
+
+**Options :**
+
+- `-d, --domain <domaine>` - Nom du domaine/module
+- `--no-ipc` - Ignorer la génération IPC
+- `--no-component` - Ignorer la génération de composant
+- `--no-db` - Ignorer la génération de base de données
+- `--dry-run` - Aperçu sans modifications
+
+### ⚙️ Configuration Codegen
+
+Le système de génération de code est configurable via `codegen.config.json` :
+
+```json
+{
+  "templates": {
+    "directory": "src/codegen/templates",
+    "ipc": {
+      "contract": "ipc-contract.template",
+      "handler": "ipc-handler.template",
+      "hook": "ipc-hook.template",
+      "test": "ipc-test.template"
+    },
+    "component": {
+      "component": "react-component.template",
+      "test": "react-component-test.template",
+      "story": "react-component-story.template"
+    }
+  },
+  "naming": {
+    "ipc": {
+      "contractSuffix": "Contract",
+      "handlerSuffix": "Handler",
+      "hookPrefix": "use"
+    },
+    "component": {
+      "suffix": "",
+      "testSuffix": ".test",
+      "storySuffix": ".stories"
+    }
+  },
+  "paths": {
+    "ipc": {
+      "contracts": "src/ipc/types",
+      "handlers": "src/ipc/handlers",
+      "hooks": "src/hooks"
+    },
+    "components": "src/components",
+    "schemas": "src/db",
+    "tests": {
+      "e2e": "e2e-tests",
+      "unit": "src/__tests__"
+    }
+  },
+  "formatting": {
+    "enabled": true,
+    "lint": true,
+    "autoFix": true,
+    "typeCheck": true
+  }
+}
+```
+
+### 🎯 Avantages
+
+- **Gain de temps :** Réduction de 80% du temps de création de boilerplate
+- **Cohérence :** Code généré suivant toujours les conventions du projet
+- **Qualité :** Formatage et validation automatiques
+- **Sécurité :** Validation des chemins et échappement des caractères spéciaux
+- **Flexibilité :** Templates personnalisables selon vos besoins
+
+### 📚 Documentation complète
+
+Pour plus de détails sur le système de génération de code, consultez :
+
+- `src/codegen/README.md` - Documentation technique complète
+- `src/codegen/CONFIG.md` - Options de configuration détaillées
+
+---
+
+## Export de Codebase pour LLM
+
+NeuroCode permet d'exporter l'intégralité de votre codebase en un seul fichier Markdown optimisé pour les Large Language Models (LLM).
+
+### 🎯 Cas d'usage
+
+- **Analyse de code par IA :** Fournir tout votre code à un LLM pour analyse complète
+- **Documentation automatique :** Générer de la documentation basée sur l'ensemble du code
+- **Revue de code :** Partager facilement tout le code avec un LLM pour revue approfondie
+- **Migration :** Analyser un projet complet avant migration vers une nouvelle technologie
+- **Apprentissage :** Permettre à un LLM de comprendre l'architecture complète de votre projet
+
+### 📍 Comment utiliser
+
+1. Allez dans **Apps** (page d'accueil)
+2. Cliquez sur une application
+3. Cliquez sur le bouton **"Exporter pour LLM"** (sous le bouton "Open in Chat")
+4. Configurez les options d'export :
+   - ☑️ Inclure les fichiers de tests
+   - ☑️ Inclure les fichiers cachés (.env.example, .gitignore, etc.)
+5. Cliquez sur **"Exporter"**
+6. Le fichier est généré et le dossier s'ouvre automatiquement
+
+### 📄 Format du fichier généré
+
+Le fichier Markdown contient :
+
+- **En-tête :** Informations sur l'export (date, chemin, nombre de fichiers, taille)
+- **Table des matières :** Liste cliquable de tous les fichiers
+- **Fichiers :** Chaque fichier avec coloration syntaxique appropriée
+- **Résumé :** Statistiques finales de l'export
+
+**Nom du fichier :** `codebase-export-[timestamp].md`
+
+### ✅ Ce qui est inclus
+
+- Tous les fichiers de code source (.ts, .tsx, .js, .jsx, .py, etc.)
+- Fichiers de configuration (.json, .yaml, .toml, etc.)
+- Documentation (.md, .txt)
+- Fichiers de build (Dockerfile, Makefile)
+- Structure de dossiers complète
+
+### 🚫 Ce qui est exclu automatiquement
+
+- `node_modules/`, `.git/`
+- `dist/`, `build/`, `.next/`, `.nuxt/`
+- `coverage/`, `.cache/`
+- Fichiers binaires (images, vidéos, etc.)
+- Fichiers > 1MB (configurable)
+- Fichiers de lock (package-lock.json, yarn.lock, etc.)
+
+### 💡 Exemples d'utilisation
+
+**Analyse d'architecture :**
+
+```
+Prompt : "Voici ma codebase complète. Analyse l'architecture et suggère des améliorations."
+[Coller le contenu du fichier exporté]
+```
+
+**Génération de documentation :**
+
+```
+Prompt : "Génère une documentation complète pour ce projet."
+[Coller le contenu du fichier exporté]
+```
+
+**Détection de bugs :**
+
+```
+Prompt : "Analyse ce code et identifie les bugs potentiels et problèmes de sécurité."
+[Coller le contenu du fichier exporté]
+```
+
+### 📊 Limites des LLM
+
+Gardez en tête les limites de contexte des LLM :
+
+| Modèle     | Limite de contexte | Fichiers moyens supportés |
+| ---------- | ------------------ | ------------------------- |
+| GPT-4      | ~128K tokens       | ~300-400 fichiers         |
+| Claude 3   | ~200K tokens       | ~500-600 fichiers         |
+| GPT-3.5    | ~16K tokens        | ~40-50 fichiers           |
+| Claude 3.5 | ~200K tokens       | ~500-600 fichiers         |
+
+Si votre export est trop volumineux, désactivez l'inclusion des tests ou exportez seulement certains dossiers.
+
+### 📚 Documentation complète
+
+Pour plus de détails, consultez [docs/EXPORT_CODEBASE_LLM.md](docs/EXPORT_CODEBASE_LLM.md)
+
+---
+
+## Fournisseurs d'IA supportés
+
+NeuroCode supporte de nombreux fournisseurs d'IA nativement :
+
+| Fournisseur          | Modèles                          | Type  |
+| -------------------- | -------------------------------- | ----- |
+| **OpenAI**           | GPT-4, GPT-3.5, o1, o3           | Cloud |
+| **Anthropic**        | Claude 3.5 Sonnet, Claude 3 Opus | Cloud |
+| **Google**           | Gemini Pro, Gemini Ultra         | Cloud |
+| **Google Vertex AI** | Modèles Gemini                   | Cloud |
+| **Azure OpenAI**     | GPT-4, GPT-3.5                   | Cloud |
+| **Amazon Bedrock**   | Claude, Titan                    | Cloud |
+| **XAI**              | Modèles Grok                     | Cloud |
+| **OpenRouter**       | Modèles multiples                | Cloud |
+| **Ollama**           | Llama, Mistral, CodeLlama        | Local |
+| **LM Studio**        | Tout modèle GGUF                 | Local |
+| **MiniMax**          | Modèles MiniMax                  | Cloud |
+
+---
+
+## Installation
+
+### Prérequis
+
+- **Node.js** >= 24
+- **npm** ou **yarn**
+- **Git** (optionnel, inclus avec l'application)
+
+### À partir des sources
+
+```bash
+# Cloner le dépôt
+git clone https://github.com/dyad-sh/dyad.git
+cd dyad
+
+# Installer les dépendances
+npm install
+
+# Initialiser les hooks de pré-commit
+npm run init-precommit
+
+# Lancer le développement
 npm run dev
 ```
 
-Avec moteur IA local compatible Dyad :
+### Générer les installateurs
 
 ```bash
-npm run dev:engine
-```
-
-### Production / packaging local
-
-```bash
+# Packager l'application
 npm run package
+
+# Créer les installateurs spécifiques à la plateforme
 npm run make
 ```
 
-Lancer l'application packagée dépend du répertoire généré par Electron Forge dans `out/`.
+---
 
-## Structure du projet
+## Utilisation
 
-```text
-.
-├── assets/                    # Logos, icônes et assets statiques
-├── docs/                      # Documentation fonctionnelle existante
-├── drizzle/                   # Migrations SQLite générées par Drizzle
-├── e2e-tests/                 # Scénarios Playwright Electron
-├── scripts/                   # Scripts release, codegen et maintenance
-├── scaffold/                  # Template de projet généré par l'application
-├── src/
-│   ├── app/                   # Layout Electron renderer
-│   ├── atoms/                 # État Jotai
-│   ├── components/            # Composants UI, chat, intégrations, settings
-│   ├── db/                    # Initialisation DB et schéma Drizzle
-│   ├── ipc/                   # Contrats, handlers, preload channels et utilitaires IPC
-│   ├── lib/                   # Schémas, constantes et helpers partagés
-│   ├── main/                  # Services main process et paramètres
-│   ├── pages/                 # Pages React
-│   ├── routes/                # Définition TanStack Router
-│   ├── skills/                # Registre et exécution des skills
-│   └── utils/                 # Utilitaires transverses
-├── workers/                   # Workers Node/Vite, notamment TypeScript
-├── package.json               # Scripts, métadonnées et dépendances
-├── drizzle.config.ts          # Configuration Drizzle SQLite
-└── vite.*.config.mts          # Configurations Vite par cible Electron
+### Pour commencer
+
+1. **Lancez NeuroCode** et configurez votre clé API de fournisseur d'IA dans les Paramètres (Settings)
+2. **Créez une nouvelle application** ou importez un projet existant
+3. **Commencez à discuter** avec l'IA pour construire ou modifier votre application
+4. **Optimisez vos prompts** en cliquant sur l'icône ✨ pour améliorer automatiquement vos demandes
+5. **Visualisez les changements** en temps réel dans le panneau d'aperçu intégré
+
+### Modes de discussion
+
+#### Mode Build (Par défaut)
+
+Génération de code interactive avec exécution d'outils autonome. L'IA peut lire des fichiers, écrire du code et effectuer des modifications directement dans votre projet.
+
+```
+Vous : "Crée un formulaire de contact avec des champs nom, email et message"
+IA : [Crée le composant formulaire, ajoute la validation, applique le style]
 ```
 
-## Contribuer
+#### Mode Ask
 
-Consultez [CONTRIBUTING.md](./CONTRIBUTING.md) pour le workflow Git, les conventions de commits, les standards de code et les commandes de test.
+Mode questions-réponses pour comprendre votre base de code sans apporter de modifications.
+
+```
+Vous : "Comment fonctionne le flux d'authentification ?"
+IA : [Explique l'implémentation de l'authentification]
+```
+
+#### Mode Plan
+
+Interface de planification collaborative pour des fonctionnalités complexes. L'IA pose des questions de clarification et crée des plans d'implémentation détaillés.
+
+```
+Vous : "Je veux ajouter des profils utilisateurs"
+IA : [Pose des questions sur les besoins, crée un plan détaillé]
+```
+
+#### Mode Agent Local
+
+Agent autonome capable d'exécuter des tâches multi-étapes de manière indépendante avec appels d'outils et prise de décision.
+
+```
+Vous : "Refactorise la couche API pour utiliser TypeScript"
+IA : [Analyse la base de code, crée un plan, exécute la refactorisation]
+```
+
+### Raccourcis clavier
+
+- `Ctrl/Cmd + N` - Nouvelle application
+- `Ctrl/Cmd + K` - Nouvelle discussion
+- `Ctrl/Cmd + ,` - Paramètres
+- `Ctrl/Cmd + R` - Redémarrer le serveur de l'application
+- `Ctrl/Cmd + Shift + R` - Reconstruire l'application
+
+### Fonctionnalités rapides
+
+- **Export de codebase :** Accessible via le bouton "Exporter pour LLM" sur la page de détails de l'application
+
+### Optimisation de prompt
+
+Cliquez sur l'icône ✨ (sparkles) à côté du champ de saisie pour optimiser automatiquement votre prompt. L'IA analysera votre demande et la reformulera pour :
+
+- La rendre plus spécifique et actionnable
+- Ajouter du contexte pertinent si nécessaire
+- Décomposer les demandes complexes en étapes claires
+- Utiliser un langage technique précis
+- Améliorer la clarté tout en conservant votre intention
+
+**Exemple :**
+
+```
+Avant : "ajoute un formulaire"
+Après : "Crée un formulaire de contact React avec les champs suivants : nom (texte requis), email (validation email requise), message (textarea requis). Ajoute la validation côté client avec des messages d'erreur clairs et un bouton de soumission désactivé jusqu'à ce que tous les champs soient valides."
+```
+
+### Suggestions IA
+
+NeuroCode analyse en permanence votre projet pour vous proposer des actions pertinentes. Juste au-dessus du champ de saisie, vous trouverez des suggestions classées par catégories :
+
+- **Fonctionnalités :** Idées de nouvelles fonctions à ajouter.
+- **Corrections :** Améliorations de la robustesse ou correction de bugs.
+- **Optimisations :** Amélioration du code ou des performances.
+- **Améliorations :** UX, design et accessibilité.
+
+Ces suggestions sont générées dynamiquement par l'IA en fonction de votre historique de discussion et sont mises en cache pour une performance optimale.
+
+---
+
+## Développement
+
+### Structure du projet
+
+```
+src/
+├── main.ts                 # Processus principal Electron
+├── preload.ts             # Pont IPC
+├── renderer.tsx           # Entrée de l'application React
+├── app/                   # Mise en page de l'application
+├── components/            # Composants React
+├── db/                    # Schéma de base de données
+├── ipc/                   # Gestionnaires IPC
+├── pages/                 # Composants de pages
+├── pro/                   # Fonctionnalités Pro
+├── prompts/               # Instructions système IA
+└── routes/                # Configuration du routeur
+```
+
+### Stack technique
+
+- **Frontend :** React 19, TanStack Router, Jotai, Tailwind CSS
+- **Backend :** Electron 40, SQLite, Drizzle ORM
+- **IA :** Vercel AI SDK avec support multi-fournisseurs
+- **Build :** Vite, Electron Forge
+- **Tests :** Vitest, Playwright
+
+### Commandes de développement
+
+```bash
+# Lancer le serveur de développement
+npm run dev
+
+# Vérification des types
+npm run ts
+
+# Linting
+npm run lint
+npm run lint:fix
+
+# Formatage
+npm run fmt
+
+# Exécuter les tests
+npm test
+npm run e2e
+
+# Génération de code
+npm run codegen -- <commande> [options]
+
+# Opérations sur la base de données
+npm run db:generate    # Générer les migrations
+npm run db:push        # Pousser les modifications de schéma
+npm run db:studio      # Ouvrir Drizzle Studio
+```
+
+### Vérifications pré-commit
+
+Avant de committer, lancez :
+
+```bash
+npm run fmt        # Formater le code
+npm run lint       # Linter le code
+npm run ts         # Vérifier les types
+```
+
+Ou utilisez la commande automatisée :
+
+```bash
+/dyad:lint
+```
+
+---
+
+## Configuration
+
+### Paramètres utilisateur
+
+Les paramètres sont stockés dans `user-settings.json` dans le dossier de données de l'application :
+
+- **Sélection du modèle :** Choisissez votre fournisseur d'IA et votre modèle préférés
+- **Clés API :** Stockées de manière sécurisée avec le stockage sécurisé d'Electron
+- **Modes de discussion :** Configurez le mode par défaut et le mode actuel
+- **Gestion du contexte :** Nombre max de tours de discussion, limites de jetons, budget de réflexion
+- **Préférences UI :** Thème, langue, niveau de zoom, mode d'appareil
+- **Intégrations :** Identifiants GitHub, Vercel, Supabase, Neon
+- **Smart Context Strategy :**
+  - `balanced` (par défaut)
+  - `conservative`
+  - `deep`
+
+### Variables d'environnement
+
+Créez un fichier `.env` pour le développement :
+
+```env
+# Clés API des fournisseurs d'IA
+OPENAI_API_KEY=votre_cle_ici
+ANTHROPIC_API_KEY=votre_cle_ici
+GOOGLE_API_KEY=votre_cle_ici
+
+# Intégration GitHub
+GITHUB_TOKEN=votre_jeton_ici
+
+# Ollama local (optionnel)
+OLLAMA_HOST=http://localhost:11434
+```
+
+### Serveurs MCP
+
+Configurez les serveurs Model Context Protocol dans `.kiro/settings/mcp.json` :
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/chemin/vers/fichiers/autorises"
+      ]
+    }
+  }
+}
+```
+
+### Skills
+
+Les skills sont des instructions réutilisables stockées dans des fichiers SKILL.md :
+
+**Emplacements des skills :**
+
+- **Niveau utilisateur :** `~/.neurocode/skills/` (disponibles uniquement pour vous)
+- **Niveau workspace :** `.neurocode/skills/` (partagés avec l'équipe)
+
+**Format d'un skill :**
+
+```markdown
+---
+name: mon-skill
+description: Description brève pour le chargement automatique
+---
+
+# Mon Skill
+
+Instructions détaillées pour le skill...
+
+## Instructions
+
+1. Étape un
+2. Étape deux
+   ...
+```
+
+**Utilisation des skills :**
+
+```bash
+# Invoquer un skill via commande slash
+/mon-skill
+
+# Les skills peuvent aussi être chargés automatiquement selon le contexte
+```
+
+**Skills d'exemple disponibles :**
+
+- `/examples:code-review` - Revue de code approfondie
+- `/examples:debug-error` - Débogage systématique d'erreurs
+- `/examples:write-tests` - Écriture de tests complets
+- `/examples:refactor-code` - Refactorisation sécurisée
+- `/examples:add-feature` - Ajout de nouvelles fonctionnalités
+- `/examples:optimize-performance` - Optimisation des performances
+
+---
+
+## Tests
+
+### Tests unitaires
+
+```bash
+npm test              # Exécuter une fois
+npm run test:watch    # Mode surveillance
+npm run test:ui       # Mode UI
+```
+
+### Tests E2E
+
+```bash
+# Compiler d'abord (requis !)
+npm run build
+
+# Exécuter les tests E2E
+npm run e2e
+npm run e2e:fast      # Avec moins de tentatives
+```
+
+- Tests de propriétés (fast-check) pour garantir :
+  - Scores toujours bornés et déterministes
+  - Respect du budget de tokens
+  - Ordonnancement correct des fichiers
+  - Limite mémoire de l’observabilité (50 entrées max)
+
+**Important :** Les tests E2E s'exécutent sur l'application compilée. Recompilez toujours après des modifications de code.
+
+---
+
+## Contribution
+
+Les contributions sont les bienvenues ! Veuillez consulter [CONTRIBUTING.md](CONTRIBUTING.md) pour les directives.
+
+### Flux de développement
+
+1. Forkez le dépôt
+2. Créez une branche de fonctionnalité (`git checkout -b feature/ma-super-fonctionnalite`)
+3. Apportez vos modifications
+4. Lancez les vérifications pré-commit (`npm run fmt && npm run lint && npm run ts`)
+5. Committez vos changements (`git commit -m 'Ajout d'une super fonctionnalité'`)
+6. Poussez vers la branche (`git push origin feature/ma-super-fonctionnalite`)
+7. Ouvrez une Pull Request
+
+### Style de code
+
+- Utilisez TypeScript pour tout nouveau code
+- Suivez le style de code existant (appliqué par Oxlint et Oxfmt)
+- Écrivez des tests pour les nouvelles fonctionnalités
+- Mettez à jour la documentation si nécessaire
+
+---
+
+## Architecture
+
+### Electron IPC
+
+NeuroCode utilise une architecture IPC sécurisée avec :
+
+- **Isolation du contexte :** Activée pour la sécurité
+- **Contrats typés :** Tous les points de terminaison IPC ont des contrats TypeScript
+- **Gestion des erreurs :** DyadError avec DyadErrorKind pour une classification appropriée
+- **Catégories de gestionnaires :** Plus de 30 modules de gestionnaires spécialisés
+
+### Schéma de base de données
+
+Base de données SQLite avec Drizzle ORM :
+
+- **apps :** Métadonnées et intégrations des applications
+- **chats :** Sessions de discussion par application
+- **messages :** Messages de chat avec réponses de l'IA
+- **versions :** Suivi des commits Git
+- **prompts :** Instructions et modèles sauvegardés
+- **language_models :** Modèles d'IA disponibles
+- **mcp_servers :** Configurations des serveurs MCP
+- **custom_themes :** Thèmes créés par l'utilisateur
+
+### Gestion de l'état
+
+- **Jotai :** Gestion d'état atomique pour l'état global
+- **TanStack Query :** État du serveur et récupération de données
+- **État local :** État UI au niveau du composant
+
+---
+
+## Sécurité
+
+NeuroCode prend la sécurité au sérieux :
+
+- **Stockage chiffré :** Clés API stockées avec le stockage sécurisé d'Electron
+- **Validation des entrées :** Schémas Zod pour toutes les entrées utilisateur
+- **Isolation du contexte :** Le processus de rendu est cloisonné (sandboxed)
+- **Revue de sécurité :** Analyse de sécurité du code par l'IA
+- **Valeurs par défaut sûres :** Blocage des paquets npm dangereux par défaut
+
+---
+
+## Performance
+
+- **Compactage du contexte :** Résumé automatique pour les longs chats
+- **Gestion des jetons :** Limites de contexte et comptage intelligents
+- **Chargement différé (Lazy Loading) :** Composants chargés à la demande
+- **Défilement virtuel :** Rendu efficace des grandes listes
+- **Suivi des performances :** Suivi intégré de la mémoire et du CPU
+
+---
+
+## Dépannage
+
+### Problèmes courants
+
+**L'application ne démarre pas :**
+
+- Vérifiez la version de Node.js (>= 24 requis)
+- Supprimez `node_modules` et réinstallez : `npm install`
+- Vérifiez les journaux (logs) dans le dossier de données de l'application
+
+**L'aperçu ne se met pas à jour :**
+
+- Cliquez sur le bouton Actualiser au-dessus de la saisie du chat
+- Essayez les commandes Redémarrer (Restart) ou Reconstruire (Rebuild)
+- Vérifiez la console du navigateur pour les erreurs
+
+**L'IA ne répond pas :**
+
+- Vérifiez la clé API dans les Paramètres
+- Vérifiez la connexion internet (pour les fournisseurs cloud)
+- Essayez un autre modèle ou fournisseur
+
+**Les opérations Git échouent :**
+
+- Assurez-vous que Git est installé (ou utilisez le Git inclus)
+- Vérifiez les permissions du dépôt
+- Vérifiez le jeton GitHub si vous utilisez l'intégration GitHub
+
+---
 
 ## Licence
 
-MIT. La licence est déclarée dans `package.json`.
+Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
+
+---
+
+## Remerciements
+
+- Construit avec [Electron](https://www.electronjs.org/)
+- IA propulsée par [Vercel AI SDK](https://sdk.vercel.ai/)
+- Composants UI de [Base UI](https://base-ui.com/)
+- Éditeur de code par [Monaco Editor](https://microsoft.github.io/monaco-editor/)
+
+---
+
+## Support
+
+- **Documentation :** [docs.dyad.sh](https://docs.dyad.sh)
+- **Problèmes :** [GitHub Issues](https://github.com/dyad-sh/dyad/issues)
+- **Discussions :** [GitHub Discussions](https://github.com/dyad-sh/dyad/discussions)
+- **Bouton d'aide :** Utilisez le bouton d'aide en bas à gauche de l'application
+
+---
+
+<div align="center">
+
+Fait avec ❤️
+
+[⬆ Retour en haut](#neurocode)
+
+</div>

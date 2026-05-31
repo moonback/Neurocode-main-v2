@@ -33,6 +33,29 @@ NeuroCode est une puissante application de bureau qui permet aux développeurs d
 - **🧠 Contexte intelligent :** Sélection automatique des fichiers les plus pertinents pour des réponses IA plus rapides et précises
 
 ---
+## Stack technique
+
+| Technologie                 | Rôle                                           | Version détectable                    |
+| --------------------------- | ---------------------------------------------- | ------------------------------------- |
+| Electron                    | Shell desktop, processus main/preload/renderer | 40.0.0                                |
+| Electron Forge              | Packaging, makers, publication                 | ^7.11.1                               |
+| Vite                        | Bundling main, preload, renderer et worker     | ^5.4.17                               |
+| React                       | UI renderer                                    | ^19.2.4                               |
+| TypeScript                  | Typage applicatif                              | ^5.8.3                                |
+| TanStack Router             | Routing frontend typé                          | ^1.114.34                             |
+| TanStack Query              | Cache et orchestration des requêtes UI         | ^5.75.5                               |
+| Jotai                       | État UI local et global                        | ^2.12.2                               |
+| Tailwind CSS                | Styles utilitaires                             | ^4.1.3                                |
+| Base UI / composants locaux | Primitives UI accessibles                      | @base-ui/react ^1.2.0                 |
+| Drizzle ORM                 | Mapping SQLite et migrations                   | ^0.41.0                               |
+| better-sqlite3              | Base locale embarquée                          | ^12.6.2                               |
+| AI SDK                      | Abstraction multi-fournisseurs IA              | ai ^6.0.68                            |
+| MCP SDK                     | Intégration Model Context Protocol             | ^1.17.5                               |
+| Dugite / isomorphic-git     | Opérations Git locales et GitHub               | dugite ^3.0.0, isomorphic-git ^1.30.1 |
+| Vitest                      | Tests unitaires/intégration                    | ^3.1.1                                |
+| Playwright                  | Tests E2E Electron                             | ^1.58.2                               |
+| Storybook                   | Catalogue de composants                        | ^8.6.15                               |
+| Oxlint / Oxfmt              | Lint et formatage                              | oxlint ^1.41.0, oxfmt ^0.26.0         |
 
 ## Fonctionnalités
 
@@ -209,6 +232,25 @@ Suivez votre utilisation en temps réel :
 
 #### ⚙️ Configuration
 
+| Variable                    | Description                                               | Exemple                       | Obligatoire |
+| --------------------------- | --------------------------------------------------------- | ----------------------------- | ----------- |
+| `OPENAI_API_KEY`            | Clé API OpenAI utilisée par le provider OpenAI.           | `sk-proj-...`                 | Non         |
+| `ANTHROPIC_API_KEY`         | Clé API Anthropic utilisée par le provider Anthropic.     | `sk-ant-...`                  | Non         |
+| `GOOGLE_API_KEY`            | Clé API Google AI.                                        | `AIza...`                     | Non         |
+| `OLLAMA_HOST`               | URL d'un serveur Ollama local ou distant.                 | `http://127.0.0.1:11434`      | Non         |
+| `GITHUB_CLIENT_ID`          | Client ID OAuth GitHub pour le flux d'intégration GitHub. | `Ov23li...`                   | Non         |
+| `GITHUB_CLIENT_SECRET`      | Secret OAuth GitHub associé au client ID.                 | `github_pat_or_secret`        | Non         |
+| `GITHUB_TOKEN`              | Token GitHub personnel pour les opérations API/scripts.   | `ghp_...`                     | Non         |
+| `APPLE_ID`                  | Apple ID utilisé pour la notarisation macOS.              | `dev@example.com`             | Non         |
+| `APPLE_PASSWORD`            | Mot de passe app-specific Apple pour notarisation.        | `xxxx-xxxx-xxxx-xxxx`         | Non         |
+| `APPLE_TEAM_ID`             | Team ID Apple Developer.                                  | `ABCDE12345`                  | Non         |
+| `SM_CODE_SIGNING_CERT_SHA1` | Empreinte SHA1 du certificat de signature macOS.          | `012345...`                   | Non         |
+| `NODE_ENV`                  | Mode d'exécution Node/Electron.                           | `development`                 | Non         |
+| `E2E_TEST_BUILD`            | Active les comportements de build E2E.                    | `true`                        | Non         |
+| `CI`                        | Indique une exécution en CI.                              | `true`                        | Non         |
+
+Les secrets utilisateur saisis dans l'application sont stockés dans le fichier de paramètres local et chiffrés via `electron.safeStorage` lorsque disponible. Les données applicatives locales sont stockées dans le répertoire utilisateur Electron, notamment `sqlite.db`.
+
 Activez l'optimisation dans **Paramètres > AI Settings** :
 
 - ☑️ **Enable Token Optimization** - Active le système complet
@@ -227,12 +269,6 @@ Activez l'optimisation dans **Paramètres > AI Settings** :
 | Taux de cache hit          | 85-95%       |
 | Précision de prédiction    | 70-85%       |
 
-#### 📚 Documentation Complète
-
-- [Guide d'Utilisation](docs/GUIDE_UTILISATION_TOKEN_OPTIMIZATION.md) - Guide pratique de démarrage
-- [Documentation Technique](docs/TOKEN_OPTIMIZATION.md) - Documentation complète du système
-- [Accès aux Analytics](docs/ACCES_ANALYTICS.md) - Comment accéder aux analytics
-- [Spec Technique](.kiro/specs/token-optimization-skills/) - Spécifications détaillées
 
 #### 🎯 Démarrage Rapide
 
