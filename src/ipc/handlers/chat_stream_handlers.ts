@@ -8,7 +8,6 @@ import {
   ImagePart,
   streamText,
   ToolSet,
-  TextStreamPart,
   stepCountIs,
   hasToolCall,
   type ToolExecutionOptions,
@@ -29,7 +28,6 @@ import {
 } from "../../prompts/supabase_prompt";
 import { buildNeonPromptForApp } from "../../neon_admin/neon_prompt_context";
 import { getDyadAppPath } from "../../paths/paths";
-import { buildDyadMediaUrl } from "../../lib/dyadMediaUrl";
 import { readSettings } from "../../main/settings";
 import type { ChatResponseEnd, ChatStreamParams } from "@/ipc/types";
 import { DyadError, DyadErrorKind } from "@/errors/dyad_error";
@@ -55,10 +53,10 @@ import { SUMMARIZE_CHAT_SYSTEM_PROMPT } from "../../prompts/summarize_chat_syste
 import { SECURITY_REVIEW_SYSTEM_PROMPT } from "../../prompts/security_review_prompt";
 import fs from "node:fs";
 import * as path from "path";
-import * as crypto from "crypto";
-import { readFile, writeFile } from "fs/promises";
+import { readFile } from "fs/promises";
 import { getMaxTokens, getTemperature } from "../utils/token_utils";
 import { processStreamChunks } from "./model_orchestrator";
+import { createFullResponseCleaner } from "../utils/streaming_response_cleaner";
 import { MAX_CHAT_TURNS_IN_CONTEXT } from "@/constants/settings_constants";
 import { validateChatContext } from "../utils/context_paths_utils";
 import { getProviderOptions, getAiHeaders } from "../utils/provider_options";
@@ -69,7 +67,6 @@ import { requireMcpToolConsent } from "../utils/mcp_consent";
 import {
   processAttachments,
   processSelectedComponents,
-  buildSystemPrompt,
   isTextFile,
 } from "./prompt_assembly_service";
 import {
@@ -83,7 +80,6 @@ import { handleLocalAgentStream } from "../../pro/main/ipc/handlers/local_agent/
 import { trackTokenUsage } from "../../token-optimization/integration";
 
 import { safeSend } from "../utils/safe_sender";
-import { cleanFullResponse } from "../utils/cleanFullResponse";
 import { generateProblemReport } from "../processors/tsc";
 import { createProblemFixPrompt } from "@/shared/problem_prompt";
 import { AsyncVirtualFileSystem } from "../../../shared/VirtualFilesystem";
@@ -101,18 +97,6 @@ import {
 } from "@/shared/chatCancellation";
 import { extractMentionedAppsCodebases } from "../utils/mention_apps";
 import { parseAppMentions } from "@/shared/parse_mention_apps";
-import {
-  parseMediaMentions,
-  stripResolvedMediaMentions,
-} from "@/shared/parse_media_mentions";
-import { prompts as promptsTable } from "../../db/schema";
-import { inArray } from "drizzle-orm";
-import { replacePromptReference } from "../utils/replacePromptReference";
-import { replaceSlashSkillReference } from "../utils/replaceSlashSkillReference";
-import { resolveMediaMentions } from "../utils/resolve_media_mentions";
-import { parsePlanFile, validatePlanId } from "./planUtils";
-import { ensureDyadGitignored } from "./gitignoreUtils";
-import { DYAD_MEDIA_DIR_NAME } from "../utils/media_path_utils";
 import { mcpManager } from "../utils/mcp_manager";
 import z from "zod";
 import {
@@ -141,9 +125,10 @@ import {
   replaceLastUserPromptForModel,
 } from "./chat_stream_display_prompt";
 
-type AsyncIterableStream<T> = AsyncIterable<T> & ReadableStream<T>;
-
 const logger = log.scope("chat_stream_handlers");
+
+const STREAM_UI_UPDATE_INTERVAL_MS = 50;
+const PARTIAL_RESPONSE_DB_SAVE_INTERVAL_MS = 500;
 
 // Track active streams for cancellation
 const activeStreams = new Map<number, AbortController>();
@@ -883,17 +868,30 @@ This conversation includes one or more image attachments. When the user uploads 
         };
 
         let lastDbSaveAt = 0;
+        let lastUiUpdateAt = 0;
+        let lastSentStreamingContent = "";
 
         const processResponseChunkUpdate = async ({
           fullResponse,
+          force = false,
         }: {
           fullResponse: string;
+          force?: boolean;
         }) => {
-          // Store the current partial response
+          // Store the current partial response for cancellation recovery on every chunk.
           partialResponses.set(req.chatId, fullResponse);
-          // Save to DB (in case user is switching chats during the stream)
+
           const now = Date.now();
-          if (now - lastDbSaveAt >= 150) {
+          const shouldPersistPartialResponse =
+            force || now - lastDbSaveAt >= PARTIAL_RESPONSE_DB_SAVE_INTERVAL_MS;
+          const shouldSendUiUpdate =
+            force ||
+            !lastSentStreamingContent ||
+            now - lastUiUpdateAt >= STREAM_UI_UPDATE_INTERVAL_MS;
+
+          // Save to DB periodically (in case user is switching chats during the stream),
+          // but avoid doing synchronous SQLite work for every token-sized delta.
+          if (shouldPersistPartialResponse) {
             await db
               .update(messages)
               .set({ content: fullResponse })
@@ -903,13 +901,27 @@ This conversation includes one or more image attachments. When the user uploads 
           }
 
           // Send incremental update with only the streaming message content
-          // instead of the full messages array to reduce IPC overhead
-          safeSend(event.sender, "chat:response:chunk", {
-            chatId: req.chatId,
-            streamingMessageId: placeholderAssistantMessage.id,
-            streamingContent: fullResponse,
-          });
+          // instead of the full messages array to reduce IPC overhead.
+          // Throttling keeps long code-generation streams from spending more time
+          // on renderer IPC than on consuming the model stream.
+          if (shouldSendUiUpdate && fullResponse !== lastSentStreamingContent) {
+            safeSend(event.sender, "chat:response:chunk", {
+              chatId: req.chatId,
+              streamingMessageId: placeholderAssistantMessage.id,
+              streamingContent: fullResponse,
+            });
+            lastSentStreamingContent = fullResponse;
+            lastUiUpdateAt = now;
+          }
+
           return fullResponse;
+        };
+
+        const flushResponseUpdates = async () => {
+          fullResponse = await processResponseChunkUpdate({
+            fullResponse,
+            force: true,
+          });
         };
 
         // Handle ask mode: use local-agent in read-only mode
@@ -1078,6 +1090,7 @@ This conversation includes one or more image attachments. When the user uploads 
               escapeDyadTagsFn: escapeDyadTags,
             });
             fullResponse = result.fullResponse;
+            await flushResponseUpdates();
             chatMessages.push({
               role: "assistant",
               content: fullResponse,
@@ -1107,6 +1120,7 @@ This conversation includes one or more image attachments. When the user uploads 
             escapeDyadTagsFn: escapeDyadTags,
           });
           fullResponse = result.fullResponse;
+          await flushResponseUpdates();
 
           if (
             settings.selectedChatMode !== "ask" &&
@@ -1186,6 +1200,7 @@ ${formattedSearchReplaceIssues}`,
                 escapeDyadTagsFn: escapeDyadTags,
               });
               fullResponse = result.fullResponse;
+              await flushResponseUpdates();
               previousAttempts.push({
                 role: "assistant",
                 content: removeNonEssentialTags(result.incrementalResponse),
@@ -1215,6 +1230,8 @@ ${formattedSearchReplaceIssues}`,
             hasUnclosedDyadWrite(fullResponse)
           ) {
             let continuationAttempts = 0;
+            const cleanFullResponseForContinuationChunk =
+              createFullResponseCleaner();
             while (
               hasUnclosedDyadWrite(fullResponse) &&
               continuationAttempts < 2 &&
@@ -1250,11 +1267,15 @@ ${formattedSearchReplaceIssues}`,
                 }
                 if (part.type !== "text-delta") continue; // ignore reasoning for continuation
                 fullResponse += part.text;
-                fullResponse = cleanFullResponse(fullResponse);
+                fullResponse = cleanFullResponseForContinuationChunk(
+                  fullResponse,
+                  part.text,
+                );
                 fullResponse = await processResponseChunkUpdate({
                   fullResponse,
                 });
               }
+              await flushResponseUpdates();
             }
           }
           const addDependencies = getDyadAddDependencyTags(fullResponse);
@@ -1366,6 +1387,7 @@ ${problemReport.problems
                   escapeDyadTagsFn: escapeDyadTags,
                 });
                 fullResponse = result.fullResponse;
+                await flushResponseUpdates();
                 previousAttempts.push({
                   role: "assistant",
                   content: removeNonEssentialTags(result.incrementalResponse),

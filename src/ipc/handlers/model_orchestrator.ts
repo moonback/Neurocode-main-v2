@@ -1,6 +1,6 @@
 import { TextStreamPart, ToolSet } from "ai";
 import log from "electron-log";
-import { cleanFullResponse } from "../utils/cleanFullResponse";
+import { createFullResponseCleaner } from "../utils/streaming_response_cleaner";
 import { parseMcpToolKey } from "./tag_parser_service";
 
 type AsyncIterableStream<T> = AsyncIterable<T> & ReadableStream<T>;
@@ -14,7 +14,9 @@ export function escapeDyadTags(text: string): string {
   // and are mishandled by:
   // 1. FE markdown parser
   // 2. Main process response processor
-  return text.replace(/\u003cdyad/g, "＜dyad").replace(/\u003c\/dyad/g, "＜/dyad");
+  return text
+    .replace(/\u003cdyad/g, "＜dyad")
+    .replace(/\u003c\/dyad/g, "＜/dyad");
 }
 
 export async function processStreamChunks({
@@ -36,6 +38,7 @@ export async function processStreamChunks({
 }): Promise<{ fullResponse: string; incrementalResponse: string }> {
   let incrementalResponse = "";
   let inThinkingBlock = false;
+  const cleanFullResponseForChunk = createFullResponseCleaner();
 
   for await (const part of fullStream) {
     let chunk = "";
@@ -73,7 +76,7 @@ export async function processStreamChunks({
 
     fullResponse += chunk;
     incrementalResponse += chunk;
-    fullResponse = cleanFullResponse(fullResponse);
+    fullResponse = cleanFullResponseForChunk(fullResponse, chunk);
     fullResponse = await processResponseChunkUpdate({
       fullResponse,
     });
